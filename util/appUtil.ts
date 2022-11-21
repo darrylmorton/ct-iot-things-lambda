@@ -38,3 +38,10 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
   // @ts-ignore
   return DynamoDBDocumentClient.from(await getDbClient())
 }
+
+export const consoleErrorOutput = (value: string | unknown, err: any | unknown) => {
+  if (process.env.NODE_ENV !== 'test') {
+    // eslint-disable-next-line no-console
+    console.error(`${value} db write error`, err)
+  }
+}

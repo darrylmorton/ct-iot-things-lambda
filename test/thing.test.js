@@ -42,7 +42,7 @@ var chai_1 = require("chai");
 var createThingLambda = require("../lambda-create/index");
 var readThingLambda = require("../lambda-read/index");
 var appHelper_1 = require("./helper/appHelper");
-var appUtil_1 = require("../lambda-create/util/appUtil");
+var appUtil_1 = require("../util/appUtil");
 var thingHelper_1 = require("./helper/thingHelper");
 // TODO
 //   thingIds, thingTypes mock data (id and name)
@@ -56,7 +56,7 @@ var thingHelper_1 = require("./helper/thingHelper");
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, appUtil_1.getDbClient)()];
+                    case 0: return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
                     case 1:
                         client = _a.sent();
                         thingName = 'thingOne';
@@ -127,7 +127,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     expectedResult = {
                         statusCode: 200,
                         message: 'ok',
-                        result: [{ thingName: thingName, thingType: thingType, description: thingName }]
+                        result: [{ id: '', thingName: thingName, thingType: thingType, description: thingName }]
                     };
                     context = (0, appHelper_1.createContext)('read-things-test-lambda');
                     event = { thingName: thingName };
@@ -138,7 +138,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     lambdaSpyResult = _a.sent();
                     (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                    (0, thingHelper_1.assertThing)(lambdaSpyResult, expectedResult);
+                    (0, thingHelper_1.assertThingResponse)(lambdaSpyResult, expectedResult);
                     return [2 /*return*/];
             }
         });

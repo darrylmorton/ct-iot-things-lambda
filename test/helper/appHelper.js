@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.delay = exports.createContext = void 0;
+exports.createContext = void 0;
 var createContext = function (functionName) {
     return {
         awsRequestId: '',
@@ -25,7 +25,3 @@ var createContext = function (functionName) {
     };
 };
 exports.createContext = createContext;
-var delay = function (time) {
-    return new Promise(function (resolve) { return setTimeout(resolve, time); });
-};
-exports.delay = delay;

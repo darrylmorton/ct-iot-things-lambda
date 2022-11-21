@@ -6,10 +6,10 @@ import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
 
 import * as createThingLambda from '../lambda-create/index'
 import * as readThingLambda from '../lambda-read/index'
-import { SimpleThing } from '../types'
-import { createContext, delay } from './helper/appHelper'
-import { getDbClient } from '../lambda-create/util/appUtil'
-import { assertThing, createThingEvent, createThingsTable, dropThingsTable } from './helper/thingHelper'
+import { SimpleThing, ThingResponse } from '../types'
+import { createContext } from './helper/appHelper'
+import { getDbDocumentClient } from '../util/appUtil'
+import { assertThingResponse, createThingEvent, createThingsTable, dropThingsTable } from './helper/thingHelper'
 
 // TODO
 //   thingIds, thingTypes mock data (id and name)
@@ -20,7 +20,7 @@ describe('thing tests', function () {
   let thingType: string
 
   before(async function () {
-    client = await getDbClient()
+    client = await getDbDocumentClient()
     thingName = 'thingOne'
     thingType = 'thingTypeOne'
 
@@ -64,10 +64,10 @@ describe('thing tests', function () {
   })
 
   it('read things', async () => {
-    const expectedResult = {
+    const expectedResult: ThingResponse = {
       statusCode: 200,
       message: 'ok',
-      result: [{ thingName, thingType, description: thingName }],
+      result: [{ id: '', thingName, thingType, description: thingName }],
     }
     const context: Context = createContext('read-things-test-lambda')
     const event = { thingName }
@@ -81,7 +81,7 @@ describe('thing tests', function () {
     const lambdaSpyResult = await lambdaSpy(event, context)
 
     assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertThing(lambdaSpyResult, expectedResult)
+    assertThingResponse(lambdaSpyResult, expectedResult)
   })
 
   it('read missing things', async () => {

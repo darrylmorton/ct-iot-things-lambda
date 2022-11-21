@@ -2,12 +2,11 @@ import { v4 as uuidv4 } from 'uuid'
 import * as dayjs from 'dayjs'
 import * as utc from 'dayjs/plugin/utc'
 import * as timezone from 'dayjs/plugin/timezone'
-import { PutItemCommand, PutItemCommandInput, PutItemCommandOutput } from '@aws-sdk/client-dynamodb'
-import { marshall } from '@aws-sdk/util-dynamodb'
 import { Context } from 'aws-lambda'
+import { PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 
-import { SimpleThing, Thing } from './types'
-import { getDbDocumentClient, getThingsDbName } from './util/appUtil'
+import { SimpleThing, Thing } from '../types'
+import { consoleErrorOutput, getDbDocumentClient, getThingsDbName } from '../util/appUtil'
 
 // @ts-ignore
 dayjs.extend(utc)
@@ -26,19 +25,18 @@ exports.handler = async function run(event: SimpleThing, context?: Context) {
     createdAt: currentDate,
   }
 
-  const params: PutItemCommandInput = {
+  const params: PutCommandInput = {
     TableName: getThingsDbName(),
-    Item: marshall(thing),
+    Item: thing,
   }
 
   try {
-    const result: PutItemCommandOutput = await (await getDbDocumentClient()).send(new PutItemCommand(params))
+    const result: PutCommandOutput = await (await getDbDocumentClient()).send(new PutCommand(params))
 
     return { statusCode: result.$metadata.httpStatusCode, message: 'ok' }
-    // @ts-ignore
-  } catch (err: PutItemCommandOutput) {
-    // eslint-disable-next-line no-console
-    console.error(`${context?.functionName} db write error`, err)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any | unknown) {
+    consoleErrorOutput(context?.functionName, err)
 
     return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }

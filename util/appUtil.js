@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getDbDocumentClient = exports.getDbClient = exports.getThingsDbName = void 0;
+exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbClient = exports.getThingsDbName = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
@@ -88,3 +88,10 @@ var getDbDocumentClient = function () { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.getDbDocumentClient = getDbDocumentClient;
+var consoleErrorOutput = function (value, err) {
+    if (process.env.NODE_ENV !== 'test') {
+        // eslint-disable-next-line no-console
+        console.error("".concat(value, " db write error"), err);
+    }
+};
+exports.consoleErrorOutput = consoleErrorOutput;

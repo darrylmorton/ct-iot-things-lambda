@@ -1,19 +1,19 @@
 import * as dayjs from 'dayjs'
 import * as utc from 'dayjs/plugin/utc'
 import * as timezone from 'dayjs/plugin/timezone'
-import { GetItemCommandInput } from '@aws-sdk/client-dynamodb'
-import { QueryCommand } from '@aws-sdk/lib-dynamodb'
+import { QueryCommand, QueryCommandInput } from '@aws-sdk/lib-dynamodb'
 import { Context } from 'aws-lambda'
 
-import { getDbDocumentClient, getThingsDbName } from './util/appUtil'
+import { consoleErrorOutput, getDbDocumentClient, getThingsDbName } from '../util/appUtil'
+import { SimpleThing } from '../types'
 
 // @ts-ignore
 dayjs.extend(utc)
 // @ts-ignore
 dayjs.extend(timezone)
 
-exports.handler = async function run(event: any, context?: Context) {
-  const params = {
+exports.handler = async function run(event: SimpleThing, context?: Context) {
+  const params: QueryCommandInput = {
     TableName: getThingsDbName(),
     IndexName: 'thingNameIndex',
     ExpressionAttributeValues: {
@@ -26,10 +26,9 @@ exports.handler = async function run(event: any, context?: Context) {
     const result = await (await getDbDocumentClient()).send(new QueryCommand(params))
 
     return { statusCode: result.$metadata.httpStatusCode, message: 'ok', result: result.Items }
-    // @ts-ignore
-  } catch (err: GetItemCommandInput) {
-    // eslint-disable-next-line no-console
-    console.error(`${context?.functionName} db write error`, err)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any | unknown) {
+    consoleErrorOutput(context?.functionName, err)
 
     return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }

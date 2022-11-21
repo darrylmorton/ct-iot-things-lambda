@@ -40,7 +40,7 @@ var dayjs = require("dayjs");
 var utc = require("dayjs/plugin/utc");
 var timezone = require("dayjs/plugin/timezone");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-var appUtil_1 = require("./util/appUtil");
+var appUtil_1 = require("../util/appUtil");
 // @ts-ignore
 dayjs.extend(utc);
 // @ts-ignore
@@ -68,12 +68,11 @@ exports.handler = function run(event, context) {
                 case 3:
                     result = _b.sent();
                     return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', result: result.Items }
-                        // @ts-ignore
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     ];
                 case 4:
                     err_1 = _b.sent();
-                    // eslint-disable-next-line no-console
-                    console.error("".concat(context === null || context === void 0 ? void 0 : context.functionName, " db write error"), err_1);
+                    (0, appUtil_1.consoleErrorOutput)(context === null || context === void 0 ? void 0 : context.functionName, err_1);
                     return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
                 case 5: return [2 /*return*/];
             }

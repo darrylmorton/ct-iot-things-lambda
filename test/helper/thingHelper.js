@@ -36,11 +36,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.assertThing = exports.createThingEvent = exports.dropThingsTable = exports.createThingsTable = exports.getThingsDbName = void 0;
+exports.assertThingResponseError = exports.assertThingResponse = exports.createThingEvent = exports.dropThingsTable = exports.createThingsTable = exports.getThingsDbName = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var chai_1 = require("chai");
 var uuid_1 = require("uuid");
-var dayjs = require("dayjs");
 var uuidValidateV4 = function (uuid) {
     return (0, uuid_1.validate)(uuid) && (0, uuid_1.version)(uuid) === 4;
 };
@@ -165,8 +164,7 @@ var createThingEvent = function (thingName, thingType, description, currentDate)
     };
 };
 exports.createThingEvent = createThingEvent;
-// TODO create and use a ThingResponse type
-var assertThing = function (actualResult, expectedResult) {
+var assertThingResponse = function (actualResult, expectedResult) {
     (0, chai_1.expect)(actualResult.statusCode).to.equal(200);
     (0, chai_1.expect)(actualResult.message).to.equal('ok');
     (0, chai_1.expect)(actualResult.result).to.have.length(1);
@@ -174,7 +172,12 @@ var assertThing = function (actualResult, expectedResult) {
     (0, chai_1.expect)(actualResult.result[0].thingName).to.equal(expectedResult.result[0].thingName);
     (0, chai_1.expect)(actualResult.result[0].thingType).to.equal(expectedResult.result[0].thingType);
     (0, chai_1.expect)(actualResult.result[0].description).to.equal(expectedResult.result[0].description);
-    (0, chai_1.expect)(dayjs(actualResult.result[0].createdAt).isValid()).to.be["true"];
-    (0, chai_1.expect)(dayjs(actualResult.result[0].updatedAt).isValid()).to.be["true"];
+    // expect(dayjs(actualResult.result[0].createdAt).isValid()).to.be.true
+    // expect(dayjs(actualResult.result[0].updatedAt).isValid()).to.be.true
 };
-exports.assertThing = assertThing;
+exports.assertThingResponse = assertThingResponse;
+var assertThingResponseError = function (actualResult) {
+    (0, chai_1.expect)(actualResult.statusCode).to.equal(200);
+    (0, chai_1.expect)(actualResult.message).to.equal('ok');
+};
+exports.assertThingResponseError = assertThingResponseError;

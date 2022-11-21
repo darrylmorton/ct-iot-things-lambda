@@ -40,9 +40,8 @@ var uuid_1 = require("uuid");
 var dayjs = require("dayjs");
 var utc = require("dayjs/plugin/utc");
 var timezone = require("dayjs/plugin/timezone");
-var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
-var appUtil_1 = require("./util/appUtil");
+var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
+var appUtil_1 = require("../util/appUtil");
 // @ts-ignore
 dayjs.extend(utc);
 // @ts-ignore
@@ -65,22 +64,21 @@ exports.handler = function run(event, context) {
                     };
                     params = {
                         TableName: (0, appUtil_1.getThingsDbName)(),
-                        Item: (0, util_dynamodb_1.marshall)(thing)
+                        Item: thing
                     };
                     _b.label = 1;
                 case 1:
                     _b.trys.push([1, 4, , 5]);
                     return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
-                case 2: return [4 /*yield*/, (_b.sent()).send(new client_dynamodb_1.PutItemCommand(params))];
+                case 2: return [4 /*yield*/, (_b.sent()).send(new lib_dynamodb_1.PutCommand(params))];
                 case 3:
                     result = _b.sent();
                     return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok' }
-                        // @ts-ignore
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     ];
                 case 4:
                     err_1 = _b.sent();
-                    // eslint-disable-next-line no-console
-                    console.error("".concat(context === null || context === void 0 ? void 0 : context.functionName, " db write error"), err_1);
+                    (0, appUtil_1.consoleErrorOutput)(context === null || context === void 0 ? void 0 : context.functionName, err_1);
                     return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
                 case 5: return [2 /*return*/];
             }

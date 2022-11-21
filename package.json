@@ -11,15 +11,10 @@
   "engines": {
     "node": ">=16.15"
   },
-  "dependencies": {
+  "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.150.0",
     "@aws-sdk/lib-dynamodb": "^3.214.0",
     "@aws-sdk/util-dynamodb": "^3.209.0",
-    "aws-lambda": "^1.0.7",
-    "dayjs": "^1.11.5",
-    "uuid": "^8.3.2"
-  },
-  "devDependencies": {
     "@types/aws-lambda": "^8.10.108",
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.0",
@@ -27,7 +22,9 @@
     "@types/sinon": "^10.0.13",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "aws-lambda": "^1.0.7",
     "chai": "^4.3.7",
+    "dayjs": "^1.11.5",
     "depcheck": "^1.4.3",
     "eslint": "^8.18.0",
     "eslint-config-prettier": "^8.5.0",
@@ -36,6 +33,7 @@
     "prettier": "^2.7.1",
     "sinon": "^14.0.2",
     "ts-node": "^10.9.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "uuid": "^8.3.2"
   }
 }

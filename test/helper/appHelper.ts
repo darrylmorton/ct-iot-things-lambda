@@ -21,7 +21,3 @@ export const createContext = (functionName: string) => {
     succeed(message: any, object?: any): void {},
   }
 }
-
-export const delay = (time: number) => {
-  return new Promise((resolve) => setTimeout(resolve, time))
-}
