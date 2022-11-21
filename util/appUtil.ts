@@ -39,6 +39,7 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
   return DynamoDBDocumentClient.from(await getDbClient())
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const consoleErrorOutput = (value: string | unknown, err: any | unknown) => {
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line no-console

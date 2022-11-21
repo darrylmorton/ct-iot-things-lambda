@@ -88,6 +88,7 @@ var getDbDocumentClient = function () { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.getDbDocumentClient = getDbDocumentClient;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 var consoleErrorOutput = function (value, err) {
     if (process.env.NODE_ENV !== 'test') {
         // eslint-disable-next-line no-console

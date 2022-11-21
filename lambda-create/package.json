@@ -3,19 +3,16 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "./node_modules/typescript/bin/tsc **/*.ts",
-    "lint": "eslint . --ext .ts",
-    "depcheck": "depcheck",
-    "test": "NODE_ENV=test mocha -r ts-node/register --config ./test/mocharc.json ./test/**/*.test.ts"
+    "depcheck": "depcheck"
   },
   "engines": {
     "node": ">=16.15"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.150.0",
-    "@aws-sdk/util-dynamodb": "^3.209.0",
+    "@aws-sdk/lib-dynamodb": "^3.214.0",
     "aws-lambda": "^1.0.7",
-    "dayjs": "^1.11.5",
+    "dayjs": "^1.11.6",
     "uuid": "^8.3.2"
   }
 }
