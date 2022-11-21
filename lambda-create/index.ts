@@ -7,7 +7,7 @@ import { marshall } from '@aws-sdk/util-dynamodb'
 import { Context } from 'aws-lambda'
 
 import { SimpleThing, Thing } from './types'
-import { getDbClient, getThingsDbName } from './util/appUtil'
+import { getDbDocumentClient, getThingsDbName } from './util/appUtil'
 
 // @ts-ignore
 dayjs.extend(utc)
@@ -29,16 +29,17 @@ exports.handler = async function run(event: SimpleThing, context?: Context) {
   const params: PutItemCommandInput = {
     TableName: getThingsDbName(),
     Item: marshall(thing),
-    ReturnValues: 'NONE',
   }
 
   try {
-    const result: PutItemCommandOutput = await (await getDbClient()).send(new PutItemCommand(params))
+    const result: PutItemCommandOutput = await (await getDbDocumentClient()).send(new PutItemCommand(params))
 
     return { statusCode: result.$metadata.httpStatusCode, message: 'ok' }
-  } catch (err) {
+    // @ts-ignore
+  } catch (err: PutItemCommandOutput) {
     // eslint-disable-next-line no-console
     console.error(`${context?.functionName} db write error`, err)
-    return { statusCode: 500, message: 'error' }
+
+    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }
 }

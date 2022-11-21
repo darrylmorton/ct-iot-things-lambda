@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.150.0",
+    "@aws-sdk/lib-dynamodb": "^3.214.0",
     "@aws-sdk/util-dynamodb": "^3.209.0",
     "aws-lambda": "^1.0.7",
     "dayjs": "^1.11.5",
