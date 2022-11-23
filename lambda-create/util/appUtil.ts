@@ -1,8 +1,19 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
+import * as dayjs from 'dayjs'
+import * as utc from 'dayjs/plugin/utc'
+import * as timezone from 'dayjs/plugin/timezone'
+// @ts-ignore
+dayjs.extend(utc)
+// @ts-ignore
+dayjs.extend(timezone)
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const THINGS_DB_TABLE_NAME_SUFFIX = 'things'
+
+export const createCurrentTime = (): string => {
+  return dayjs.tz(Date.now(), 'Europe/London').format('YYYY-MM-DDThh:mm:ss:SSS')
+}
 
 export const getThingsDbName = () => {
   const NODE_ENV = process.env.NODE_ENV
@@ -18,13 +29,13 @@ export const getThingsDbName = () => {
   }
 }
 
-export const getDbClient = async (): Promise<DynamoDBClient> => {
+const getDbClient = async (): Promise<DynamoDBClient> => {
   if (process.env.NODE_ENV === 'test') {
     return new DynamoDBClient({
-      region: 'eu-west-2',
+      region: 'localhost',
       credentials: {
-        secretAccessKey: 'KEY',
-        accessKeyId: 'ACCESSKEY',
+        accessKeyId: 'wt20ei',
+        secretAccessKey: '9t246v',
       },
       tls: false,
       endpoint: 'http://localhost:8000',
@@ -35,8 +46,24 @@ export const getDbClient = async (): Promise<DynamoDBClient> => {
 }
 
 export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => {
+  const marshallOptions = {
+    // Whether to automatically convert empty strings, blobs, and sets to `null`.
+    convertEmptyValues: false, // false, by default.
+    // Whether to remove undefined values while marshalling.
+    removeUndefinedValues: true, // false, by default.
+    // Whether to convert typeof object to map attribute.
+    convertClassInstanceToMap: false, // false, by default.
+  }
+
+  const unmarshallOptions = {
+    // Whether to return numbers as a string instead of converting them to native JavaScript numbers.
+    wrapNumbers: false, // false, by default.
+  }
+
+  const translateConfig = { marshallOptions, unmarshallOptions }
+
   // @ts-ignore
-  return DynamoDBDocumentClient.from(await getDbClient())
+  return DynamoDBDocumentClient.from(await getDbClient(), translateConfig)
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

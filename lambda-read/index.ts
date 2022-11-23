@@ -1,35 +1,34 @@
-import * as dayjs from 'dayjs'
-import * as utc from 'dayjs/plugin/utc'
-import * as timezone from 'dayjs/plugin/timezone'
-import { QueryCommand, QueryCommandInput } from '@aws-sdk/lib-dynamodb'
-import { Context } from 'aws-lambda'
+import { APIGatewayProxyEvent, Context } from 'aws-lambda'
+import { GetItemCommand, GetItemCommandInput } from '@aws-sdk/client-dynamodb'
+import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 
-import { consoleErrorOutput, getDbDocumentClient, getThingsDbName } from '../util/appUtil'
-import { SimpleThing } from '../types'
+import { consoleErrorOutput, getDbDocumentClient, getThingsDbName } from './util/appUtil'
 
-// @ts-ignore
-dayjs.extend(utc)
-// @ts-ignore
-dayjs.extend(timezone)
+exports.handler = async function run(event: APIGatewayProxyEvent, context?: Context) {
+  if (event.pathParameters?.id) {
+    const params: GetItemCommandInput = {
+      TableName: getThingsDbName(),
+      Key: marshall({ id: event.pathParameters.id }),
+      AttributesToGet: ['id', 'thingName', 'thingType', 'description'],
+    }
 
-exports.handler = async function run(event: SimpleThing, context?: Context) {
-  const params: QueryCommandInput = {
-    TableName: getThingsDbName(),
-    IndexName: 'thingNameIndex',
-    ExpressionAttributeValues: {
-      ':thingName': event.thingName,
-    },
-    KeyConditionExpression: 'thingName = :thingName',
-  }
+    try {
+      // @ts-ignore
+      const result: ServiceOutputTypes = await (await getDbDocumentClient()).send(new GetItemCommand(params))
 
-  try {
-    const result = await (await getDbDocumentClient()).send(new QueryCommand(params))
+      if (result.Item) {
+        const body = unmarshall(result.Item)
+        return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }
+      } else {
+        return { statusCode: 404, message: 'missing item' }
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any | unknown) {
+      consoleErrorOutput(context?.functionName, err)
 
-    return { statusCode: result.$metadata.httpStatusCode, message: 'ok', result: result.Items }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any | unknown) {
-    consoleErrorOutput(context?.functionName, err)
-
-    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
+      return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
+    }
+  } else {
+    return { statusCode: 404, message: 'missing item' }
   }
 }

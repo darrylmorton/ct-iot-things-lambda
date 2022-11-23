@@ -36,11 +36,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbClient = exports.getThingsDbName = void 0;
+exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getThingsDbName = exports.createCurrentTime = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
+var dayjs = require("dayjs");
+var utc = require("dayjs/plugin/utc");
+var timezone = require("dayjs/plugin/timezone");
+// @ts-ignore
+dayjs.extend(utc);
+// @ts-ignore
+dayjs.extend(timezone);
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
 var THINGS_DB_TABLE_NAME_SUFFIX = 'things';
+var createCurrentTime = function () {
+    return dayjs.tz(Date.now(), 'Europe/London').format('YYYY-MM-DDThh:mm:ss:SSS');
+};
+exports.createCurrentTime = createCurrentTime;
 var getThingsDbName = function () {
     var NODE_ENV = process.env.NODE_ENV;
     switch (NODE_ENV) {
@@ -58,10 +69,10 @@ var getDbClient = function () { return __awaiter(void 0, void 0, void 0, functio
     return __generator(this, function (_a) {
         if (process.env.NODE_ENV === 'test') {
             return [2 /*return*/, new client_dynamodb_1.DynamoDBClient({
-                    region: 'eu-west-2',
+                    region: 'localhost',
                     credentials: {
-                        secretAccessKey: 'KEY',
-                        accessKeyId: 'ACCESSKEY'
+                        accessKeyId: 'wt20ei',
+                        secretAccessKey: '9t246v'
                     },
                     tls: false,
                     endpoint: 'http://localhost:8000'
@@ -73,17 +84,29 @@ var getDbClient = function () { return __awaiter(void 0, void 0, void 0, functio
         return [2 /*return*/];
     });
 }); };
-exports.getDbClient = getDbClient;
 var getDbDocumentClient = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b;
+    var marshallOptions, unmarshallOptions, translateConfig, _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
+                marshallOptions = {
+                    // Whether to automatically convert empty strings, blobs, and sets to `null`.
+                    convertEmptyValues: false,
+                    // Whether to remove undefined values while marshalling.
+                    removeUndefinedValues: true,
+                    // Whether to convert typeof object to map attribute.
+                    convertClassInstanceToMap: false
+                };
+                unmarshallOptions = {
+                    // Whether to return numbers as a string instead of converting them to native JavaScript numbers.
+                    wrapNumbers: false
+                };
+                translateConfig = { marshallOptions: marshallOptions, unmarshallOptions: unmarshallOptions };
                 _b = (_a = lib_dynamodb_1.DynamoDBDocumentClient).from;
-                return [4 /*yield*/, (0, exports.getDbClient)()];
+                return [4 /*yield*/, getDbClient()];
             case 1: 
             // @ts-ignore
-            return [2 /*return*/, _b.apply(_a, [_c.sent()])];
+            return [2 /*return*/, _b.apply(_a, [_c.sent(), translateConfig])];
         }
     });
 }); };

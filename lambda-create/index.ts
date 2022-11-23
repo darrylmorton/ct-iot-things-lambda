@@ -1,39 +1,40 @@
 import { v4 as uuidv4 } from 'uuid'
-import * as dayjs from 'dayjs'
-import * as utc from 'dayjs/plugin/utc'
-import * as timezone from 'dayjs/plugin/timezone'
 import { Context } from 'aws-lambda'
 import { PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 
-import { SimpleThing, Thing } from '../types'
-import { consoleErrorOutput, getDbDocumentClient, getThingsDbName } from '../util/appUtil'
+import { Thing, ThingEvent } from '../types'
+import { consoleErrorOutput, createCurrentTime, getDbDocumentClient, getThingsDbName } from './util/appUtil'
 
-// @ts-ignore
-dayjs.extend(utc)
-// @ts-ignore
-dayjs.extend(timezone)
-
-exports.handler = async function run(event: SimpleThing, context?: Context) {
-  const currentDate = dayjs.tz(Date.now(), 'Europe/London').format('YYYY-MM-DDThh:mm:ss:SSS')
-
-  const thing: Thing = {
-    id: uuidv4(),
-    thingName: event.thingName,
-    thingType: event.thingType,
-    description: event.description,
-    updatedAt: currentDate,
-    createdAt: currentDate,
-  }
-
-  const params: PutCommandInput = {
-    TableName: getThingsDbName(),
-    Item: thing,
-  }
-
+exports.handler = async function run(event: ThingEvent, context?: Context) {
   try {
-    const result: PutCommandOutput = await (await getDbDocumentClient()).send(new PutCommand(params))
+    if (event.body) {
+      const body = JSON.parse(event.body)
 
-    return { statusCode: result.$metadata.httpStatusCode, message: 'ok' }
+      if (body.thingName && body.thingType && body.description) {
+        const currentDate: string = createCurrentTime()
+
+        const thing: Thing = {
+          id: uuidv4(),
+          thingName: body.thingName,
+          thingType: body.thingType,
+          description: body.description,
+          updatedAt: currentDate,
+          createdAt: currentDate,
+        }
+
+        const params: PutCommandInput = {
+          TableName: getThingsDbName(),
+          Item: thing,
+        }
+
+        const result: PutCommandOutput = await (await getDbDocumentClient()).send(new PutCommand(params))
+
+        return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(thing) }
+      }
+    }
+
+    return { statusCode: 400, message: 'invalid thing' }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any | unknown) {
     consoleErrorOutput(context?.functionName, err)

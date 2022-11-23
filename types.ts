@@ -1,3 +1,14 @@
+export interface ThingEvent {
+  body: string
+  // {
+  //     thingName: string | number | undefined
+  //     thingType: string
+  //     description: string
+  //   }
+  updatedAt: string
+  createdAt: string
+}
+
 export interface SimpleThing {
   thingName: string | number | undefined
   thingType: string
@@ -15,7 +26,7 @@ export interface ThingResponseError {
   message: string
 }
 
-export type ThingResponseType = {
+export type ThingResponseBody = {
   id: string
   thingName: string
   thingType: string
@@ -23,5 +34,5 @@ export type ThingResponseType = {
 }
 
 export interface ThingResponse extends ThingResponseError {
-  result: ThingResponseType[]
+  body: string
 }

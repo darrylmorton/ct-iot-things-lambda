@@ -6,3 +6,7 @@ services:
     container_name: dynamodb-local-testing
     ports:
       - "8000:8000"
+    environment:
+      - AWS_ACCESS_KEY_ID=wt20ei
+      - AWS_SECRET_ACCESS_KEY=9t246v
+      - AWS_DEFAULT_REGION=localhost

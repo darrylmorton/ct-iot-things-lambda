@@ -1,10 +1,20 @@
 import { CreateTableCommand, DeleteTableCommand, DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { expect } from 'chai'
 import { validate as uuidValidate, version as uuidVersion } from 'uuid'
+import { APIGatewayEventDefaultAuthorizerContext, APIGatewayEventRequestContextWithAuthorizer } from 'aws-lambda'
+import {
+  APIGatewayProxyEventMultiValueQueryStringParameters,
+  APIGatewayProxyEvent,
+  APIGatewayProxyEventHeaders,
+  APIGatewayProxyEventMultiValueHeaders,
+  APIGatewayProxyEventPathParameters,
+  APIGatewayProxyEventQueryStringParameters,
+  APIGatewayProxyEventStageVariables,
+} from 'aws-lambda/trigger/api-gateway-proxy'
 
-import { SimpleThing, ThingResponse } from '../../types'
+import { ThingResponse, ThingResponseBody, ThingResponseError } from '../../types'
 
-const uuidValidateV4 = (uuid: string) => {
+export const uuidValidateV4 = (uuid: string) => {
   return uuidValidate(uuid) && uuidVersion(uuid) === 4
 }
 
@@ -38,10 +48,6 @@ export const createThingsTable = async (dbClient: DynamoDBClient) => {
       {
         AttributeName: 'id',
         KeyType: 'HASH',
-      },
-      {
-        AttributeName: 'updatedAt',
-        KeyType: 'RANGE',
       },
     ],
     ProvisionedThroughput: {
@@ -112,34 +118,48 @@ export const dropThingsTable = async (dbClient: DynamoDBClient) => {
 }
 
 export const createThingEvent = (
-  thingName: string,
-  thingType: string,
-  description: string,
-  currentDate: string
-): SimpleThing => {
+  body: string | null,
+  headers: APIGatewayProxyEventHeaders,
+  httpMethod: string,
+  path: string,
+  multiValueHeaders: APIGatewayProxyEventMultiValueHeaders,
+  multiValueQueryStringParameters: APIGatewayProxyEventMultiValueQueryStringParameters,
+  pathParameters: APIGatewayProxyEventPathParameters,
+  queryStringParameters: APIGatewayProxyEventQueryStringParameters,
+  requestContext: APIGatewayEventRequestContextWithAuthorizer<APIGatewayEventDefaultAuthorizerContext>,
+  resource: string,
+  stageVariables: APIGatewayProxyEventStageVariables
+): APIGatewayProxyEvent => {
   return {
-    thingName,
-    thingType,
-    description,
-    updatedAt: currentDate,
-    createdAt: currentDate,
+    body,
+    headers,
+    httpMethod,
+    isBase64Encoded: false,
+    multiValueHeaders,
+    multiValueQueryStringParameters,
+    path,
+    pathParameters,
+    queryStringParameters,
+    requestContext,
+    resource,
+    stageVariables,
   }
 }
 
 export const assertThingResponse = (actualResult: ThingResponse, expectedResult: ThingResponse) => {
-  expect(actualResult.statusCode).to.equal(200)
-  expect(actualResult.message).to.equal('ok')
+  expect(actualResult.statusCode).to.equal(expectedResult.statusCode)
+  expect(actualResult.message).to.equal(expectedResult.message)
 
-  expect(actualResult.result).to.have.length(1)
-  expect(uuidValidateV4(actualResult.result[0].id)).to.deep.equal(true)
-  expect(actualResult.result[0].thingName).to.equal(expectedResult.result[0].thingName)
-  expect(actualResult.result[0].thingType).to.equal(expectedResult.result[0].thingType)
-  expect(actualResult.result[0].description).to.equal(expectedResult.result[0].description)
-  // expect(dayjs(actualResult.result[0].createdAt).isValid()).to.be.true
-  // expect(dayjs(actualResult.result[0].updatedAt).isValid()).to.be.true
+  const actualResultBody: ThingResponseBody = JSON.parse(actualResult.body)
+  const expectedResultBody: ThingResponseBody = JSON.parse(actualResult.body)
+
+  expect(uuidValidateV4(actualResultBody.id)).to.deep.equal(true)
+  expect(actualResultBody.thingName).to.equal(expectedResultBody.thingName)
+  expect(actualResultBody.thingType).to.equal(expectedResultBody.thingType)
+  expect(actualResultBody.description).to.equal(expectedResultBody.description)
 }
 
-export const assertThingResponseError = (actualResult: ThingResponse) => {
-  expect(actualResult.statusCode).to.equal(200)
-  expect(actualResult.message).to.equal('ok')
+export const assertThingResponseError = (actualResult: ThingResponseError, statusCode: number, message: string) => {
+  expect(actualResult.statusCode).to.equal(statusCode)
+  expect(actualResult.message).to.equal(message)
 }

@@ -37,28 +37,25 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var uuid_1 = require("uuid");
-var dayjs = require("dayjs");
-var utc = require("dayjs/plugin/utc");
-var timezone = require("dayjs/plugin/timezone");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-var appUtil_1 = require("../util/appUtil");
-// @ts-ignore
-dayjs.extend(utc);
-// @ts-ignore
-dayjs.extend(timezone);
+var appUtil_1 = require("./util/appUtil");
 exports.handler = function run(event, context) {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var currentDate, thing, params, result, err_1;
+        var body, currentDate, thing, params, result, err_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    currentDate = dayjs.tz(Date.now(), 'Europe/London').format('YYYY-MM-DDThh:mm:ss:SSS');
+                    _b.trys.push([0, 4, , 5]);
+                    if (!event.body) return [3 /*break*/, 3];
+                    body = JSON.parse(event.body);
+                    if (!(body.thingName && body.thingType && body.description)) return [3 /*break*/, 3];
+                    currentDate = (0, appUtil_1.createCurrentTime)();
                     thing = {
                         id: (0, uuid_1.v4)(),
-                        thingName: event.thingName,
-                        thingType: event.thingType,
-                        description: event.description,
+                        thingName: body.thingName,
+                        thingType: body.thingType,
+                        description: body.description,
                         updatedAt: currentDate,
                         createdAt: currentDate
                     };
@@ -66,16 +63,14 @@ exports.handler = function run(event, context) {
                         TableName: (0, appUtil_1.getThingsDbName)(),
                         Item: thing
                     };
-                    _b.label = 1;
-                case 1:
-                    _b.trys.push([1, 4, , 5]);
                     return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
-                case 2: return [4 /*yield*/, (_b.sent()).send(new lib_dynamodb_1.PutCommand(params))];
-                case 3:
+                case 1: return [4 /*yield*/, (_b.sent()).send(new lib_dynamodb_1.PutCommand(params))];
+                case 2:
                     result = _b.sent();
-                    return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok' }
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    ];
+                    return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(thing) }];
+                case 3: return [2 /*return*/, { statusCode: 400, message: 'invalid thing' }
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ];
                 case 4:
                     err_1 = _b.sent();
                     (0, appUtil_1.consoleErrorOutput)(context === null || context === void 0 ? void 0 : context.functionName, err_1);

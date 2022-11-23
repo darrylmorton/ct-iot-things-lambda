@@ -42,7 +42,6 @@ var chai_1 = require("chai");
 var createThingLambda = require("../lambda-create/index");
 var readThingLambda = require("../lambda-read/index");
 var appHelper_1 = require("./helper/appHelper");
-var appUtil_1 = require("../util/appUtil");
 var thingHelper_1 = require("./helper/thingHelper");
 // TODO
 //   thingIds, thingTypes mock data (id and name)
@@ -50,31 +49,24 @@ var thingHelper_1 = require("./helper/thingHelper");
 (0, mocha_1.describe)('thing tests', function () {
     var _this = this;
     var client;
+    var context;
     var thingName;
     var thingType;
     (0, mocha_1.before)(function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
+                    case 0: return [4 /*yield*/, (0, appHelper_1.getDbDocumentClient)()];
                     case 1:
                         client = _a.sent();
+                        context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                         thingName = 'thingOne';
                         thingType = 'thingTypeOne';
-                        return [4 /*yield*/, (0, thingHelper_1.createThingsTable)(client)];
+                        return [4 /*yield*/, (0, thingHelper_1.dropThingsTable)(client)];
                     case 2:
                         _a.sent();
-                        return [2 /*return*/];
-                }
-            });
-        });
-    });
-    (0, mocha_1.after)(function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, thingHelper_1.dropThingsTable)(client)];
-                    case 1:
+                        return [4 /*yield*/, (0, thingHelper_1.createThingsTable)(client)];
+                    case 3:
                         _a.sent();
                         return [2 /*return*/];
                 }
@@ -82,31 +74,41 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     });
     (0, mocha_1.it)('create thing', function () { return __awaiter(_this, void 0, void 0, function () {
-        var context, event, lambdaSpy, lambdaSpyResult;
+        var pathParameters, body, expectedResult, event, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    context = (0, appHelper_1.createContext)('create-thing-test-lambda');
-                    event = (0, thingHelper_1.createThingEvent)(thingName, thingType, thingName, new Date().toISOString());
+                    pathParameters = { thing: 'thing' };
+                    body = JSON.stringify({ id: '', thingName: thingName, thingType: thingType, description: thingName });
+                    expectedResult = {
+                        statusCode: 200,
+                        message: 'ok',
+                        body: body
+                    };
+                    event = (0, appHelper_1.createThingWrapper)(body, 'POST', pathParameters);
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     createThingLambda.handler);
-                    return [4 /*yield*/, lambdaSpy(event, context)];
+                    return [4 /*yield*/, lambdaSpy(event, context)
+                        // console.log('lambdaSpyResult', await lambdaSpyResult)
+                    ];
                 case 1:
                     lambdaSpyResult = _a.sent();
+                    // console.log('lambdaSpyResult', await lambdaSpyResult)
                     (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                    (0, chai_1.expect)(lambdaSpyResult).to.deep.equal({ statusCode: 200, message: 'ok' });
+                    (0, thingHelper_1.assertThingResponse)(lambdaSpyResult, expectedResult);
                     return [2 /*return*/];
             }
         });
     }); });
     (0, mocha_1.it)('create bad thing', function () { return __awaiter(_this, void 0, void 0, function () {
-        var context, event, lambdaSpy, lambdaSpyResult;
+        var pathParameters, body, event, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    context = (0, appHelper_1.createContext)('create-thing-test-lambda');
-                    event = (0, thingHelper_1.createThingEvent)('', '', '', '');
+                    pathParameters = { thing: 'thing' };
+                    body = JSON.stringify({ id: '', thingName: 'thingOne', thingType: '', description: '' });
+                    event = (0, appHelper_1.createThingWrapper)(body, 'POST', pathParameters);
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     createThingLambda.handler);
@@ -114,28 +116,37 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     lambdaSpyResult = _a.sent();
                     (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                    (0, chai_1.expect)(lambdaSpyResult).to.deep.equal({ statusCode: 400, message: 'error' });
+                    (0, thingHelper_1.assertThingResponseError)(lambdaSpyResult, 400, 'invalid thing');
                     return [2 /*return*/];
             }
         });
     }); });
-    (0, mocha_1.it)('read things', function () { return __awaiter(_this, void 0, void 0, function () {
-        var expectedResult, context, event, lambdaSpy, lambdaSpyResult;
+    (0, mocha_1.it)('read thing', function () { return __awaiter(_this, void 0, void 0, function () {
+        var createdThingBody, thingId, pathParameters, body, expectedResult, event, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
+                case 0: return [4 /*yield*/, (0, appHelper_1.createThing)(client, 'thingTwo', 'thingTypeTwo')];
+                case 1:
+                    createdThingBody = (_a.sent()).body;
+                    thingId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
+                    pathParameters = { thing: 'thing', id: thingId };
+                    body = JSON.stringify({
+                        id: thingId,
+                        thingName: 'thingTwo',
+                        thingType: 'thingTypeTwo',
+                        description: 'thingTwo'
+                    });
                     expectedResult = {
                         statusCode: 200,
                         message: 'ok',
-                        result: [{ id: '', thingName: thingName, thingType: thingType, description: thingName }]
+                        body: body
                     };
-                    context = (0, appHelper_1.createContext)('read-things-test-lambda');
-                    event = { thingName: thingName };
+                    event = (0, appHelper_1.createThingWrapper)(null, 'GET', pathParameters);
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     readThingLambda.handler);
                     return [4 /*yield*/, lambdaSpy(event, context)];
-                case 1:
+                case 2:
                     lambdaSpyResult = _a.sent();
                     (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
                     (0, thingHelper_1.assertThingResponse)(lambdaSpyResult, expectedResult);
@@ -143,18 +154,14 @@ var thingHelper_1 = require("./helper/thingHelper");
             }
         });
     }); });
-    (0, mocha_1.it)('read missing things', function () { return __awaiter(_this, void 0, void 0, function () {
-        var expectedResult, context, event, lambdaSpy, lambdaSpyResult;
+    (0, mocha_1.it)('read missing thing', function () { return __awaiter(_this, void 0, void 0, function () {
+        var thingId, pathParameters, event, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    expectedResult = {
-                        statusCode: 200,
-                        message: 'ok',
-                        result: []
-                    };
-                    context = (0, appHelper_1.createContext)('read-things-test-lambda');
-                    event = { thingName: 'a' };
+                    thingId = '43961f67-fcfe-4515-8b5d-f59ccca6c041';
+                    pathParameters = { thing: 'thing', id: thingId };
+                    event = (0, appHelper_1.createThingWrapper)(null, 'GET', pathParameters);
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     readThingLambda.handler);
@@ -162,26 +169,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     lambdaSpyResult = _a.sent();
                     (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                    (0, chai_1.expect)(lambdaSpyResult).to.deep.equal(expectedResult);
-                    return [2 /*return*/];
-            }
-        });
-    }); });
-    (0, mocha_1.it)('read bad things', function () { return __awaiter(_this, void 0, void 0, function () {
-        var context, event, lambdaSpy, lambdaSpyResult;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    context = (0, appHelper_1.createContext)('read-things-test-lambda');
-                    event = { thingName: '' };
-                    lambdaSpy = sinon.spy(
-                    // @ts-ignore
-                    readThingLambda.handler);
-                    return [4 /*yield*/, lambdaSpy(event, context)];
-                case 1:
-                    lambdaSpyResult = _a.sent();
-                    (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                    (0, chai_1.expect)(lambdaSpyResult).to.deep.equal({ statusCode: 400, message: 'error' });
+                    (0, thingHelper_1.assertThingResponseError)(lambdaSpyResult, 404, 'missing item');
                     return [2 /*return*/];
             }
         });

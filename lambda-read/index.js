@@ -36,45 +36,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var dayjs = require("dayjs");
-var utc = require("dayjs/plugin/utc");
-var timezone = require("dayjs/plugin/timezone");
-var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-var appUtil_1 = require("../util/appUtil");
-// @ts-ignore
-dayjs.extend(utc);
-// @ts-ignore
-dayjs.extend(timezone);
+var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
+var util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
+var appUtil_1 = require("./util/appUtil");
 exports.handler = function run(event, context) {
-    var _a;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function () {
-        var params, result, err_1;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var params, result, body, err_1;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
+                    if (!((_a = event.pathParameters) === null || _a === void 0 ? void 0 : _a.id)) return [3 /*break*/, 6];
                     params = {
                         TableName: (0, appUtil_1.getThingsDbName)(),
-                        IndexName: 'thingNameIndex',
-                        ExpressionAttributeValues: {
-                            ':thingName': event.thingName
-                        },
-                        KeyConditionExpression: 'thingName = :thingName'
+                        Key: (0, util_dynamodb_1.marshall)({ id: event.pathParameters.id }),
+                        AttributesToGet: ['id', 'thingName', 'thingType', 'description']
                     };
-                    _b.label = 1;
+                    _c.label = 1;
                 case 1:
-                    _b.trys.push([1, 4, , 5]);
+                    _c.trys.push([1, 4, , 5]);
                     return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
-                case 2: return [4 /*yield*/, (_b.sent()).send(new lib_dynamodb_1.QueryCommand(params))];
+                case 2: return [4 /*yield*/, (_c.sent()).send(new client_dynamodb_1.GetItemCommand(params))];
                 case 3:
-                    result = _b.sent();
-                    return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', result: result.Items }
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    ];
+                    result = _c.sent();
+                    if (result.Item) {
+                        body = (0, util_dynamodb_1.unmarshall)(result.Item);
+                        return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }];
+                    }
+                    else {
+                        return [2 /*return*/, { statusCode: 404, message: 'missing item' }];
+                    }
+                    return [3 /*break*/, 5];
                 case 4:
-                    err_1 = _b.sent();
+                    err_1 = _c.sent();
                     (0, appUtil_1.consoleErrorOutput)(context === null || context === void 0 ? void 0 : context.functionName, err_1);
-                    return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
-                case 5: return [2 /*return*/];
+                    return [2 /*return*/, { statusCode: (_b = err_1.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
+                case 5: return [3 /*break*/, 7];
+                case 6: return [2 /*return*/, { statusCode: 404, message: 'missing item' }];
+                case 7: return [2 /*return*/];
             }
         });
     });

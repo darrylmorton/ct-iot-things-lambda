@@ -36,13 +36,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.assertThingResponseError = exports.assertThingResponse = exports.createThingEvent = exports.dropThingsTable = exports.createThingsTable = exports.getThingsDbName = void 0;
+exports.assertThingResponseError = exports.assertThingResponse = exports.createThingEvent = exports.dropThingsTable = exports.createThingsTable = exports.getThingsDbName = exports.uuidValidateV4 = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var chai_1 = require("chai");
 var uuid_1 = require("uuid");
 var uuidValidateV4 = function (uuid) {
     return (0, uuid_1.validate)(uuid) && (0, uuid_1.version)(uuid) === 4;
 };
+exports.uuidValidateV4 = uuidValidateV4;
 var getThingsDbName = function () {
     process.env.AWS_REGION = 'eu-west-2';
     return 'ct-iot-test-things';
@@ -75,10 +76,6 @@ var createThingsTable = function (dbClient) { return __awaiter(void 0, void 0, v
                 {
                     AttributeName: 'id',
                     KeyType: 'HASH'
-                },
-                {
-                    AttributeName: 'updatedAt',
-                    KeyType: 'RANGE'
                 },
             ],
             ProvisionedThroughput: {
@@ -154,30 +151,36 @@ var dropThingsTable = function (dbClient) { return __awaiter(void 0, void 0, voi
     });
 }); };
 exports.dropThingsTable = dropThingsTable;
-var createThingEvent = function (thingName, thingType, description, currentDate) {
+var createThingEvent = function (body, headers, httpMethod, path, multiValueHeaders, multiValueQueryStringParameters, pathParameters, queryStringParameters, requestContext, resource, stageVariables) {
     return {
-        thingName: thingName,
-        thingType: thingType,
-        description: description,
-        updatedAt: currentDate,
-        createdAt: currentDate
+        body: body,
+        headers: headers,
+        httpMethod: httpMethod,
+        isBase64Encoded: false,
+        multiValueHeaders: multiValueHeaders,
+        multiValueQueryStringParameters: multiValueQueryStringParameters,
+        path: path,
+        pathParameters: pathParameters,
+        queryStringParameters: queryStringParameters,
+        requestContext: requestContext,
+        resource: resource,
+        stageVariables: stageVariables
     };
 };
 exports.createThingEvent = createThingEvent;
 var assertThingResponse = function (actualResult, expectedResult) {
-    (0, chai_1.expect)(actualResult.statusCode).to.equal(200);
-    (0, chai_1.expect)(actualResult.message).to.equal('ok');
-    (0, chai_1.expect)(actualResult.result).to.have.length(1);
-    (0, chai_1.expect)(uuidValidateV4(actualResult.result[0].id)).to.deep.equal(true);
-    (0, chai_1.expect)(actualResult.result[0].thingName).to.equal(expectedResult.result[0].thingName);
-    (0, chai_1.expect)(actualResult.result[0].thingType).to.equal(expectedResult.result[0].thingType);
-    (0, chai_1.expect)(actualResult.result[0].description).to.equal(expectedResult.result[0].description);
-    // expect(dayjs(actualResult.result[0].createdAt).isValid()).to.be.true
-    // expect(dayjs(actualResult.result[0].updatedAt).isValid()).to.be.true
+    (0, chai_1.expect)(actualResult.statusCode).to.equal(expectedResult.statusCode);
+    (0, chai_1.expect)(actualResult.message).to.equal(expectedResult.message);
+    var actualResultBody = JSON.parse(actualResult.body);
+    var expectedResultBody = JSON.parse(actualResult.body);
+    (0, chai_1.expect)((0, exports.uuidValidateV4)(actualResultBody.id)).to.deep.equal(true);
+    (0, chai_1.expect)(actualResultBody.thingName).to.equal(expectedResultBody.thingName);
+    (0, chai_1.expect)(actualResultBody.thingType).to.equal(expectedResultBody.thingType);
+    (0, chai_1.expect)(actualResultBody.description).to.equal(expectedResultBody.description);
 };
 exports.assertThingResponse = assertThingResponse;
-var assertThingResponseError = function (actualResult) {
-    (0, chai_1.expect)(actualResult.statusCode).to.equal(200);
-    (0, chai_1.expect)(actualResult.message).to.equal('ok');
+var assertThingResponseError = function (actualResult, statusCode, message) {
+    (0, chai_1.expect)(actualResult.statusCode).to.equal(statusCode);
+    (0, chai_1.expect)(actualResult.message).to.equal(message);
 };
 exports.assertThingResponseError = assertThingResponseError;
