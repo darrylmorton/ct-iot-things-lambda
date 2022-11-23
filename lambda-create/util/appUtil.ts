@@ -29,6 +29,7 @@ export const getThingsDbName = () => {
   }
 }
 
+// TODO dynamodb test creds need to be passed in, .env or runtime envs?
 const getDbClient = async (): Promise<DynamoDBClient> => {
   if (process.env.NODE_ENV === 'test') {
     return new DynamoDBClient({

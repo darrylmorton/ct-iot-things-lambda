@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+  ## TODO dynamodb test creds need to be passed in, .env or runtime envs?
   dynamodb-local-testing:
     image: amazon/dynamodb-local:1.20.0
     container_name: dynamodb-local-testing

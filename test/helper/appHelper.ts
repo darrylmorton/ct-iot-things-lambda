@@ -7,6 +7,7 @@ import { createThingEvent } from './thingHelper'
 import { Thing } from '../../types'
 import { consoleErrorOutput, createCurrentTime, getThingsDbName } from '../../lambda-create/util/appUtil'
 
+// TODO dynamodb test creds need to be passed in, .env or runtime envs?
 export const getDbClient = async (): Promise<DynamoDBClient> => {
   if (process.env.NODE_ENV === 'test') {
     return new DynamoDBClient({
