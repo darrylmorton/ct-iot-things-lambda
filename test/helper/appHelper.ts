@@ -131,24 +131,6 @@ export const createEvent = (httpMethod: string, path: string, qsParams: Record<s
   }
 }
 
-const pathToPathParameters = (path: string): APIGatewayProxyEventPathParameters => {
-  if (path) {
-    const paths = path.split('/')
-
-    const pathParameters = paths.reduce((acc: Record<string, string>, item: string) => {
-      if (item) {
-        acc[`${item}`] = item
-      }
-
-      return acc
-    }, {})
-
-    return pathParameters
-  } else {
-    return {}
-  }
-}
-
 const pathParametersToPath = (pathParameters: Record<string, string>): string => {
   let path = ''
 
