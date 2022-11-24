@@ -6,7 +6,7 @@
     "build": "./node_modules/typescript/bin/tsc  **/*.ts",
     "lint": "eslint . --ext .ts",
     "depcheck": "depcheck",
-    "test": "NODE_ENV=test AWS_ACCESS_KEY_ID=1 AWS_SECRET_ACCESS_KEY=2 AWS_REGION=3 mocha -r ts-node/register --config ./test/mocharc.json ./test/**/*.test.ts"
+    "test": "NODE_ENV=test AWS_ACCESS_KEY_ID=1 AWS_SECRET_ACCESS_KEY=2 AWS_REGION=localhost mocha -r ts-node/register --config ./test/mocharc.json ./test/**/*.test.ts"
   },
   "engines": {
     "node": ">=16.15"
@@ -23,7 +23,6 @@
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "aws-lambda": "^1.0.7",
     "chai": "^4.3.7",
-    "dayjs": "^1.11.6",
     "depcheck": "^1.4.3",
     "eslint": "^8.18.0",
     "eslint-config-prettier": "^8.5.0",

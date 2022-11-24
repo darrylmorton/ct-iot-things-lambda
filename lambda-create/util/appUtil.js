@@ -67,7 +67,6 @@ exports.getThingsDbName = getThingsDbName;
 var getDbClient = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         if (process.env.NODE_ENV === 'test') {
-            console.log('create envs', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, process.env.AWS_REGION);
             return [2 /*return*/, new client_dynamodb_1.DynamoDBClient({
                     region: process.env.AWS_REGION,
                     credentials: {

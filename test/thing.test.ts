@@ -16,13 +16,6 @@ import { assertThingResponse, assertThingResponseError, createThingsTable, dropT
 //   thingIds, thingTypes mock data (id and name)
 //   thingType schema change, thingPayloads table changes including new GSIs and removing existing
 describe('thing tests', function () {
-  console.log(
-    'sinon test envs',
-    process.env.AWS_ACCESS_KEY_ID,
-    process.env.AWS_SECRET_ACCESS_KEY,
-    process.env.AWS_REGION
-  )
-
   let client: DynamoDBDocumentClient
   let context: Context
 

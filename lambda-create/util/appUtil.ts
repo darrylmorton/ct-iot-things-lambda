@@ -30,8 +30,6 @@ export const getThingsDbName = () => {
 
 const getDbClient = async (): Promise<DynamoDBClient> => {
   if (process.env.NODE_ENV === 'test') {
-    console.log('create envs', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, process.env.AWS_REGION)
-
     return new DynamoDBClient({
       region: process.env.AWS_REGION,
       credentials: {

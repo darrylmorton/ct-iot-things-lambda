@@ -49,7 +49,6 @@ var thingHelper_1 = require("./helper/thingHelper");
 //   thingType schema change, thingPayloads table changes including new GSIs and removing existing
 (0, mocha_1.describe)('thing tests', function () {
     var _this = this;
-    console.log('sinon test envs', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, process.env.AWS_REGION);
     var client;
     var context;
     var thingName;
