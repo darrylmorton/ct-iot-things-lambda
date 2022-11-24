@@ -48,7 +48,7 @@ exports.handler = function run(event, context) {
                 case 0:
                     if (!((_a = event.pathParameters) === null || _a === void 0 ? void 0 : _a.id)) return [3 /*break*/, 6];
                     params = {
-                        TableName: (0, appUtil_1.getThingsDbName)(),
+                        TableName: (0, appUtil_1.getDbName)(),
                         Key: (0, util_dynamodb_1.marshall)({ id: event.pathParameters.id }),
                         AttributesToGet: ['id', 'thingName', 'thingType', 'description']
                     };
@@ -64,7 +64,7 @@ exports.handler = function run(event, context) {
                         return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }];
                     }
                     else {
-                        return [2 /*return*/, { statusCode: 404, message: 'missing item' }];
+                        return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
                     }
                     return [3 /*break*/, 5];
                 case 4:
@@ -72,7 +72,7 @@ exports.handler = function run(event, context) {
                     (0, appUtil_1.consoleErrorOutput)(context === null || context === void 0 ? void 0 : context.functionName, err_1);
                     return [2 /*return*/, { statusCode: (_b = err_1.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
                 case 5: return [3 /*break*/, 7];
-                case 6: return [2 /*return*/, { statusCode: 404, message: 'missing item' }];
+                case 6: return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
                 case 7: return [2 /*return*/];
             }
         });

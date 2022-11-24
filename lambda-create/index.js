@@ -68,7 +68,7 @@ exports.handler = function run(event, context) {
                         createdAt: currentDate
                     };
                     params = {
-                        TableName: (0, appUtil_1.getThingsDbName)(),
+                        TableName: (0, appUtil_1.getDbName)(),
                         Item: thing
                     };
                     return [4 /*yield*/, client.send(new lib_dynamodb_1.PutCommand(params))];

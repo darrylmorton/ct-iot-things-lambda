@@ -36,24 +36,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getPathId = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getThingsDbName = void 0;
+exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-var thingHelper_1 = require("../../test/helper/thingHelper");
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
-var THINGS_DB_TABLE_NAME_SUFFIX = 'things';
-var getThingsDbName = function () {
+var DB_TABLE_NAME_SUFFIX = 'things';
+var getDbName = function () {
     var NODE_ENV = process.env.NODE_ENV;
     switch (NODE_ENV) {
         case 'production':
-            return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(THINGS_DB_TABLE_NAME_SUFFIX);
+            return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(DB_TABLE_NAME_SUFFIX);
         case 'test':
-            return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(THINGS_DB_TABLE_NAME_SUFFIX);
+            return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(DB_TABLE_NAME_SUFFIX);
         default:
-            return "".concat(DB_TABLE_NAME_PREFIX, "-development-").concat(THINGS_DB_TABLE_NAME_SUFFIX);
+            return "".concat(DB_TABLE_NAME_PREFIX, "-development-").concat(DB_TABLE_NAME_SUFFIX);
     }
 };
-exports.getThingsDbName = getThingsDbName;
+exports.getDbName = getDbName;
 var getDbClient = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         if (process.env.NODE_ENV === 'test') {
@@ -108,15 +107,3 @@ var consoleErrorOutput = function (value, err) {
     }
 };
 exports.consoleErrorOutput = consoleErrorOutput;
-var getPathId = function () {
-    var path = '/thing/id';
-    var paths = path.split('/');
-    if (paths.length === 1 && paths[0] === 'thing' && (0, thingHelper_1.uuidValidateV4)(paths[1])) {
-        paths.splice(0, 1);
-        return paths[1];
-    }
-    else {
-        return 0;
-    }
-};
-exports.getPathId = getPathId;

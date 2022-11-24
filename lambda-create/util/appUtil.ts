@@ -3,29 +3,30 @@ import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOu
 import * as dayjs from 'dayjs'
 import * as utc from 'dayjs/plugin/utc'
 import * as timezone from 'dayjs/plugin/timezone'
-import { ThingResponseError } from '../../types'
+
+import { ResponseError } from '../../types'
 // @ts-ignore
 dayjs.extend(utc)
 // @ts-ignore
 dayjs.extend(timezone)
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
-const THINGS_DB_TABLE_NAME_SUFFIX = 'things'
+const DB_TABLE_NAME_SUFFIX = 'things'
 
 export const createCurrentTime = (): string => {
   return dayjs.tz(Date.now(), 'Europe/London').format('YYYY-MM-DDThh:mm:ss:SSS')
 }
 
-export const getThingsDbName = () => {
+export const getDbName = () => {
   const NODE_ENV = process.env.NODE_ENV
 
   switch (NODE_ENV) {
     case 'production':
-      return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${THINGS_DB_TABLE_NAME_SUFFIX}`
+      return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${DB_TABLE_NAME_SUFFIX}`
     case 'test':
-      return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${THINGS_DB_TABLE_NAME_SUFFIX}`
+      return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${DB_TABLE_NAME_SUFFIX}`
     default:
-      return `${DB_TABLE_NAME_PREFIX}-development-${THINGS_DB_TABLE_NAME_SUFFIX}`
+      return `${DB_TABLE_NAME_PREFIX}-development-${DB_TABLE_NAME_SUFFIX}`
   }
 }
 
@@ -74,12 +75,9 @@ export const consoleErrorOutput = (value: string | unknown, err: any | unknown) 
   }
 }
 
-export const queryByThingName = async (
-  client: DynamoDBDocumentClient,
-  thingName: string
-): Promise<ThingResponseError> => {
+export const queryByThingName = async (client: DynamoDBDocumentClient, thingName: string): Promise<ResponseError> => {
   const params: QueryCommandInput = {
-    TableName: getThingsDbName(),
+    TableName: getDbName(),
     IndexName: 'thingNameIndex',
     KeyConditionExpression: 'thingName = :thingName',
     ExpressionAttributeValues: { ':thingName': thingName },

@@ -1,20 +1,19 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
-import { uuidValidateV4 } from '../../test/helper/thingHelper'
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
-const THINGS_DB_TABLE_NAME_SUFFIX = 'things'
+const DB_TABLE_NAME_SUFFIX = 'things'
 
-export const getThingsDbName = () => {
+export const getDbName = () => {
   const NODE_ENV = process.env.NODE_ENV
 
   switch (NODE_ENV) {
     case 'production':
-      return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${THINGS_DB_TABLE_NAME_SUFFIX}`
+      return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${DB_TABLE_NAME_SUFFIX}`
     case 'test':
-      return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${THINGS_DB_TABLE_NAME_SUFFIX}`
+      return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${DB_TABLE_NAME_SUFFIX}`
     default:
-      return `${DB_TABLE_NAME_PREFIX}-development-${THINGS_DB_TABLE_NAME_SUFFIX}`
+      return `${DB_TABLE_NAME_PREFIX}-development-${DB_TABLE_NAME_SUFFIX}`
   }
 }
 
@@ -60,18 +59,5 @@ export const consoleErrorOutput = (value: string | unknown, err: any | unknown) 
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line no-console
     console.error(`${value} db write error`, err)
-  }
-}
-
-export const getPathId = () => {
-  const path = '/thing/id'
-  const paths = path.split('/')
-
-  if (paths.length === 1 && paths[0] === 'thing' && uuidValidateV4(paths[1])) {
-    paths.splice(0, 1)
-
-    return paths[1]
-  } else {
-    return 0
   }
 }

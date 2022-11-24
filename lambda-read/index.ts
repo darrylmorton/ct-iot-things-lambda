@@ -2,12 +2,12 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda'
 import { GetItemCommand, GetItemCommandInput } from '@aws-sdk/client-dynamodb'
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 
-import { consoleErrorOutput, getDbDocumentClient, getThingsDbName } from './util/appUtil'
+import { consoleErrorOutput, getDbDocumentClient, getDbName } from './util/appUtil'
 
 exports.handler = async function run(event: APIGatewayProxyEvent, context?: Context) {
   if (event.pathParameters?.id) {
     const params: GetItemCommandInput = {
-      TableName: getThingsDbName(),
+      TableName: getDbName(),
       Key: marshall({ id: event.pathParameters.id }),
       AttributesToGet: ['id', 'thingName', 'thingType', 'description'],
     }
@@ -21,7 +21,7 @@ exports.handler = async function run(event: APIGatewayProxyEvent, context?: Cont
 
         return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }
       } else {
-        return { statusCode: 404, message: 'missing item' }
+        return { statusCode: 404, message: 'missing thing' }
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any | unknown) {
@@ -30,6 +30,6 @@ exports.handler = async function run(event: APIGatewayProxyEvent, context?: Cont
       return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
     }
   } else {
-    return { statusCode: 404, message: 'missing item' }
+    return { statusCode: 404, message: 'missing thing' }
   }
 }

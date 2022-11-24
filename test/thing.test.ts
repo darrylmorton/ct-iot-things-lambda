@@ -9,9 +9,9 @@ import { v4 as uuidv4 } from 'uuid'
 
 import * as createThingLambda from '../lambda-create/index'
 import * as readThingLambda from '../lambda-read/index'
-import { ThingResponse, ThingResponseError } from '../types'
-import { createContext, createThing, createThingWrapper, getDbDocumentClient } from './helper/appHelper'
-import { assertThingResponse, assertThingResponseError, createThingsTable, dropThingsTable } from './helper/thingHelper'
+import { ThingResponse } from '../types'
+import { createContext, createThing, createEventWrapper, getDbDocumentClient } from './helper/appHelper'
+import { assertThingResponse, assertThingResponseError, createTable, dropTable } from './helper/thingHelper'
 
 describe('thing tests', function () {
   let client: DynamoDBDocumentClient
@@ -26,11 +26,11 @@ describe('thing tests', function () {
     thingName = 'thingOne'
     thingType = uuidv4()
 
-    await createThingsTable(client)
+    await createTable(client)
   })
 
   after(async function () {
-    await dropThingsTable(client)
+    await dropTable(client)
   })
 
   it('create thing', async () => {
@@ -42,7 +42,7 @@ describe('thing tests', function () {
       body,
     }
 
-    const event = createThingWrapper(body, 'POST', pathParameters)
+    const event = createEventWrapper(body, 'POST', pathParameters)
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
@@ -58,7 +58,7 @@ describe('thing tests', function () {
     const pathParameters = { thing: 'thing' }
     const body = JSON.stringify({ id: '', thingName, thingType, description: thingName })
 
-    const event = createThingWrapper(body, 'POST', pathParameters)
+    const event = createEventWrapper(body, 'POST', pathParameters)
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
@@ -74,7 +74,7 @@ describe('thing tests', function () {
     const pathParameters = { thing: 'thing' }
     const body = JSON.stringify({ id: '', thingName: 'thingOne', thingType: '', description: '' })
 
-    const event = createThingWrapper(body, 'POST', pathParameters)
+    const event = createEventWrapper(body, 'POST', pathParameters)
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
@@ -104,7 +104,7 @@ describe('thing tests', function () {
       body,
     }
 
-    const event = createThingWrapper(null, 'GET', pathParameters)
+    const event = createEventWrapper(null, 'GET', pathParameters)
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
@@ -120,7 +120,7 @@ describe('thing tests', function () {
     const thingId = '43961f67-fcfe-4515-8b5d-f59ccca6c041'
     const pathParameters = { thing: 'thing', id: thingId }
 
-    const event = createThingWrapper(null, 'GET', pathParameters)
+    const event = createEventWrapper(null, 'GET', pathParameters)
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
@@ -129,6 +129,6 @@ describe('thing tests', function () {
     const lambdaSpyResult = await lambdaSpy(event, context)
 
     assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertThingResponseError(lambdaSpyResult, 404, 'missing item')
+    assertThingResponseError(lambdaSpyResult, 404, 'missing thing')
   })
 })

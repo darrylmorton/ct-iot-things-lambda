@@ -3,13 +3,7 @@ import { Context } from 'aws-lambda'
 import { PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 
 import { Thing, ThingEvent } from '../types'
-import {
-  consoleErrorOutput,
-  createCurrentTime,
-  getDbDocumentClient,
-  getThingsDbName,
-  queryByThingName,
-} from './util/appUtil'
+import { consoleErrorOutput, createCurrentTime, getDbDocumentClient, getDbName, queryByThingName } from './util/appUtil'
 
 exports.handler = async function run(event: ThingEvent, context?: Context) {
   try {
@@ -34,7 +28,7 @@ exports.handler = async function run(event: ThingEvent, context?: Context) {
         }
 
         const params: PutCommandInput = {
-          TableName: getThingsDbName(),
+          TableName: getDbName(),
           Item: thing,
         }
 

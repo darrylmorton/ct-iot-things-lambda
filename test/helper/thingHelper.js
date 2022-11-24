@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.assertThingResponseError = exports.assertThingResponse = exports.createThingEvent = exports.dropThingsTable = exports.createThingsTable = exports.getThingsDbName = exports.uuidValidateV4 = void 0;
+exports.assertThingResponseError = exports.assertThingResponse = exports.createEvent = exports.dropTable = exports.createTable = exports.DB_NAME = exports.uuidValidateV4 = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var chai_1 = require("chai");
 var uuid_1 = require("uuid");
@@ -44,15 +44,12 @@ var uuidValidateV4 = function (uuid) {
     return (0, uuid_1.validate)(uuid) && (0, uuid_1.version)(uuid) === 4;
 };
 exports.uuidValidateV4 = uuidValidateV4;
-var getThingsDbName = function () {
-    return 'ct-iot-test-things';
-};
-exports.getThingsDbName = getThingsDbName;
-var createThingsTable = function (dbClient) { return __awaiter(void 0, void 0, void 0, function () {
+exports.DB_NAME = 'ct-iot-test-things';
+var createTable = function (dbClient) { return __awaiter(void 0, void 0, void 0, function () {
     var input, command;
     return __generator(this, function (_a) {
         input = {
-            TableName: (0, exports.getThingsDbName)(),
+            TableName: exports.DB_NAME,
             AttributeDefinitions: [
                 {
                     AttributeName: 'id',
@@ -132,19 +129,19 @@ var createThingsTable = function (dbClient) { return __awaiter(void 0, void 0, v
         return [2 /*return*/, dbClient.send(command)];
     });
 }); };
-exports.createThingsTable = createThingsTable;
-var dropThingsTable = function (dbClient) { return __awaiter(void 0, void 0, void 0, function () {
+exports.createTable = createTable;
+var dropTable = function (dbClient) { return __awaiter(void 0, void 0, void 0, function () {
     var params, command;
     return __generator(this, function (_a) {
         params = {
-            TableName: (0, exports.getThingsDbName)()
+            TableName: exports.DB_NAME
         };
         command = new client_dynamodb_1.DeleteTableCommand(params);
         return [2 /*return*/, dbClient.send(command)];
     });
 }); };
-exports.dropThingsTable = dropThingsTable;
-var createThingEvent = function (body, headers, httpMethod, path, multiValueHeaders, multiValueQueryStringParameters, pathParameters, queryStringParameters, requestContext, resource, stageVariables) {
+exports.dropTable = dropTable;
+var createEvent = function (body, headers, httpMethod, path, multiValueHeaders, multiValueQueryStringParameters, pathParameters, queryStringParameters, requestContext, resource, stageVariables) {
     return {
         body: body,
         headers: headers,
@@ -160,7 +157,7 @@ var createThingEvent = function (body, headers, httpMethod, path, multiValueHead
         stageVariables: stageVariables
     };
 };
-exports.createThingEvent = createThingEvent;
+exports.createEvent = createEvent;
 var assertThingResponse = function (actualResult, expectedResult) {
     (0, chai_1.expect)(actualResult.statusCode).to.equal(expectedResult.statusCode);
     (0, chai_1.expect)(actualResult.message).to.equal(expectedResult.message);

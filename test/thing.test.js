@@ -61,7 +61,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                         context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                         thingName = 'thingOne';
                         thingType = (0, uuid_1.v4)();
-                        return [4 /*yield*/, (0, thingHelper_1.createThingsTable)(client)];
+                        return [4 /*yield*/, (0, thingHelper_1.createTable)(client)];
                     case 2:
                         _a.sent();
                         return [2 /*return*/];
@@ -73,7 +73,7 @@ var thingHelper_1 = require("./helper/thingHelper");
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, thingHelper_1.dropThingsTable)(client)];
+                    case 0: return [4 /*yield*/, (0, thingHelper_1.dropTable)(client)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -93,7 +93,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                         message: 'ok',
                         body: body
                     };
-                    event = (0, appHelper_1.createThingWrapper)(body, 'POST', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(body, 'POST', pathParameters);
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     createThingLambda.handler);
@@ -113,7 +113,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 0:
                     pathParameters = { thing: 'thing' };
                     body = JSON.stringify({ id: '', thingName: thingName, thingType: thingType, description: thingName });
-                    event = (0, appHelper_1.createThingWrapper)(body, 'POST', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(body, 'POST', pathParameters);
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     createThingLambda.handler);
@@ -133,7 +133,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 0:
                     pathParameters = { thing: 'thing' };
                     body = JSON.stringify({ id: '', thingName: 'thingOne', thingType: '', description: '' });
-                    event = (0, appHelper_1.createThingWrapper)(body, 'POST', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(body, 'POST', pathParameters);
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     createThingLambda.handler);
@@ -168,7 +168,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                         message: 'ok',
                         body: body
                     };
-                    event = (0, appHelper_1.createThingWrapper)(null, 'GET', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     readThingLambda.handler);
@@ -188,7 +188,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 0:
                     thingId = '43961f67-fcfe-4515-8b5d-f59ccca6c041';
                     pathParameters = { thing: 'thing', id: thingId };
-                    event = (0, appHelper_1.createThingWrapper)(null, 'GET', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     readThingLambda.handler);
@@ -196,7 +196,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     lambdaSpyResult = _a.sent();
                     (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                    (0, thingHelper_1.assertThingResponseError)(lambdaSpyResult, 404, 'missing item');
+                    (0, thingHelper_1.assertThingResponseError)(lambdaSpyResult, 404, 'missing thing');
                     return [2 /*return*/];
             }
         });

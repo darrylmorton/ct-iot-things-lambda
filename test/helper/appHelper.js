@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.createThing = exports.createThingWrapper = exports.createEvent = exports.createContext = exports.getDbDocumentClient = exports.getDbClient = void 0;
+exports.createThing = exports.createEventWrapper = exports.createContext = exports.getDbDocumentClient = exports.getDbClient = void 0;
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var uuid_1 = require("uuid");
@@ -114,64 +114,6 @@ var createContext = function (functionName) {
     };
 };
 exports.createContext = createContext;
-var qsParamsToQs = function (qsParams) {
-    return "?".concat(Object.keys(qsParams)
-        .map(function (key) {
-        return "".concat(key, "=").concat(encodeURIComponent(qsParams[key]));
-    })
-        .join('&'));
-};
-var createEvent = function (httpMethod, path, qsParams) {
-    return {
-        version: '2.0',
-        routeKey: '$default',
-        rawPath: path,
-        rawQueryString: qsParams ? qsParamsToQs(qsParams) : '',
-        headers: {
-            'sec-fetch-mode': 'navigate',
-            'x-amzn-tls-version': 'TLSv1.2',
-            'sec-fetch-site': 'none',
-            'accept-language': 'en-US,en;q=0.9',
-            'x-forwarded-proto': 'https',
-            'x-forwarded-port': '443',
-            dnt: '1',
-            'x-forwarded-for': '1.111.11.11',
-            'sec-fetch-user': '?1',
-            accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'x-amzn-tls-cipher-suite': 'ECDHE-RSA-AES128-GCM-SHA256',
-            'sec-ch-ua': '"Google Chrome";v="107", "Chromium";v="107", "Not=A?Brand";v="24"',
-            'sec-ch-ua-mobile': '?0',
-            'x-amzn-trace-id': 'Root=1-637bccc5-329f9e1d4c8e25c46410095b',
-            'sec-ch-ua-platform': '"macOS"',
-            host: 'f3qyws6pmvhex3nknasuwe3xn40vknkh.lambda-url.eu-west-2.on.aws',
-            'upgrade-insecure-requests': '1',
-            'accept-encoding': 'gzip, deflate, br',
-            'sec-fetch-dest': 'document',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
-        },
-        queryStringParameters: qsParams || {},
-        requestContext: {
-            accountId: 'anonymous',
-            apiId: 'f3qyws6pmvhex3nknasuwe3xn40vknkh',
-            domainName: 'f3qyws6pmvhex3nknasuwe3xn40vknkh.lambda-url.eu-west-2.on.aws',
-            domainPrefix: 'f3qyws6pmvhex3nknasuwe3xn40vknkh',
-            http: {
-                method: 'GET',
-                path: '/hello/you',
-                protocol: 'HTTP/1.1',
-                sourceIp: '1.111.11.11',
-                userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
-            },
-            requestId: '05d5b31d-9792-4206-800e-bbc470769ff9',
-            routeKey: '$default',
-            stage: '$default',
-            time: '21/Nov/2022:19:08:53 +0000',
-            timeEpoch: 1669057733694
-        },
-        isBase64Encoded: false
-    };
-};
-exports.createEvent = createEvent;
 var pathParametersToPath = function (pathParameters) {
     var path = '';
     if (pathParameters) {
@@ -184,9 +126,9 @@ var pathParametersToPath = function (pathParameters) {
     }
     return path;
 };
-var createThingWrapper = function (body, httpMethod, pathParameters) {
+var createEventWrapper = function (body, httpMethod, pathParameters) {
     var path = pathParametersToPath(pathParameters);
-    return (0, thingHelper_1.createThingEvent)(body, { 'content-type': 'application/json' }, httpMethod, path, {}, {}, pathParameters, {}, {
+    return (0, thingHelper_1.createEvent)(body, { 'content-type': 'application/json' }, httpMethod, path, {}, {}, pathParameters, {}, {
         apiId: '',
         authorizer: undefined,
         httpMethod: '',
@@ -217,7 +159,7 @@ var createThingWrapper = function (body, httpMethod, pathParameters) {
         accountId: ''
     }, '', {});
 };
-exports.createThingWrapper = createThingWrapper;
+exports.createEventWrapper = createEventWrapper;
 var createThing = function (client, thingName, thingType) { return __awaiter(void 0, void 0, void 0, function () {
     var currentDate, thing, params, result, err_1;
     var _a;
@@ -234,7 +176,7 @@ var createThing = function (client, thingName, thingType) { return __awaiter(voi
                     createdAt: currentDate
                 };
                 params = {
-                    TableName: (0, appUtil_1.getThingsDbName)(),
+                    TableName: thingHelper_1.DB_NAME,
                     Item: thing
                 };
                 _b.label = 1;

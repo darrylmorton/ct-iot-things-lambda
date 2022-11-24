@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.queryByThingName = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getThingsDbName = exports.createCurrentTime = void 0;
+exports.queryByThingName = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.createCurrentTime = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var dayjs = require("dayjs");
@@ -47,23 +47,23 @@ dayjs.extend(utc);
 // @ts-ignore
 dayjs.extend(timezone);
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
-var THINGS_DB_TABLE_NAME_SUFFIX = 'things';
+var DB_TABLE_NAME_SUFFIX = 'things';
 var createCurrentTime = function () {
     return dayjs.tz(Date.now(), 'Europe/London').format('YYYY-MM-DDThh:mm:ss:SSS');
 };
 exports.createCurrentTime = createCurrentTime;
-var getThingsDbName = function () {
+var getDbName = function () {
     var NODE_ENV = process.env.NODE_ENV;
     switch (NODE_ENV) {
         case 'production':
-            return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(THINGS_DB_TABLE_NAME_SUFFIX);
+            return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(DB_TABLE_NAME_SUFFIX);
         case 'test':
-            return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(THINGS_DB_TABLE_NAME_SUFFIX);
+            return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(DB_TABLE_NAME_SUFFIX);
         default:
-            return "".concat(DB_TABLE_NAME_PREFIX, "-development-").concat(THINGS_DB_TABLE_NAME_SUFFIX);
+            return "".concat(DB_TABLE_NAME_PREFIX, "-development-").concat(DB_TABLE_NAME_SUFFIX);
     }
 };
-exports.getThingsDbName = getThingsDbName;
+exports.getDbName = getDbName;
 var getDbClient = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         if (process.env.NODE_ENV === 'test') {
@@ -125,7 +125,7 @@ var queryByThingName = function (client, thingName) { return __awaiter(void 0, v
         switch (_b.label) {
             case 0:
                 params = {
-                    TableName: (0, exports.getThingsDbName)(),
+                    TableName: (0, exports.getDbName)(),
                     IndexName: 'thingNameIndex',
                     KeyConditionExpression: 'thingName = :thingName',
                     ExpressionAttributeValues: { ':thingName': thingName }

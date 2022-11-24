@@ -12,19 +12,17 @@ import {
   APIGatewayProxyEventStageVariables,
 } from 'aws-lambda/trigger/api-gateway-proxy'
 
-import { ThingResponse, ThingResponseBody, ThingResponseError } from '../../types'
+import { ThingResponse, ResponseBody, ResponseError } from '../../types'
 
 export const uuidValidateV4 = (uuid: string) => {
   return uuidValidate(uuid) && uuidVersion(uuid) === 4
 }
 
-export const getThingsDbName = () => {
-  return 'ct-iot-test-things'
-}
+export const DB_NAME = 'ct-iot-test-things'
 
-export const createThingsTable = async (dbClient: DynamoDBClient) => {
+export const createTable = async (dbClient: DynamoDBClient) => {
   const input = {
-    TableName: getThingsDbName(),
+    TableName: DB_NAME,
     AttributeDefinitions: [
       {
         AttributeName: 'id',
@@ -106,9 +104,9 @@ export const createThingsTable = async (dbClient: DynamoDBClient) => {
   return dbClient.send(command)
 }
 
-export const dropThingsTable = async (dbClient: DynamoDBClient) => {
+export const dropTable = async (dbClient: DynamoDBClient) => {
   const params = {
-    TableName: getThingsDbName(),
+    TableName: DB_NAME,
   }
 
   const command = new DeleteTableCommand(params)
@@ -116,7 +114,7 @@ export const dropThingsTable = async (dbClient: DynamoDBClient) => {
   return dbClient.send(command)
 }
 
-export const createThingEvent = (
+export const createEvent = (
   body: string | null,
   headers: APIGatewayProxyEventHeaders,
   httpMethod: string,
@@ -149,8 +147,8 @@ export const assertThingResponse = (actualResult: ThingResponse, expectedResult:
   expect(actualResult.statusCode).to.equal(expectedResult.statusCode)
   expect(actualResult.message).to.equal(expectedResult.message)
 
-  const actualResultBody: ThingResponseBody = JSON.parse(actualResult.body)
-  const expectedResultBody: ThingResponseBody = JSON.parse(actualResult.body)
+  const actualResultBody: ResponseBody = JSON.parse(actualResult.body)
+  const expectedResultBody: ResponseBody = JSON.parse(actualResult.body)
 
   expect(uuidValidateV4(actualResultBody.id)).to.deep.equal(true)
   expect(actualResultBody.thingName).to.equal(expectedResultBody.thingName)
@@ -158,7 +156,7 @@ export const assertThingResponse = (actualResult: ThingResponse, expectedResult:
   expect(actualResultBody.description).to.equal(expectedResultBody.description)
 }
 
-export const assertThingResponseError = (actualResult: ThingResponseError, statusCode: number, message: string) => {
+export const assertThingResponseError = (actualResult: ResponseError, statusCode: number, message: string) => {
   expect(actualResult.statusCode).to.equal(statusCode)
   expect(actualResult.message).to.equal(message)
 }
