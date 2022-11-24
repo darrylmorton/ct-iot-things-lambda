@@ -14,10 +14,11 @@ exports.handler = async function run(event: APIGatewayProxyEvent, context?: Cont
 
     try {
       // @ts-ignore
-      const result: ServiceOutputTypes = await (await getDbDocumentClient()).send(new GetItemCommand(params))
+      const result: GetItemCommandOutput = await (await getDbDocumentClient()).send(new GetItemCommand(params))
 
       if (result.Item) {
         const body = unmarshall(result.Item)
+
         return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }
       } else {
         return { statusCode: 404, message: 'missing item' }

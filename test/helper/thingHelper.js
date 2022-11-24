@@ -45,7 +45,6 @@ var uuidValidateV4 = function (uuid) {
 };
 exports.uuidValidateV4 = uuidValidateV4;
 var getThingsDbName = function () {
-    process.env.AWS_REGION = 'eu-west-2';
     return 'ct-iot-test-things';
 };
 exports.getThingsDbName = getThingsDbName;
@@ -137,17 +136,11 @@ exports.createThingsTable = createThingsTable;
 var dropThingsTable = function (dbClient) { return __awaiter(void 0, void 0, void 0, function () {
     var params, command;
     return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                params = {
-                    TableName: (0, exports.getThingsDbName)()
-                };
-                command = new client_dynamodb_1.DeleteTableCommand(params);
-                return [4 /*yield*/, dbClient.send(command)];
-            case 1:
-                _a.sent();
-                return [2 /*return*/];
-        }
+        params = {
+            TableName: (0, exports.getThingsDbName)()
+        };
+        command = new client_dynamodb_1.DeleteTableCommand(params);
+        return [2 /*return*/, dbClient.send(command)];
     });
 }); };
 exports.dropThingsTable = dropThingsTable;

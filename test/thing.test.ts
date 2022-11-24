@@ -1,4 +1,6 @@
-import { describe, it, before } from 'mocha'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { describe, it, before, after } from 'mocha'
 import * as sinon from 'sinon'
 import { Context } from 'aws-lambda'
 import { assert } from 'chai'
@@ -14,6 +16,13 @@ import { assertThingResponse, assertThingResponseError, createThingsTable, dropT
 //   thingIds, thingTypes mock data (id and name)
 //   thingType schema change, thingPayloads table changes including new GSIs and removing existing
 describe('thing tests', function () {
+  console.log(
+    'sinon test envs',
+    process.env.AWS_ACCESS_KEY_ID,
+    process.env.AWS_SECRET_ACCESS_KEY,
+    process.env.AWS_REGION
+  )
+
   let client: DynamoDBDocumentClient
   let context: Context
 
@@ -26,13 +35,14 @@ describe('thing tests', function () {
     thingName = 'thingOne'
     thingType = 'thingTypeOne'
 
-    await dropThingsTable(client)
     await createThingsTable(client)
   })
 
+  after(async function () {
+    await dropThingsTable(client)
+  })
+
   it('create thing', async () => {
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pathParameters = { thing: 'thing' }
     const body = JSON.stringify({ id: '', thingName, thingType, description: thingName })
     const expectedResult: ThingResponse = {
@@ -42,29 +52,23 @@ describe('thing tests', function () {
     }
 
     const event = createThingWrapper(body, 'POST', pathParameters)
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
       createThingLambda.handler
     )
     const lambdaSpyResult = await lambdaSpy(event, context)
-    // console.log('lambdaSpyResult', await lambdaSpyResult)
 
     assert(lambdaSpy.withArgs(event, context).calledOnce)
     assertThingResponse(lambdaSpyResult, expectedResult)
   })
 
   it('create bad thing', async () => {
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pathParameters = { thing: 'thing' }
     const body = JSON.stringify({ id: '', thingName: 'thingOne', thingType: '', description: '' })
 
     const event = createThingWrapper(body, 'POST', pathParameters)
 
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
       createThingLambda.handler
@@ -79,8 +83,6 @@ describe('thing tests', function () {
     const { body: createdThingBody } = await createThing(client, 'thingTwo', 'thingTypeTwo')
     const thingId: string = createdThingBody?.id || ''
 
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pathParameters = { thing: 'thing', id: thingId }
     const body = JSON.stringify({
       id: thingId,
@@ -95,8 +97,7 @@ describe('thing tests', function () {
     }
 
     const event = createThingWrapper(null, 'GET', pathParameters)
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
       readThingLambda.handler
@@ -109,14 +110,10 @@ describe('thing tests', function () {
 
   it('read missing thing', async () => {
     const thingId = '43961f67-fcfe-4515-8b5d-f59ccca6c041'
-
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pathParameters = { thing: 'thing', id: thingId }
 
     const event = createThingWrapper(null, 'GET', pathParameters)
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
       readThingLambda.handler

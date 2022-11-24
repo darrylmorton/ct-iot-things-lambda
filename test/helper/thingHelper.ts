@@ -19,7 +19,6 @@ export const uuidValidateV4 = (uuid: string) => {
 }
 
 export const getThingsDbName = () => {
-  process.env.AWS_REGION = 'eu-west-2'
   return 'ct-iot-test-things'
 }
 
@@ -114,7 +113,7 @@ export const dropThingsTable = async (dbClient: DynamoDBClient) => {
 
   const command = new DeleteTableCommand(params)
 
-  await dbClient.send(command)
+  return dbClient.send(command)
 }
 
 export const createThingEvent = (

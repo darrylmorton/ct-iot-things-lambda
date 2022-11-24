@@ -22,21 +22,21 @@ export const getThingsDbName = () => {
     case 'production':
       return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${THINGS_DB_TABLE_NAME_SUFFIX}`
     case 'test':
-      process.env.AWS_REGION = 'eu-west-2'
       return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${THINGS_DB_TABLE_NAME_SUFFIX}`
     default:
       return `${DB_TABLE_NAME_PREFIX}-development-${THINGS_DB_TABLE_NAME_SUFFIX}`
   }
 }
 
-// TODO dynamodb test creds need to be passed in, .env or runtime envs?
 const getDbClient = async (): Promise<DynamoDBClient> => {
   if (process.env.NODE_ENV === 'test') {
+    console.log('create envs', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, process.env.AWS_REGION)
+
     return new DynamoDBClient({
-      region: 'localhost',
+      region: process.env.AWS_REGION,
       credentials: {
-        accessKeyId: 'wt20ei',
-        secretAccessKey: '9t246v',
+        accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
+        secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
       },
       tls: false,
       endpoint: 'http://localhost:8000',

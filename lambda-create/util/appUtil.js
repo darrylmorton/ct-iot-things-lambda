@@ -58,7 +58,6 @@ var getThingsDbName = function () {
         case 'production':
             return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(THINGS_DB_TABLE_NAME_SUFFIX);
         case 'test':
-            process.env.AWS_REGION = 'eu-west-2';
             return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(THINGS_DB_TABLE_NAME_SUFFIX);
         default:
             return "".concat(DB_TABLE_NAME_PREFIX, "-development-").concat(THINGS_DB_TABLE_NAME_SUFFIX);
@@ -68,11 +67,12 @@ exports.getThingsDbName = getThingsDbName;
 var getDbClient = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         if (process.env.NODE_ENV === 'test') {
+            console.log('create envs', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, process.env.AWS_REGION);
             return [2 /*return*/, new client_dynamodb_1.DynamoDBClient({
-                    region: 'localhost',
+                    region: process.env.AWS_REGION,
                     credentials: {
-                        accessKeyId: 'wt20ei',
-                        secretAccessKey: '9t246v'
+                        accessKeyId: "".concat(process.env.AWS_ACCESS_KEY_ID),
+                        secretAccessKey: "".concat(process.env.AWS_SECRET_ACCESS_KEY)
                     },
                     tls: false,
                     endpoint: 'http://localhost:8000'

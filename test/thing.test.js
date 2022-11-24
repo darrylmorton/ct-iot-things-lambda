@@ -1,4 +1,5 @@
 "use strict";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -48,6 +49,7 @@ var thingHelper_1 = require("./helper/thingHelper");
 //   thingType schema change, thingPayloads table changes including new GSIs and removing existing
 (0, mocha_1.describe)('thing tests', function () {
     var _this = this;
+    console.log('sinon test envs', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, process.env.AWS_REGION);
     var client;
     var context;
     var thingName;
@@ -62,11 +64,20 @@ var thingHelper_1 = require("./helper/thingHelper");
                         context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                         thingName = 'thingOne';
                         thingType = 'thingTypeOne';
-                        return [4 /*yield*/, (0, thingHelper_1.dropThingsTable)(client)];
+                        return [4 /*yield*/, (0, thingHelper_1.createThingsTable)(client)];
                     case 2:
                         _a.sent();
-                        return [4 /*yield*/, (0, thingHelper_1.createThingsTable)(client)];
-                    case 3:
+                        return [2 /*return*/];
+                }
+            });
+        });
+    });
+    (0, mocha_1.after)(function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, thingHelper_1.dropThingsTable)(client)];
+                    case 1:
                         _a.sent();
                         return [2 /*return*/];
                 }
@@ -89,12 +100,9 @@ var thingHelper_1 = require("./helper/thingHelper");
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     createThingLambda.handler);
-                    return [4 /*yield*/, lambdaSpy(event, context)
-                        // console.log('lambdaSpyResult', await lambdaSpyResult)
-                    ];
+                    return [4 /*yield*/, lambdaSpy(event, context)];
                 case 1:
                     lambdaSpyResult = _a.sent();
-                    // console.log('lambdaSpyResult', await lambdaSpyResult)
                     (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
                     (0, thingHelper_1.assertThingResponse)(lambdaSpyResult, expectedResult);
                     return [2 /*return*/];

@@ -1,20 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { DynamoDBDocumentClient, PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
-import { APIGatewayProxyEventPathParameters } from 'aws-lambda/trigger/api-gateway-proxy'
 
 import { createThingEvent } from './thingHelper'
 import { Thing } from '../../types'
 import { consoleErrorOutput, createCurrentTime, getThingsDbName } from '../../lambda-create/util/appUtil'
 
-// TODO dynamodb test creds need to be passed in, .env or runtime envs?
 export const getDbClient = async (): Promise<DynamoDBClient> => {
   if (process.env.NODE_ENV === 'test') {
+    console.log('test envs', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, process.env.AWS_REGION)
+
     return new DynamoDBClient({
-      region: 'localhost',
+      region: process.env.AWS_REGION,
       credentials: {
-        accessKeyId: 'wt20ei',
-        secretAccessKey: '9t246v',
+        accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
+        secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
       },
       tls: false,
       endpoint: 'http://localhost:8000',
@@ -75,7 +77,6 @@ const qsParamsToQs = (qsParams: Record<string, string>): string =>
       return `${key}=${encodeURIComponent(qsParams[key])}`
     })
     .join('&')}`
-// `?${new URLSearchParams(qsParams).toString()}`
 
 export const createEvent = (httpMethod: string, path: string, qsParams: Record<string, string>) => {
   return {
@@ -213,7 +214,6 @@ export const createThing = async (client: DynamoDBDocumentClient, thingName: str
     const result: PutCommandOutput = await client.send(new PutCommand(params))
 
     return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: thing }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any | unknown) {
     consoleErrorOutput('create-thing-test-lambda', err)
 

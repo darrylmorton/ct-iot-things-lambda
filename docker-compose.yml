@@ -1,13 +1,12 @@
-version: '3'
+version: "3"
 
 services:
-  ## TODO dynamodb test creds need to be passed in, .env or runtime envs?
   dynamodb-local-testing:
     image: amazon/dynamodb-local:1.20.0
     container_name: dynamodb-local-testing
     ports:
       - "8000:8000"
     environment:
-      - AWS_ACCESS_KEY_ID=wt20ei
-      - AWS_SECRET_ACCESS_KEY=9t246v
-      - AWS_DEFAULT_REGION=localhost
+      - AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION=eu-west-2

@@ -1,4 +1,5 @@
 "use strict";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -45,11 +46,12 @@ var appUtil_1 = require("../../lambda-create/util/appUtil");
 var getDbClient = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         if (process.env.NODE_ENV === 'test') {
+            console.log('test envs', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, process.env.AWS_REGION);
             return [2 /*return*/, new client_dynamodb_1.DynamoDBClient({
-                    region: 'localhost',
+                    region: process.env.AWS_REGION,
                     credentials: {
-                        accessKeyId: 'wt20ei',
-                        secretAccessKey: '9t246v'
+                        accessKeyId: "".concat(process.env.AWS_ACCESS_KEY_ID),
+                        secretAccessKey: "".concat(process.env.AWS_SECRET_ACCESS_KEY)
                     },
                     tls: false,
                     endpoint: 'http://localhost:8000'
@@ -120,7 +122,6 @@ var qsParamsToQs = function (qsParams) {
     })
         .join('&'));
 };
-// `?${new URLSearchParams(qsParams).toString()}`
 var createEvent = function (httpMethod, path, qsParams) {
     return {
         version: '2.0',
@@ -172,21 +173,6 @@ var createEvent = function (httpMethod, path, qsParams) {
     };
 };
 exports.createEvent = createEvent;
-var pathToPathParameters = function (path) {
-    if (path) {
-        var paths = path.split('/');
-        var pathParameters = paths.reduce(function (acc, item) {
-            if (item) {
-                acc["".concat(item)] = item;
-            }
-            return acc;
-        }, {});
-        return pathParameters;
-    }
-    else {
-        return {};
-    }
-};
 var pathParametersToPath = function (pathParameters) {
     var path = '';
     if (pathParameters) {
@@ -258,9 +244,7 @@ var createThing = function (client, thingName, thingType) { return __awaiter(voi
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.PutCommand(params))];
             case 2:
                 result = _b.sent();
-                return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: thing }
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                ];
+                return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: thing }];
             case 3:
                 err_1 = _b.sent();
                 (0, appUtil_1.consoleErrorOutput)('create-thing-test-lambda', err_1);
