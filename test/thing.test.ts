@@ -11,7 +11,7 @@ import * as createThingLambda from '../lambda-create/index'
 import * as readThingLambda from '../lambda-read/index'
 import { ThingResponse } from '../types'
 import { createContext, createThing, createEventWrapper, getDbDocumentClient } from './helper/appHelper'
-import { assertThingResponse, assertThingResponseError, createTable, dropTable } from './helper/thingHelper'
+import { assertThingResponse, assertResponseError, createTable, dropTable } from './helper/thingHelper'
 
 describe('thing tests', function () {
   let client: DynamoDBDocumentClient
@@ -67,7 +67,7 @@ describe('thing tests', function () {
     const lambdaSpyResult = await lambdaSpy(event, context)
 
     assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertThingResponseError(lambdaSpyResult, 409, 'thing exists')
+    assertResponseError(lambdaSpyResult, 409, 'thing exists')
   })
 
   it('create bad thing', async () => {
@@ -83,7 +83,7 @@ describe('thing tests', function () {
     const lambdaSpyResult = await lambdaSpy(event, context)
 
     assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertThingResponseError(lambdaSpyResult, 400, 'invalid thing')
+    assertResponseError(lambdaSpyResult, 400, 'invalid thing')
   })
 
   it('read thing', async () => {
@@ -129,6 +129,6 @@ describe('thing tests', function () {
     const lambdaSpyResult = await lambdaSpy(event, context)
 
     assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertThingResponseError(lambdaSpyResult, 404, 'missing thing')
+    assertResponseError(lambdaSpyResult, 404, 'missing thing')
   })
 })

@@ -121,7 +121,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     lambdaSpyResult = _a.sent();
                     (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                    (0, thingHelper_1.assertThingResponseError)(lambdaSpyResult, 409, 'thing exists');
+                    (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 409, 'thing exists');
                     return [2 /*return*/];
             }
         });
@@ -141,7 +141,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     lambdaSpyResult = _a.sent();
                     (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                    (0, thingHelper_1.assertThingResponseError)(lambdaSpyResult, 400, 'invalid thing');
+                    (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400, 'invalid thing');
                     return [2 /*return*/];
             }
         });
@@ -196,7 +196,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     lambdaSpyResult = _a.sent();
                     (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                    (0, thingHelper_1.assertThingResponseError)(lambdaSpyResult, 404, 'missing thing');
+                    (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404, 'missing thing');
                     return [2 /*return*/];
             }
         });

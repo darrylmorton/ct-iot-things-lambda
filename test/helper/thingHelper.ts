@@ -156,7 +156,7 @@ export const assertThingResponse = (actualResult: ThingResponse, expectedResult:
   expect(actualResultBody.description).to.equal(expectedResultBody.description)
 }
 
-export const assertThingResponseError = (actualResult: ResponseError, statusCode: number, message: string) => {
+export const assertResponseError = (actualResult: ResponseError, statusCode: number, message: string) => {
   expect(actualResult.statusCode).to.equal(statusCode)
   expect(actualResult.message).to.equal(message)
 }

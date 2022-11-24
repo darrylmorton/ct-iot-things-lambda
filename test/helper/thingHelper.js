@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.assertThingResponseError = exports.assertThingResponse = exports.createEvent = exports.dropTable = exports.createTable = exports.DB_NAME = exports.uuidValidateV4 = void 0;
+exports.assertResponseError = exports.assertThingResponse = exports.createEvent = exports.dropTable = exports.createTable = exports.DB_NAME = exports.uuidValidateV4 = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var chai_1 = require("chai");
 var uuid_1 = require("uuid");
@@ -169,8 +169,8 @@ var assertThingResponse = function (actualResult, expectedResult) {
     (0, chai_1.expect)(actualResultBody.description).to.equal(expectedResultBody.description);
 };
 exports.assertThingResponse = assertThingResponse;
-var assertThingResponseError = function (actualResult, statusCode, message) {
+var assertResponseError = function (actualResult, statusCode, message) {
     (0, chai_1.expect)(actualResult.statusCode).to.equal(statusCode);
     (0, chai_1.expect)(actualResult.message).to.equal(message);
 };
-exports.assertThingResponseError = assertThingResponseError;
+exports.assertResponseError = assertResponseError;
