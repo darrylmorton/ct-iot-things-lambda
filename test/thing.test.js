@@ -40,13 +40,11 @@ exports.__esModule = true;
 var mocha_1 = require("mocha");
 var sinon = require("sinon");
 var chai_1 = require("chai");
+var uuid_1 = require("uuid");
 var createThingLambda = require("../lambda-create/index");
 var readThingLambda = require("../lambda-read/index");
 var appHelper_1 = require("./helper/appHelper");
 var thingHelper_1 = require("./helper/thingHelper");
-// TODO
-//   thingIds, thingTypes mock data (id and name)
-//   thingType schema change, thingPayloads table changes including new GSIs and removing existing
 (0, mocha_1.describe)('thing tests', function () {
     var _this = this;
     var client;
@@ -62,7 +60,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                         client = _a.sent();
                         context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                         thingName = 'thingOne';
-                        thingType = 'thingTypeOne';
+                        thingType = (0, uuid_1.v4)();
                         return [4 /*yield*/, (0, thingHelper_1.createThingsTable)(client)];
                     case 2:
                         _a.sent();
@@ -129,10 +127,12 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('read thing', function () { return __awaiter(_this, void 0, void 0, function () {
-        var createdThingBody, thingId, pathParameters, body, expectedResult, event, lambdaSpy, lambdaSpyResult;
+        var thingTypeTwo, createdThingBody, thingId, pathParameters, body, expectedResult, event, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, (0, appHelper_1.createThing)(client, 'thingTwo', 'thingTypeTwo')];
+                case 0:
+                    thingTypeTwo = (0, uuid_1.v4)();
+                    return [4 /*yield*/, (0, appHelper_1.createThing)(client, 'thingTwo', thingTypeTwo)];
                 case 1:
                     createdThingBody = (_a.sent()).body;
                     thingId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
@@ -140,7 +140,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     body = JSON.stringify({
                         id: thingId,
                         thingName: 'thingTwo',
-                        thingType: 'thingTypeTwo',
+                        thingType: thingTypeTwo,
                         description: 'thingTwo'
                     });
                     expectedResult = {

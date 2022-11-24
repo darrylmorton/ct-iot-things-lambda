@@ -5,6 +5,7 @@ import * as sinon from 'sinon'
 import { Context } from 'aws-lambda'
 import { assert } from 'chai'
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
+import { v4 as uuidv4 } from 'uuid'
 
 import * as createThingLambda from '../lambda-create/index'
 import * as readThingLambda from '../lambda-read/index'
@@ -12,9 +13,6 @@ import { ThingResponse } from '../types'
 import { createContext, createThing, createThingWrapper, getDbDocumentClient } from './helper/appHelper'
 import { assertThingResponse, assertThingResponseError, createThingsTable, dropThingsTable } from './helper/thingHelper'
 
-// TODO
-//   thingIds, thingTypes mock data (id and name)
-//   thingType schema change, thingPayloads table changes including new GSIs and removing existing
 describe('thing tests', function () {
   let client: DynamoDBDocumentClient
   let context: Context
@@ -26,7 +24,7 @@ describe('thing tests', function () {
     client = await getDbDocumentClient()
     context = createContext('create-thing-test-lambda')
     thingName = 'thingOne'
-    thingType = 'thingTypeOne'
+    thingType = uuidv4()
 
     await createThingsTable(client)
   })
@@ -73,14 +71,15 @@ describe('thing tests', function () {
   })
 
   it('read thing', async () => {
-    const { body: createdThingBody } = await createThing(client, 'thingTwo', 'thingTypeTwo')
+    const thingTypeTwo = uuidv4()
+    const { body: createdThingBody } = await createThing(client, 'thingTwo', thingTypeTwo)
     const thingId: string = createdThingBody?.id || ''
 
     const pathParameters = { thing: 'thing', id: thingId }
     const body = JSON.stringify({
       id: thingId,
       thingName: 'thingTwo',
-      thingType: 'thingTypeTwo',
+      thingType: thingTypeTwo,
       description: 'thingTwo',
     })
     const expectedResult: ThingResponse = {

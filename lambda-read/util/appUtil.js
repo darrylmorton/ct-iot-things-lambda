@@ -54,7 +54,6 @@ var getThingsDbName = function () {
     }
 };
 exports.getThingsDbName = getThingsDbName;
-// TODO dynamodb test creds need to be passed in, .env or runtime envs?
 var getDbClient = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         if (process.env.NODE_ENV === 'test') {
