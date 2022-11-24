@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getThingsDbName = exports.createCurrentTime = void 0;
+exports.queryByThingName = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getThingsDbName = exports.createCurrentTime = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var dayjs = require("dayjs");
@@ -118,3 +118,29 @@ var consoleErrorOutput = function (value, err) {
     }
 };
 exports.consoleErrorOutput = consoleErrorOutput;
+var queryByThingName = function (client, thingName) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, result;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                params = {
+                    TableName: (0, exports.getThingsDbName)(),
+                    IndexName: 'thingNameIndex',
+                    KeyConditionExpression: 'thingName = :thingName',
+                    ExpressionAttributeValues: { ':thingName': thingName }
+                };
+                return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
+            case 1:
+                result = _b.sent();
+                if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
+                    return [2 /*return*/, { statusCode: 409, message: 'thing exists' }];
+                }
+                else {
+                    return [2 /*return*/, { statusCode: 404, message: 'thing missing' }];
+                }
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.queryByThingName = queryByThingName;

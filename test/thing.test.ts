@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import * as createThingLambda from '../lambda-create/index'
 import * as readThingLambda from '../lambda-read/index'
-import { ThingResponse } from '../types'
+import { ThingResponse, ThingResponseError } from '../types'
 import { createContext, createThing, createThingWrapper, getDbDocumentClient } from './helper/appHelper'
 import { assertThingResponse, assertThingResponseError, createThingsTable, dropThingsTable } from './helper/thingHelper'
 
@@ -52,6 +52,22 @@ describe('thing tests', function () {
 
     assert(lambdaSpy.withArgs(event, context).calledOnce)
     assertThingResponse(lambdaSpyResult, expectedResult)
+  })
+
+  it('create existing thing', async () => {
+    const pathParameters = { thing: 'thing' }
+    const body = JSON.stringify({ id: '', thingName, thingType, description: thingName })
+
+    const event = createThingWrapper(body, 'POST', pathParameters)
+
+    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      // @ts-ignore
+      createThingLambda.handler
+    )
+    const lambdaSpyResult = await lambdaSpy(event, context)
+
+    assert(lambdaSpy.withArgs(event, context).calledOnce)
+    assertThingResponseError(lambdaSpyResult, 409, 'thing exists')
   })
 
   it('create bad thing', async () => {

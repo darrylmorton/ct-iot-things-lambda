@@ -1,8 +1,9 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
+import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
 import * as dayjs from 'dayjs'
 import * as utc from 'dayjs/plugin/utc'
 import * as timezone from 'dayjs/plugin/timezone'
+import { ThingResponseError } from '../../types'
 // @ts-ignore
 dayjs.extend(utc)
 // @ts-ignore
@@ -70,5 +71,25 @@ export const consoleErrorOutput = (value: string | unknown, err: any | unknown) 
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line no-console
     console.error(`${value} db write error`, err)
+  }
+}
+
+export const queryByThingName = async (
+  client: DynamoDBDocumentClient,
+  thingName: string
+): Promise<ThingResponseError> => {
+  const params: QueryCommandInput = {
+    TableName: getThingsDbName(),
+    IndexName: 'thingNameIndex',
+    KeyConditionExpression: 'thingName = :thingName',
+    ExpressionAttributeValues: { ':thingName': thingName },
+  }
+
+  const result: QueryCommandOutput = await client.send(new QueryCommand(params))
+
+  if (result.Items?.length) {
+    return { statusCode: 409, message: 'thing exists' }
+  } else {
+    return { statusCode: 404, message: 'thing missing' }
   }
 }

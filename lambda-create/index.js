@@ -42,14 +42,22 @@ var appUtil_1 = require("./util/appUtil");
 exports.handler = function run(event, context) {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var body, currentDate, thing, params, result, err_1;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var body, client, _b, statusCode, message, currentDate, thing, params, result, err_1;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
-                    _b.trys.push([0, 4, , 5]);
-                    if (!event.body) return [3 /*break*/, 3];
+                    _c.trys.push([0, 5, , 6]);
+                    if (!event.body) return [3 /*break*/, 4];
                     body = JSON.parse(event.body);
-                    if (!(body.thingName && body.thingType && body.description)) return [3 /*break*/, 3];
+                    if (!(body.thingName && body.thingType && body.description)) return [3 /*break*/, 4];
+                    return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
+                case 1:
+                    client = _c.sent();
+                    return [4 /*yield*/, (0, appUtil_1.queryByThingName)(client, body.thingName)];
+                case 2:
+                    _b = _c.sent(), statusCode = _b.statusCode, message = _b.message;
+                    if (statusCode === 409)
+                        return [2 /*return*/, { statusCode: statusCode, message: message }];
                     currentDate = (0, appUtil_1.createCurrentTime)();
                     thing = {
                         id: (0, uuid_1.v4)(),
@@ -63,19 +71,18 @@ exports.handler = function run(event, context) {
                         TableName: (0, appUtil_1.getThingsDbName)(),
                         Item: thing
                     };
-                    return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
-                case 1: return [4 /*yield*/, (_b.sent()).send(new lib_dynamodb_1.PutCommand(params))];
-                case 2:
-                    result = _b.sent();
+                    return [4 /*yield*/, client.send(new lib_dynamodb_1.PutCommand(params))];
+                case 3:
+                    result = _c.sent();
                     return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(thing) }];
-                case 3: return [2 /*return*/, { statusCode: 400, message: 'invalid thing' }
+                case 4: return [2 /*return*/, { statusCode: 400, message: 'invalid thing' }
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ];
-                case 4:
-                    err_1 = _b.sent();
+                case 5:
+                    err_1 = _c.sent();
                     (0, appUtil_1.consoleErrorOutput)(context === null || context === void 0 ? void 0 : context.functionName, err_1);
                     return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
-                case 5: return [2 /*return*/];
+                case 6: return [2 /*return*/];
             }
         });
     });
