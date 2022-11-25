@@ -48,7 +48,6 @@ var thingHelper_1 = require("./helper/thingHelper");
 (0, mocha_1.describe)('thing tests', function () {
     var _this = this;
     var client;
-    var context;
     var thingName;
     var thingType;
     (0, mocha_1.before)(function () {
@@ -58,7 +57,6 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 0: return [4 /*yield*/, (0, appHelper_1.getDbDocumentClient)()];
                     case 1:
                         client = _a.sent();
-                        context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                         thingName = 'thingOne';
                         thingType = (0, uuid_1.v4)();
                         return [4 /*yield*/, (0, thingHelper_1.createTable)(client)];
@@ -82,7 +80,7 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     });
     (0, mocha_1.it)('create thing', function () { return __awaiter(_this, void 0, void 0, function () {
-        var pathParameters, body, expectedResult, event, lambdaSpy, lambdaSpyResult;
+        var pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -94,6 +92,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                         body: body
                     };
                     event = (0, appHelper_1.createEventWrapper)(body, 'POST', pathParameters);
+                    context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     createThingLambda.handler);
@@ -107,13 +106,14 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('create existing thing', function () { return __awaiter(_this, void 0, void 0, function () {
-        var pathParameters, body, event, lambdaSpy, lambdaSpyResult;
+        var pathParameters, body, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     pathParameters = { thing: 'thing' };
                     body = JSON.stringify({ id: '', thingName: thingName, thingType: thingType, description: thingName });
                     event = (0, appHelper_1.createEventWrapper)(body, 'POST', pathParameters);
+                    context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     createThingLambda.handler);
@@ -127,13 +127,14 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('create bad thing', function () { return __awaiter(_this, void 0, void 0, function () {
-        var pathParameters, body, event, lambdaSpy, lambdaSpyResult;
+        var pathParameters, body, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     pathParameters = { thing: 'thing' };
                     body = JSON.stringify({ id: '', thingName: 'thingOne', thingType: '', description: '' });
                     event = (0, appHelper_1.createEventWrapper)(body, 'POST', pathParameters);
+                    context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     createThingLambda.handler);
@@ -147,7 +148,7 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('read thing', function () { return __awaiter(_this, void 0, void 0, function () {
-        var thingTypeTwo, createdThingBody, thingId, pathParameters, body, expectedResult, event, lambdaSpy, lambdaSpyResult;
+        var thingTypeTwo, createdThingBody, thingId, pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -169,6 +170,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                         body: body
                     };
                     event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    context = (0, appHelper_1.createContext)('read-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     readThingLambda.handler);
@@ -182,13 +184,14 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('read missing thing', function () { return __awaiter(_this, void 0, void 0, function () {
-        var thingId, pathParameters, event, lambdaSpy, lambdaSpyResult;
+        var thingId, pathParameters, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     thingId = '43961f67-fcfe-4515-8b5d-f59ccca6c041';
                     pathParameters = { thing: 'thing', id: thingId };
                     event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    context = (0, appHelper_1.createContext)('read-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
                     readThingLambda.handler);

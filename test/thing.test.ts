@@ -2,7 +2,6 @@
 
 import { describe, it, before, after } from 'mocha'
 import * as sinon from 'sinon'
-import { Context } from 'aws-lambda'
 import { assert } from 'chai'
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
@@ -15,14 +14,12 @@ import { assertThingResponse, assertResponseError, createTable, dropTable } from
 
 describe('thing tests', function () {
   let client: DynamoDBDocumentClient
-  let context: Context
 
   let thingName: string
   let thingType: string
 
   before(async function () {
     client = await getDbDocumentClient()
-    context = createContext('create-thing-test-lambda')
     thingName = 'thingOne'
     thingType = uuidv4()
 
@@ -43,6 +40,7 @@ describe('thing tests', function () {
     }
 
     const event = createEventWrapper(body, 'POST', pathParameters)
+    const context = createContext('create-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
@@ -59,6 +57,7 @@ describe('thing tests', function () {
     const body = JSON.stringify({ id: '', thingName, thingType, description: thingName })
 
     const event = createEventWrapper(body, 'POST', pathParameters)
+    const context = createContext('create-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
@@ -75,6 +74,7 @@ describe('thing tests', function () {
     const body = JSON.stringify({ id: '', thingName: 'thingOne', thingType: '', description: '' })
 
     const event = createEventWrapper(body, 'POST', pathParameters)
+    const context = createContext('create-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
@@ -105,6 +105,7 @@ describe('thing tests', function () {
     }
 
     const event = createEventWrapper(null, 'GET', pathParameters)
+    const context = createContext('read-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore
@@ -121,6 +122,7 @@ describe('thing tests', function () {
     const pathParameters = { thing: 'thing', id: thingId }
 
     const event = createEventWrapper(null, 'GET', pathParameters)
+    const context = createContext('read-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
       // @ts-ignore

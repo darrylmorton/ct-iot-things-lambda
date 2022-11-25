@@ -148,7 +148,7 @@ export const assertThingResponse = (actualResult: ThingResponse, expectedResult:
   expect(actualResult.message).to.equal(expectedResult.message)
 
   const actualResultBody: ResponseBody = JSON.parse(actualResult.body)
-  const expectedResultBody: ResponseBody = JSON.parse(actualResult.body)
+  const expectedResultBody: ResponseBody = JSON.parse(expectedResult.body)
 
   expect(uuidValidateV4(actualResultBody.id)).to.deep.equal(true)
   expect(actualResultBody.thingName).to.equal(expectedResultBody.thingName)

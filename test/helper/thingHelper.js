@@ -162,7 +162,7 @@ var assertThingResponse = function (actualResult, expectedResult) {
     (0, chai_1.expect)(actualResult.statusCode).to.equal(expectedResult.statusCode);
     (0, chai_1.expect)(actualResult.message).to.equal(expectedResult.message);
     var actualResultBody = JSON.parse(actualResult.body);
-    var expectedResultBody = JSON.parse(actualResult.body);
+    var expectedResultBody = JSON.parse(expectedResult.body);
     (0, chai_1.expect)((0, exports.uuidValidateV4)(actualResultBody.id)).to.deep.equal(true);
     (0, chai_1.expect)(actualResultBody.thingName).to.equal(expectedResultBody.thingName);
     (0, chai_1.expect)(actualResultBody.thingType).to.equal(expectedResultBody.thingType);
