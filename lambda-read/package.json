@@ -1,5 +1,5 @@
 {
-  "name": "ct-iot-things-read-lambda",
+  "name": "ct-iot-read-things-lambda",
   "version": "0.0.1",
   "private": true,
   "scripts": {
