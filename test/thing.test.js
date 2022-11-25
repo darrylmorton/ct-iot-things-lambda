@@ -85,7 +85,7 @@ var thingHelper_1 = require("./helper/thingHelper");
             switch (_a.label) {
                 case 0:
                     pathParameters = { thing: 'thing' };
-                    body = JSON.stringify({ id: '', thingName: thingName, thingType: thingType, description: thingName });
+                    body = JSON.stringify({ thingName: thingName, thingType: thingType, description: thingName });
                     expectedResult = {
                         statusCode: 200,
                         message: 'ok',
@@ -111,7 +111,7 @@ var thingHelper_1 = require("./helper/thingHelper");
             switch (_a.label) {
                 case 0:
                     pathParameters = { thing: 'thing' };
-                    body = JSON.stringify({ id: '', thingName: thingName, thingType: thingType, description: thingName });
+                    body = JSON.stringify({ thingName: thingName, thingType: thingType, description: thingName });
                     event = (0, appHelper_1.createEventWrapper)(body, 'POST', pathParameters);
                     context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                     lambdaSpy = sinon.spy(
@@ -132,7 +132,7 @@ var thingHelper_1 = require("./helper/thingHelper");
             switch (_a.label) {
                 case 0:
                     pathParameters = { thing: 'thing' };
-                    body = JSON.stringify({ id: '', thingName: 'thingOne', thingType: '', description: '' });
+                    body = JSON.stringify({ thingName: 'thingOne', thingType: '', description: '' });
                     event = (0, appHelper_1.createEventWrapper)(body, 'POST', pathParameters);
                     context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                     lambdaSpy = sinon.spy(

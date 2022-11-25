@@ -32,7 +32,7 @@ describe('thing tests', function () {
 
   it('create thing', async () => {
     const pathParameters = { thing: 'thing' }
-    const body = JSON.stringify({ id: '', thingName, thingType, description: thingName })
+    const body = JSON.stringify({ thingName, thingType, description: thingName })
     const expectedResult: ThingResponse = {
       statusCode: 200,
       message: 'ok',
@@ -54,7 +54,7 @@ describe('thing tests', function () {
 
   it('create existing thing', async () => {
     const pathParameters = { thing: 'thing' }
-    const body = JSON.stringify({ id: '', thingName, thingType, description: thingName })
+    const body = JSON.stringify({ thingName, thingType, description: thingName })
 
     const event = createEventWrapper(body, 'POST', pathParameters)
     const context = createContext('create-thing-test-lambda')
@@ -71,7 +71,7 @@ describe('thing tests', function () {
 
   it('create bad thing', async () => {
     const pathParameters = { thing: 'thing' }
-    const body = JSON.stringify({ id: '', thingName: 'thingOne', thingType: '', description: '' })
+    const body = JSON.stringify({ thingName: 'thingOne', thingType: '', description: '' })
 
     const event = createEventWrapper(body, 'POST', pathParameters)
     const context = createContext('create-thing-test-lambda')
