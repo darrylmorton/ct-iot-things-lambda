@@ -38,14 +38,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var appUtil_1 = require("./util/appUtil");
 exports.handler = function run(event, context) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function () {
         var client;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
+        return __generator(this, function (_e) {
+            switch (_e.label) {
                 case 0: return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
                 case 1:
-                    client = _d.sent();
+                    client = _e.sent();
                     if ((_a = event.pathParameters) === null || _a === void 0 ? void 0 : _a.id) {
                         return [2 /*return*/, (0, appUtil_1.getItemById)(client, event.pathParameters.id, context)];
                     }
@@ -54,6 +54,9 @@ exports.handler = function run(event, context) {
                     }
                     else if ((_c = event.pathParameters) === null || _c === void 0 ? void 0 : _c.thingType) {
                         return [2 /*return*/, (0, appUtil_1.queryByThingType)(client, event.pathParameters.thingType, context)];
+                    }
+                    else if ((_d = event.pathParameters) === null || _d === void 0 ? void 0 : _d.thing) {
+                        return [2 /*return*/, (0, appUtil_1.getItems)(client, event.pathParameters.thing, context)];
                     }
                     else {
                         return [2 /*return*/, { statusCode: 404, message: 'missing thing(s)' }];

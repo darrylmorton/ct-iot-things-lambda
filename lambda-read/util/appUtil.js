@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.queryByThingType = exports.queryByThingName = exports.getItemById = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = void 0;
+exports.queryByThingType = exports.queryByThingName = exports.getItemById = exports.getItems = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
@@ -108,8 +108,45 @@ var consoleErrorOutput = function (value, err) {
     }
 };
 exports.consoleErrorOutput = consoleErrorOutput;
-var getItemById = function (client, id, context) { return __awaiter(void 0, void 0, void 0, function () {
+var getItems = function (client, id, context) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result, body, err_1;
+    var _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                _c.trys.push([0, 2, , 3]);
+                params = {
+                    TableName: (0, exports.getDbName)(),
+                    Select: 'SPECIFIC_ATTRIBUTES',
+                    ProjectionExpression: 'id, thingName, thingType, description'
+                };
+                return [4 /*yield*/, client.send(new client_dynamodb_1.ScanCommand(params))];
+            case 1:
+                result = _c.sent();
+                if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
+                    body = result.Items.reduce(function (acc, item) {
+                        var unmarshalledItem = (0, util_dynamodb_1.unmarshall)(item);
+                        // @ts-ignore
+                        acc.push(unmarshalledItem);
+                        return acc;
+                    }, []);
+                    return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }];
+                }
+                else {
+                    return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                err_1 = _c.sent();
+                (0, exports.consoleErrorOutput)(context.functionName, err_1);
+                return [2 /*return*/, { statusCode: (_b = err_1.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getItems = getItems;
+var getItemById = function (client, id, context) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, result, body, err_2;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -132,16 +169,16 @@ var getItemById = function (client, id, context) { return __awaiter(void 0, void
                 }
                 return [3 /*break*/, 3];
             case 2:
-                err_1 = _b.sent();
-                (0, exports.consoleErrorOutput)(context.functionName, err_1);
-                return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
+                err_2 = _b.sent();
+                (0, exports.consoleErrorOutput)(context.functionName, err_2);
+                return [2 /*return*/, { statusCode: (_a = err_2.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
             case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.getItemById = getItemById;
 var queryByThingName = function (client, thingName, context) { return __awaiter(void 0, void 0, void 0, function () {
-    var params, result, err_2;
+    var params, result, err_3;
     var _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
@@ -166,16 +203,16 @@ var queryByThingName = function (client, thingName, context) { return __awaiter(
                 }
                 return [3 /*break*/, 3];
             case 2:
-                err_2 = _c.sent();
-                (0, exports.consoleErrorOutput)(context.functionName, err_2);
-                return [2 /*return*/, { statusCode: (_b = err_2.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
+                err_3 = _c.sent();
+                (0, exports.consoleErrorOutput)(context.functionName, err_3);
+                return [2 /*return*/, { statusCode: (_b = err_3.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
             case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.queryByThingName = queryByThingName;
 var queryByThingType = function (client, thingType, context) { return __awaiter(void 0, void 0, void 0, function () {
-    var params, result, err_3;
+    var params, result, err_4;
     var _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
@@ -200,9 +237,9 @@ var queryByThingType = function (client, thingType, context) { return __awaiter(
                 }
                 return [3 /*break*/, 3];
             case 2:
-                err_3 = _c.sent();
-                (0, exports.consoleErrorOutput)(context.functionName, err_3);
-                return [2 /*return*/, { statusCode: (_b = err_3.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
+                err_4 = _c.sent();
+                (0, exports.consoleErrorOutput)(context.functionName, err_4);
+                return [2 /*return*/, { statusCode: (_b = err_4.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
             case 3: return [2 /*return*/];
         }
     });

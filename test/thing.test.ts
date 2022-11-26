@@ -36,6 +36,39 @@ describe('thing tests', function () {
     await dropTable(client)
   })
 
+  it('read things', async () => {
+    const thingTypeTwo = uuidv4()
+    const { body: createdThingBody } = await createThing(client, 'thingTwoB', thingTypeTwo)
+    const thingId: string = createdThingBody?.id || ''
+
+    const pathParameters = { thing: 'thing' }
+    const body = JSON.stringify([
+      {
+        id: thingId,
+        thingName: 'thingTwoB',
+        thingType: thingTypeTwo,
+        description: 'thingTwoB',
+      },
+    ])
+    const expectedResult: ThingResponse = {
+      statusCode: 200,
+      message: 'ok',
+      body,
+    }
+
+    const event = createEventWrapper(null, 'GET', pathParameters)
+    const context = createContext('read-thing-test-lambda')
+
+    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      // @ts-ignore
+      readThingLambda.handler
+    )
+    const lambdaSpyResult = await lambdaSpy(event, context)
+
+    assert(lambdaSpy.withArgs(event, context).calledOnce)
+    assertThingsResponse(lambdaSpyResult, expectedResult)
+  })
+
   it('create thing', async () => {
     const pathParameters = { thing: 'thing' }
     const body = JSON.stringify({ thingName, thingType, description: thingName })

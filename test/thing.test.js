@@ -79,6 +79,44 @@ var thingHelper_1 = require("./helper/thingHelper");
             });
         });
     });
+    (0, mocha_1.it)('read things', function () { return __awaiter(_this, void 0, void 0, function () {
+        var thingTypeTwo, createdThingBody, thingId, pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    thingTypeTwo = (0, uuid_1.v4)();
+                    return [4 /*yield*/, (0, appHelper_1.createThing)(client, 'thingTwoB', thingTypeTwo)];
+                case 1:
+                    createdThingBody = (_a.sent()).body;
+                    thingId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
+                    pathParameters = { thing: 'thing' };
+                    body = JSON.stringify([
+                        {
+                            id: thingId,
+                            thingName: 'thingTwoB',
+                            thingType: thingTypeTwo,
+                            description: 'thingTwoB'
+                        },
+                    ]);
+                    expectedResult = {
+                        statusCode: 200,
+                        message: 'ok',
+                        body: body
+                    };
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    context = (0, appHelper_1.createContext)('read-thing-test-lambda');
+                    lambdaSpy = sinon.spy(
+                    // @ts-ignore
+                    readThingLambda.handler);
+                    return [4 /*yield*/, lambdaSpy(event, context)];
+                case 2:
+                    lambdaSpyResult = _a.sent();
+                    (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
+                    (0, thingHelper_1.assertThingsResponse)(lambdaSpyResult, expectedResult);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
     (0, mocha_1.it)('create thing', function () { return __awaiter(_this, void 0, void 0, function () {
         var pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {

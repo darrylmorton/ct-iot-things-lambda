@@ -1,4 +1,12 @@
-import { DynamoDBClient, GetItemCommand, GetItemCommandInput, GetItemCommandOutput } from '@aws-sdk/client-dynamodb'
+import {
+  DynamoDBClient,
+  GetItemCommand,
+  GetItemCommandInput,
+  GetItemCommandOutput,
+  ScanCommand,
+  ScanCommandInput,
+  ScanCommandOutput,
+} from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
 import { ResponseError, ThingResponse } from '../../types'
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
@@ -62,6 +70,42 @@ export const consoleErrorOutput = (value: string | unknown, err: any | unknown) 
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line no-console
     console.error(`${value} db write error`, err)
+  }
+}
+
+export const getItems = async (
+  client: DynamoDBDocumentClient,
+  id: string,
+  context: Context
+): Promise<ThingResponse | ResponseError> => {
+  try {
+    const params: ScanCommandInput = {
+      TableName: getDbName(),
+      Select: 'SPECIFIC_ATTRIBUTES',
+      ProjectionExpression: 'id, thingName, thingType, description',
+    }
+
+    // @ts-ignore
+    const result: ScanCommandOutput = await client.send(new ScanCommand(params))
+
+    if (result.Items?.length) {
+      const body = result.Items.reduce((acc, item) => {
+        const unmarshalledItem = unmarshall(item)
+        // @ts-ignore
+        acc.push(unmarshalledItem)
+
+        return acc
+      }, [])
+
+      return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }
+    } else {
+      return { statusCode: 404, message: 'missing thing' }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any | unknown) {
+    consoleErrorOutput(context.functionName, err)
+
+    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }
 }
 
