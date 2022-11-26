@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.assertResponseError = exports.assertThingResponse = exports.createEvent = exports.dropTable = exports.createTable = exports.DB_NAME = exports.uuidValidateV4 = void 0;
+exports.assertResponseError = exports.assertThingResponseBody = exports.assertThingsResponse = exports.assertThingResponse = exports.createEvent = exports.dropTable = exports.createTable = exports.DB_NAME = exports.uuidValidateV4 = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var chai_1 = require("chai");
 var uuid_1 = require("uuid");
@@ -163,12 +163,27 @@ var assertThingResponse = function (actualResult, expectedResult) {
     (0, chai_1.expect)(actualResult.message).to.equal(expectedResult.message);
     var actualResultBody = JSON.parse(actualResult.body);
     var expectedResultBody = JSON.parse(expectedResult.body);
+    (0, exports.assertThingResponseBody)(actualResultBody, expectedResultBody);
+};
+exports.assertThingResponse = assertThingResponse;
+var assertThingsResponse = function (actualResult, expectedResult) {
+    (0, chai_1.expect)(actualResult.statusCode).to.equal(expectedResult.statusCode);
+    (0, chai_1.expect)(actualResult.message).to.equal(expectedResult.message);
+    var actualResultBody = JSON.parse(actualResult.body);
+    var expectedResultBody = JSON.parse(expectedResult.body);
+    (0, chai_1.expect)(actualResultBody).to.have.length(expectedResultBody.length);
+    for (var counter = 0; counter < actualResultBody.length; counter++) {
+        (0, exports.assertThingResponseBody)(actualResultBody[counter], expectedResultBody[counter]);
+    }
+};
+exports.assertThingsResponse = assertThingsResponse;
+var assertThingResponseBody = function (actualResultBody, expectedResultBody) {
     (0, chai_1.expect)((0, exports.uuidValidateV4)(actualResultBody.id)).to.deep.equal(true);
     (0, chai_1.expect)(actualResultBody.thingName).to.equal(expectedResultBody.thingName);
     (0, chai_1.expect)(actualResultBody.thingType).to.equal(expectedResultBody.thingType);
     (0, chai_1.expect)(actualResultBody.description).to.equal(expectedResultBody.description);
 };
-exports.assertThingResponse = assertThingResponse;
+exports.assertThingResponseBody = assertThingResponseBody;
 var assertResponseError = function (actualResult, statusCode, message) {
     (0, chai_1.expect)(actualResult.statusCode).to.equal(statusCode);
     (0, chai_1.expect)(actualResult.message).to.equal(message);

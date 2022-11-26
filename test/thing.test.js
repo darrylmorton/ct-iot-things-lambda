@@ -147,7 +147,7 @@ var thingHelper_1 = require("./helper/thingHelper");
             }
         });
     }); });
-    (0, mocha_1.it)('read thing', function () { return __awaiter(_this, void 0, void 0, function () {
+    (0, mocha_1.it)('read thing by id', function () { return __awaiter(_this, void 0, void 0, function () {
         var thingTypeTwo, createdThingBody, thingId, pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -183,13 +183,129 @@ var thingHelper_1 = require("./helper/thingHelper");
             }
         });
     }); });
-    (0, mocha_1.it)('read missing thing', function () { return __awaiter(_this, void 0, void 0, function () {
+    (0, mocha_1.it)('read missing thing by id', function () { return __awaiter(_this, void 0, void 0, function () {
         var thingId, pathParameters, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     thingId = '43961f67-fcfe-4515-8b5d-f59ccca6c041';
                     pathParameters = { thing: 'thing', id: thingId };
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    context = (0, appHelper_1.createContext)('read-thing-test-lambda');
+                    lambdaSpy = sinon.spy(
+                    // @ts-ignore
+                    readThingLambda.handler);
+                    return [4 /*yield*/, lambdaSpy(event, context)];
+                case 1:
+                    lambdaSpyResult = _a.sent();
+                    (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
+                    (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404, 'missing thing');
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    (0, mocha_1.it)('read thing by name', function () { return __awaiter(_this, void 0, void 0, function () {
+        var thingTypeTwo, createdThingBody, thingId, pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    thingTypeTwo = (0, uuid_1.v4)();
+                    return [4 /*yield*/, (0, appHelper_1.createThing)(client, 'thingThree', thingTypeTwo)];
+                case 1:
+                    createdThingBody = (_a.sent()).body;
+                    thingId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
+                    pathParameters = { thing: 'thing', thingName: 'thingThree' };
+                    body = JSON.stringify([
+                        {
+                            id: thingId,
+                            thingName: 'thingThree',
+                            thingType: thingTypeTwo,
+                            description: 'thingThree'
+                        },
+                    ]);
+                    expectedResult = {
+                        statusCode: 200,
+                        message: 'ok',
+                        body: body
+                    };
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    context = (0, appHelper_1.createContext)('read-thing-test-lambda');
+                    lambdaSpy = sinon.spy(
+                    // @ts-ignore
+                    readThingLambda.handler);
+                    return [4 /*yield*/, lambdaSpy(event, context)];
+                case 2:
+                    lambdaSpyResult = _a.sent();
+                    (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
+                    (0, thingHelper_1.assertThingsResponse)(lambdaSpyResult, expectedResult);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    (0, mocha_1.it)('read missing thing by name', function () { return __awaiter(_this, void 0, void 0, function () {
+        var pathParameters, event, context, lambdaSpy, lambdaSpyResult;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    pathParameters = { thing: 'thing', thingName: 'thingZero' };
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    context = (0, appHelper_1.createContext)('read-thing-test-lambda');
+                    lambdaSpy = sinon.spy(
+                    // @ts-ignore
+                    readThingLambda.handler);
+                    return [4 /*yield*/, lambdaSpy(event, context)];
+                case 1:
+                    lambdaSpyResult = _a.sent();
+                    (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
+                    (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404, 'missing thing');
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    (0, mocha_1.it)('read thing by type', function () { return __awaiter(_this, void 0, void 0, function () {
+        var thingTypeTwo, createdThingBody, thingId, pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    thingTypeTwo = (0, uuid_1.v4)();
+                    return [4 /*yield*/, (0, appHelper_1.createThing)(client, thingName, thingTypeTwo)];
+                case 1:
+                    createdThingBody = (_a.sent()).body;
+                    thingId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
+                    pathParameters = { thing: 'thing', thingType: thingTypeTwo };
+                    body = JSON.stringify([
+                        {
+                            id: thingId,
+                            thingName: thingName,
+                            thingType: thingTypeTwo,
+                            description: 'thingOne'
+                        },
+                    ]);
+                    expectedResult = {
+                        statusCode: 200,
+                        message: 'ok',
+                        body: body
+                    };
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    context = (0, appHelper_1.createContext)('read-thing-test-lambda');
+                    lambdaSpy = sinon.spy(
+                    // @ts-ignore
+                    readThingLambda.handler);
+                    return [4 /*yield*/, lambdaSpy(event, context)];
+                case 2:
+                    lambdaSpyResult = _a.sent();
+                    (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
+                    (0, thingHelper_1.assertThingsResponse)(lambdaSpyResult, expectedResult);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    (0, mocha_1.it)('read missing thing by type', function () { return __awaiter(_this, void 0, void 0, function () {
+        var pathParameters, event, context, lambdaSpy, lambdaSpyResult;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    pathParameters = { thing: 'thing', thingType: 'thingTypeZero' };
                     event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
                     context = (0, appHelper_1.createContext)('read-thing-test-lambda');
                     lambdaSpy = sinon.spy(

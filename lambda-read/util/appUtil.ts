@@ -115,7 +115,7 @@ export const queryByThingName = async (
     if (result.Items?.length) {
       return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
     } else {
-      return { statusCode: 404, message: 'thing missing' }
+      return { statusCode: 404, message: 'missing thing' }
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any | unknown) {
@@ -145,7 +145,7 @@ export const queryByThingType = async (
     if (result.Items?.length) {
       return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
     } else {
-      return { statusCode: 404, message: 'thing missing' }
+      return { statusCode: 404, message: 'missing thing' }
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any | unknown) {

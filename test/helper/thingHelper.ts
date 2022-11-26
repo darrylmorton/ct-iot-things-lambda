@@ -150,6 +150,24 @@ export const assertThingResponse = (actualResult: ThingResponse, expectedResult:
   const actualResultBody: ResponseBody = JSON.parse(actualResult.body)
   const expectedResultBody: ResponseBody = JSON.parse(expectedResult.body)
 
+  assertThingResponseBody(actualResultBody, expectedResultBody)
+}
+
+export const assertThingsResponse = (actualResult: ThingResponse, expectedResult: ThingResponse) => {
+  expect(actualResult.statusCode).to.equal(expectedResult.statusCode)
+  expect(actualResult.message).to.equal(expectedResult.message)
+
+  const actualResultBody: ResponseBody[] = JSON.parse(actualResult.body)
+  const expectedResultBody: ResponseBody[] = JSON.parse(expectedResult.body)
+
+  expect(actualResultBody).to.have.length(expectedResultBody.length)
+
+  for (let counter = 0; counter < actualResultBody.length; counter++) {
+    assertThingResponseBody(actualResultBody[counter], expectedResultBody[counter])
+  }
+}
+
+export const assertThingResponseBody = (actualResultBody: ResponseBody, expectedResultBody: ResponseBody) => {
   expect(uuidValidateV4(actualResultBody.id)).to.deep.equal(true)
   expect(actualResultBody.thingName).to.equal(expectedResultBody.thingName)
   expect(actualResultBody.thingType).to.equal(expectedResultBody.thingType)

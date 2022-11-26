@@ -162,7 +162,7 @@ var queryByThingName = function (client, thingName, context) { return __awaiter(
                     return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
                 }
                 else {
-                    return [2 /*return*/, { statusCode: 404, message: 'thing missing' }];
+                    return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
                 }
                 return [3 /*break*/, 3];
             case 2:
@@ -196,7 +196,7 @@ var queryByThingType = function (client, thingType, context) { return __awaiter(
                     return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
                 }
                 else {
-                    return [2 /*return*/, { statusCode: 404, message: 'thing missing' }];
+                    return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
                 }
                 return [3 /*break*/, 3];
             case 2:
