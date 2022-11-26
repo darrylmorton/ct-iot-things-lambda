@@ -5,7 +5,7 @@ import { PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dyna
 import { Thing, ThingEvent } from '../types'
 import { consoleErrorOutput, createCurrentTime, getDbDocumentClient, getDbName, queryByThingName } from './util/appUtil'
 
-exports.handler = async function run(event: ThingEvent, context?: Context) {
+exports.handler = async function run(event: ThingEvent, context: Context) {
   try {
     if (event.body) {
       const body = JSON.parse(event.body)
@@ -42,7 +42,7 @@ exports.handler = async function run(event: ThingEvent, context?: Context) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any | unknown) {
-    consoleErrorOutput(context?.functionName, err)
+    consoleErrorOutput(context.functionName, err)
 
     return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }

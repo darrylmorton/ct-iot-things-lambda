@@ -36,9 +36,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = void 0;
+exports.queryByThingType = exports.queryByThingName = exports.getItemById = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
+var util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
 var DB_TABLE_NAME_SUFFIX = 'things';
 var getDbName = function () {
@@ -107,3 +108,86 @@ var consoleErrorOutput = function (value, err) {
     }
 };
 exports.consoleErrorOutput = consoleErrorOutput;
+var getItemById = function (client, params, context) { return __awaiter(void 0, void 0, void 0, function () {
+    var result, body, err_1;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _b.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, client.send(new client_dynamodb_1.GetItemCommand(params))];
+            case 1:
+                result = _b.sent();
+                if (result.Item) {
+                    body = (0, util_dynamodb_1.unmarshall)(result.Item);
+                    return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }];
+                }
+                else {
+                    return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                err_1 = _b.sent();
+                (0, exports.consoleErrorOutput)(context.functionName, err_1);
+                return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getItemById = getItemById;
+var queryByThingName = function (client, thingName) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, result;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                params = {
+                    TableName: (0, exports.getDbName)(),
+                    IndexName: 'thingNameIndex',
+                    KeyConditionExpression: 'thingName = :thingName',
+                    ExpressionAttributeValues: { ':thingName': thingName },
+                    Select: 'SPECIFIC_ATTRIBUTES',
+                    ProjectionExpression: 'id, thingName, thingType, description'
+                };
+                return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
+            case 1:
+                result = _b.sent();
+                if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
+                    return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
+                }
+                else {
+                    return [2 /*return*/, { statusCode: 404, message: 'thing missing' }];
+                }
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.queryByThingName = queryByThingName;
+var queryByThingType = function (client, thingType) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, result;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                params = {
+                    TableName: (0, exports.getDbName)(),
+                    IndexName: 'thingTypeIndex',
+                    KeyConditionExpression: 'thingType = :thingType',
+                    ExpressionAttributeValues: { ':thingType': thingType },
+                    Select: 'SPECIFIC_ATTRIBUTES',
+                    ProjectionExpression: 'id, thingName, thingType, description'
+                };
+                return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
+            case 1:
+                result = _b.sent();
+                if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
+                    return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
+                }
+                else {
+                    return [2 /*return*/, { statusCode: 404, message: 'thing missing' }];
+                }
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.queryByThingType = queryByThingType;

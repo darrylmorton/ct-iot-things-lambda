@@ -80,7 +80,7 @@ exports.handler = function run(event, context) {
                 ];
                 case 5:
                     err_1 = _c.sent();
-                    (0, appUtil_1.consoleErrorOutput)(context === null || context === void 0 ? void 0 : context.functionName, err_1);
+                    (0, appUtil_1.consoleErrorOutput)(context.functionName, err_1);
                     return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
                 case 6: return [2 /*return*/];
             }

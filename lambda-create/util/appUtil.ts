@@ -63,7 +63,6 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
 
   const translateConfig = { marshallOptions, unmarshallOptions }
 
-  // @ts-ignore
   return DynamoDBDocumentClient.from(await getDbClient(), translateConfig)
 }
 
@@ -81,6 +80,8 @@ export const queryByThingName = async (client: DynamoDBDocumentClient, thingName
     IndexName: 'thingNameIndex',
     KeyConditionExpression: 'thingName = :thingName',
     ExpressionAttributeValues: { ':thingName': thingName },
+    Select: 'SPECIFIC_ATTRIBUTES',
+    ProjectionExpression: 'id, thingName, thingType, description',
   }
 
   const result: QueryCommandOutput = await client.send(new QueryCommand(params))

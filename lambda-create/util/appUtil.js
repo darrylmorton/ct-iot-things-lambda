@@ -103,9 +103,7 @@ var getDbDocumentClient = function () { return __awaiter(void 0, void 0, void 0,
                 translateConfig = { marshallOptions: marshallOptions, unmarshallOptions: unmarshallOptions };
                 _b = (_a = lib_dynamodb_1.DynamoDBDocumentClient).from;
                 return [4 /*yield*/, getDbClient()];
-            case 1: 
-            // @ts-ignore
-            return [2 /*return*/, _b.apply(_a, [_c.sent(), translateConfig])];
+            case 1: return [2 /*return*/, _b.apply(_a, [_c.sent(), translateConfig])];
         }
     });
 }); };
@@ -128,7 +126,9 @@ var queryByThingName = function (client, thingName) { return __awaiter(void 0, v
                     TableName: (0, exports.getDbName)(),
                     IndexName: 'thingNameIndex',
                     KeyConditionExpression: 'thingName = :thingName',
-                    ExpressionAttributeValues: { ':thingName': thingName }
+                    ExpressionAttributeValues: { ':thingName': thingName },
+                    Select: 'SPECIFIC_ATTRIBUTES',
+                    ProjectionExpression: 'id, thingName, thingType, description'
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
             case 1:
