@@ -36,26 +36,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
 var appUtil_1 = require("./util/appUtil");
 exports.handler = function run(event, context) {
-    var _a;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function () {
-        var client, params;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    if (!((_a = event.pathParameters) === null || _a === void 0 ? void 0 : _a.id)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
+        var client;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
+                case 0: return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
                 case 1:
-                    client = _b.sent();
-                    params = {
-                        TableName: (0, appUtil_1.getDbName)(),
-                        Key: (0, util_dynamodb_1.marshall)({ id: event.pathParameters.id }),
-                        AttributesToGet: ['id', 'thingName', 'thingType', 'description']
-                    };
-                    return [2 /*return*/, (0, appUtil_1.getItemById)(client, params, context)];
-                case 2: return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
+                    client = _d.sent();
+                    if ((_a = event.pathParameters) === null || _a === void 0 ? void 0 : _a.id) {
+                        return [2 /*return*/, (0, appUtil_1.getItemById)(client, event.pathParameters.id, context)];
+                    }
+                    else if ((_b = event.pathParameters) === null || _b === void 0 ? void 0 : _b.thingName) {
+                        return [2 /*return*/, (0, appUtil_1.queryByThingName)(client, event.pathParameters.thingName, context)];
+                    }
+                    else if ((_c = event.pathParameters) === null || _c === void 0 ? void 0 : _c.thingType) {
+                        return [2 /*return*/, (0, appUtil_1.queryByThingType)(client, event.pathParameters.thingType, context)];
+                    }
+                    else {
+                        return [2 /*return*/, { statusCode: 404, message: 'missing thing(s)' }];
+                    }
+                    return [2 /*return*/];
             }
         });
     });

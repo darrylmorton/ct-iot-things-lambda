@@ -1,7 +1,7 @@
 import { DynamoDBClient, GetItemCommand, GetItemCommandInput, GetItemCommandOutput } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
 import { ResponseError, ThingResponse } from '../../types'
-import { unmarshall } from '@aws-sdk/util-dynamodb'
+import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 import { Context } from 'aws-lambda'
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
@@ -67,10 +67,16 @@ export const consoleErrorOutput = (value: string | unknown, err: any | unknown) 
 
 export const getItemById = async (
   client: DynamoDBDocumentClient,
-  params: GetItemCommandInput,
+  id: string,
   context: Context
 ): Promise<ThingResponse | ResponseError> => {
   try {
+    const params: GetItemCommandInput = {
+      TableName: getDbName(),
+      Key: marshall({ id }),
+      AttributesToGet: ['id', 'thingName', 'thingType', 'description'],
+    }
+
     // @ts-ignore
     const result: GetItemCommandOutput = await client.send(new GetItemCommand(params))
 
@@ -91,44 +97,60 @@ export const getItemById = async (
 
 export const queryByThingName = async (
   client: DynamoDBDocumentClient,
-  thingName: string
+  thingName: string,
+  context: Context
 ): Promise<ThingResponse | ResponseError> => {
-  const params: QueryCommandInput = {
-    TableName: getDbName(),
-    IndexName: 'thingNameIndex',
-    KeyConditionExpression: 'thingName = :thingName',
-    ExpressionAttributeValues: { ':thingName': thingName },
-    Select: 'SPECIFIC_ATTRIBUTES',
-    ProjectionExpression: 'id, thingName, thingType, description',
-  }
+  try {
+    const params: QueryCommandInput = {
+      TableName: getDbName(),
+      IndexName: 'thingNameIndex',
+      KeyConditionExpression: 'thingName = :thingName',
+      ExpressionAttributeValues: { ':thingName': thingName },
+      Select: 'SPECIFIC_ATTRIBUTES',
+      ProjectionExpression: 'id, thingName, thingType, description',
+    }
 
-  const result: QueryCommandOutput = await client.send(new QueryCommand(params))
+    const result: QueryCommandOutput = await client.send(new QueryCommand(params))
 
-  if (result.Items?.length) {
-    return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
-  } else {
-    return { statusCode: 404, message: 'thing missing' }
+    if (result.Items?.length) {
+      return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
+    } else {
+      return { statusCode: 404, message: 'thing missing' }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any | unknown) {
+    consoleErrorOutput(context.functionName, err)
+
+    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }
 }
 
 export const queryByThingType = async (
   client: DynamoDBDocumentClient,
-  thingType: string
+  thingType: string,
+  context: Context
 ): Promise<ThingResponse | ResponseError> => {
-  const params: QueryCommandInput = {
-    TableName: getDbName(),
-    IndexName: 'thingTypeIndex',
-    KeyConditionExpression: 'thingType = :thingType',
-    ExpressionAttributeValues: { ':thingType': thingType },
-    Select: 'SPECIFIC_ATTRIBUTES',
-    ProjectionExpression: 'id, thingName, thingType, description',
-  }
+  try {
+    const params: QueryCommandInput = {
+      TableName: getDbName(),
+      IndexName: 'thingTypeIndex',
+      KeyConditionExpression: 'thingType = :thingType',
+      ExpressionAttributeValues: { ':thingType': thingType },
+      Select: 'SPECIFIC_ATTRIBUTES',
+      ProjectionExpression: 'id, thingName, thingType, description',
+    }
 
-  const result: QueryCommandOutput = await client.send(new QueryCommand(params))
+    const result: QueryCommandOutput = await client.send(new QueryCommand(params))
 
-  if (result.Items?.length) {
-    return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
-  } else {
-    return { statusCode: 404, message: 'thing missing' }
+    if (result.Items?.length) {
+      return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
+    } else {
+      return { statusCode: 404, message: 'thing missing' }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any | unknown) {
+    consoleErrorOutput(context.functionName, err)
+
+    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }
 }
