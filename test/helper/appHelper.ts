@@ -69,36 +69,28 @@ export const createContext = (functionName: string) => {
   }
 }
 
-const pathParametersToPath = (pathParameters: Record<string, string>): string => {
-  let path = ''
+// const qsParamsToQs = (qsParams: Record<string, string>): string =>
+//   `?${Object.keys(qsParams)
+//     .map((key) => {
+//       return `${key}=${encodeURIComponent(qsParams[key])}`
+//     })
+//     .join('&')}`
+// // `?${new URLSearchParams(qsParams).toString()}`
 
-  if (pathParameters) {
-    for (const pathParametersKey in pathParameters) {
-      path += `/${pathParameters[pathParametersKey]}`
-    }
-  } else {
-    path = '/'
-  }
-
-  return path
-}
-
-export const createEventWrapper = (body: string | null, httpMethod: string, pathParameters: Record<string, string>) => {
-  const path = pathParametersToPath(pathParameters)
-
+export const createEventWrapper = (body: string | null, httpMethod: string, qsParams: Record<string, string>) => {
   return createEvent(
     body,
     { 'content-type': 'application/json' },
     httpMethod,
-    path,
+    '/thing',
     {},
     {},
-    pathParameters,
     {},
+    qsParams,
     {
       apiId: '',
       authorizer: undefined,
-      httpMethod: '',
+      httpMethod,
       identity: {
         accessKey: null,
         accountId: null,
@@ -116,7 +108,7 @@ export const createEventWrapper = (body: string | null, httpMethod: string, path
         userAgent: null,
         userArn: null,
       },
-      path,
+      path: '/thing',
       protocol: '',
       requestId: '',
       requestTimeEpoch: 0,

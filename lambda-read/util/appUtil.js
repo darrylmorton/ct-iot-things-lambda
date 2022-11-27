@@ -108,7 +108,7 @@ var consoleErrorOutput = function (value, err) {
     }
 };
 exports.consoleErrorOutput = consoleErrorOutput;
-var getItems = function (client, id, context) { return __awaiter(void 0, void 0, void 0, function () {
+var getItems = function (client, context) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result, body, err_1;
     var _a, _b;
     return __generator(this, function (_c) {

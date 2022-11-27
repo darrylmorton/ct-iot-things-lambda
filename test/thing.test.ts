@@ -41,7 +41,7 @@ describe('thing tests', function () {
     const { body: createdThingBody } = await createThing(client, 'thingTwoB', thingTypeTwo)
     const thingId: string = createdThingBody?.id || ''
 
-    const pathParameters = { thing: 'thing' }
+    const qsParams = {}
     const body = JSON.stringify([
       {
         id: thingId,
@@ -56,7 +56,7 @@ describe('thing tests', function () {
       body,
     }
 
-    const event = createEventWrapper(null, 'GET', pathParameters)
+    const event = createEventWrapper(null, 'GET', qsParams)
     const context = createContext('read-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
@@ -70,7 +70,6 @@ describe('thing tests', function () {
   })
 
   it('create thing', async () => {
-    const pathParameters = { thing: 'thing' }
     const body = JSON.stringify({ thingName, thingType, description: thingName })
     const expectedResult: ThingResponse = {
       statusCode: 200,
@@ -78,7 +77,7 @@ describe('thing tests', function () {
       body,
     }
 
-    const event = createEventWrapper(body, 'POST', pathParameters)
+    const event = createEventWrapper(body, 'POST', {})
     const context = createContext('create-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
@@ -92,10 +91,9 @@ describe('thing tests', function () {
   })
 
   it('create existing thing', async () => {
-    const pathParameters = { thing: 'thing' }
     const body = JSON.stringify({ thingName, thingType, description: thingName })
 
-    const event = createEventWrapper(body, 'POST', pathParameters)
+    const event = createEventWrapper(body, 'POST', {})
     const context = createContext('create-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
@@ -109,10 +107,9 @@ describe('thing tests', function () {
   })
 
   it('create bad thing', async () => {
-    const pathParameters = { thing: 'thing' }
     const body = JSON.stringify({ thingName: 'thingOne', thingType: '', description: '' })
 
-    const event = createEventWrapper(body, 'POST', pathParameters)
+    const event = createEventWrapper(body, 'POST', {})
     const context = createContext('create-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
@@ -130,7 +127,7 @@ describe('thing tests', function () {
     const { body: createdThingBody } = await createThing(client, 'thingTwo', thingTypeTwo)
     const thingId: string = createdThingBody?.id || ''
 
-    const pathParameters = { thing: 'thing', id: thingId }
+    const qsParams = { id: thingId }
     const body = JSON.stringify({
       id: thingId,
       thingName: 'thingTwo',
@@ -143,7 +140,7 @@ describe('thing tests', function () {
       body,
     }
 
-    const event = createEventWrapper(null, 'GET', pathParameters)
+    const event = createEventWrapper(null, 'GET', qsParams)
     const context = createContext('read-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
@@ -158,9 +155,9 @@ describe('thing tests', function () {
 
   it('read missing thing by id', async () => {
     const thingId = '43961f67-fcfe-4515-8b5d-f59ccca6c041'
-    const pathParameters = { thing: 'thing', id: thingId }
+    const qsParams = { id: thingId }
 
-    const event = createEventWrapper(null, 'GET', pathParameters)
+    const event = createEventWrapper(null, 'GET', qsParams)
     const context = createContext('read-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
@@ -178,7 +175,7 @@ describe('thing tests', function () {
     const { body: createdThingBody } = await createThing(client, 'thingThree', thingTypeTwo)
     const thingId: string = createdThingBody?.id || ''
 
-    const pathParameters = { thing: 'thing', thingName: 'thingThree' }
+    const qsParams = { thingName: 'thingThree' }
     const body = JSON.stringify([
       {
         id: thingId,
@@ -193,7 +190,7 @@ describe('thing tests', function () {
       body,
     }
 
-    const event = createEventWrapper(null, 'GET', pathParameters)
+    const event = createEventWrapper(null, 'GET', qsParams)
     const context = createContext('read-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
@@ -207,9 +204,9 @@ describe('thing tests', function () {
   })
 
   it('read missing thing by name', async () => {
-    const pathParameters = { thing: 'thing', thingName: 'thingZero' }
+    const qsParams = { thingName: 'thingZero' }
 
-    const event = createEventWrapper(null, 'GET', pathParameters)
+    const event = createEventWrapper(null, 'GET', qsParams)
     const context = createContext('read-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
@@ -227,7 +224,7 @@ describe('thing tests', function () {
     const { body: createdThingBody } = await createThing(client, thingName, thingTypeTwo)
     const thingId: string = createdThingBody?.id || ''
 
-    const pathParameters = { thing: 'thing', thingType: thingTypeTwo }
+    const qsParams = { thingType: thingTypeTwo }
     const body = JSON.stringify([
       {
         id: thingId,
@@ -242,7 +239,7 @@ describe('thing tests', function () {
       body,
     }
 
-    const event = createEventWrapper(null, 'GET', pathParameters)
+    const event = createEventWrapper(null, 'GET', qsParams)
     const context = createContext('read-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
@@ -256,9 +253,9 @@ describe('thing tests', function () {
   })
 
   it('read missing thing by type', async () => {
-    const pathParameters = { thing: 'thing', thingType: 'thingTypeZero' }
+    const qsParams = { thingType: 'thingTypeZero' }
 
-    const event = createEventWrapper(null, 'GET', pathParameters)
+    const event = createEventWrapper(null, 'GET', qsParams)
     const context = createContext('read-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(

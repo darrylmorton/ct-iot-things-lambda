@@ -80,7 +80,7 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     });
     (0, mocha_1.it)('read things', function () { return __awaiter(_this, void 0, void 0, function () {
-        var thingTypeTwo, createdThingBody, thingId, pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
+        var thingTypeTwo, createdThingBody, thingId, qsParams, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -89,7 +89,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     createdThingBody = (_a.sent()).body;
                     thingId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
-                    pathParameters = { thing: 'thing' };
+                    qsParams = {};
                     body = JSON.stringify([
                         {
                             id: thingId,
@@ -103,7 +103,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                         message: 'ok',
                         body: body
                     };
-                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
                     context = (0, appHelper_1.createContext)('read-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
@@ -118,18 +118,17 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('create thing', function () { return __awaiter(_this, void 0, void 0, function () {
-        var pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
+        var body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    pathParameters = { thing: 'thing' };
                     body = JSON.stringify({ thingName: thingName, thingType: thingType, description: thingName });
                     expectedResult = {
                         statusCode: 200,
                         message: 'ok',
                         body: body
                     };
-                    event = (0, appHelper_1.createEventWrapper)(body, 'POST', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(body, 'POST', {});
                     context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
@@ -144,13 +143,12 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('create existing thing', function () { return __awaiter(_this, void 0, void 0, function () {
-        var pathParameters, body, event, context, lambdaSpy, lambdaSpyResult;
+        var body, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    pathParameters = { thing: 'thing' };
                     body = JSON.stringify({ thingName: thingName, thingType: thingType, description: thingName });
-                    event = (0, appHelper_1.createEventWrapper)(body, 'POST', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(body, 'POST', {});
                     context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
@@ -165,13 +163,12 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('create bad thing', function () { return __awaiter(_this, void 0, void 0, function () {
-        var pathParameters, body, event, context, lambdaSpy, lambdaSpyResult;
+        var body, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    pathParameters = { thing: 'thing' };
                     body = JSON.stringify({ thingName: 'thingOne', thingType: '', description: '' });
-                    event = (0, appHelper_1.createEventWrapper)(body, 'POST', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(body, 'POST', {});
                     context = (0, appHelper_1.createContext)('create-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
@@ -186,7 +183,7 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('read thing by id', function () { return __awaiter(_this, void 0, void 0, function () {
-        var thingTypeTwo, createdThingBody, thingId, pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
+        var thingTypeTwo, createdThingBody, thingId, qsParams, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -195,7 +192,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     createdThingBody = (_a.sent()).body;
                     thingId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
-                    pathParameters = { thing: 'thing', id: thingId };
+                    qsParams = { id: thingId };
                     body = JSON.stringify({
                         id: thingId,
                         thingName: 'thingTwo',
@@ -207,7 +204,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                         message: 'ok',
                         body: body
                     };
-                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
                     context = (0, appHelper_1.createContext)('read-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
@@ -222,13 +219,13 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('read missing thing by id', function () { return __awaiter(_this, void 0, void 0, function () {
-        var thingId, pathParameters, event, context, lambdaSpy, lambdaSpyResult;
+        var thingId, qsParams, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     thingId = '43961f67-fcfe-4515-8b5d-f59ccca6c041';
-                    pathParameters = { thing: 'thing', id: thingId };
-                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    qsParams = { id: thingId };
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
                     context = (0, appHelper_1.createContext)('read-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
@@ -243,7 +240,7 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('read thing by name', function () { return __awaiter(_this, void 0, void 0, function () {
-        var thingTypeTwo, createdThingBody, thingId, pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
+        var thingTypeTwo, createdThingBody, thingId, qsParams, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -252,7 +249,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     createdThingBody = (_a.sent()).body;
                     thingId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
-                    pathParameters = { thing: 'thing', thingName: 'thingThree' };
+                    qsParams = { thingName: 'thingThree' };
                     body = JSON.stringify([
                         {
                             id: thingId,
@@ -266,7 +263,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                         message: 'ok',
                         body: body
                     };
-                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
                     context = (0, appHelper_1.createContext)('read-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
@@ -281,12 +278,12 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('read missing thing by name', function () { return __awaiter(_this, void 0, void 0, function () {
-        var pathParameters, event, context, lambdaSpy, lambdaSpyResult;
+        var qsParams, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    pathParameters = { thing: 'thing', thingName: 'thingZero' };
-                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    qsParams = { thingName: 'thingZero' };
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
                     context = (0, appHelper_1.createContext)('read-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
@@ -301,7 +298,7 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('read thing by type', function () { return __awaiter(_this, void 0, void 0, function () {
-        var thingTypeTwo, createdThingBody, thingId, pathParameters, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
+        var thingTypeTwo, createdThingBody, thingId, qsParams, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -310,7 +307,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     createdThingBody = (_a.sent()).body;
                     thingId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
-                    pathParameters = { thing: 'thing', thingType: thingTypeTwo };
+                    qsParams = { thingType: thingTypeTwo };
                     body = JSON.stringify([
                         {
                             id: thingId,
@@ -324,7 +321,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                         message: 'ok',
                         body: body
                     };
-                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
                     context = (0, appHelper_1.createContext)('read-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
@@ -339,12 +336,12 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     }); });
     (0, mocha_1.it)('read missing thing by type', function () { return __awaiter(_this, void 0, void 0, function () {
-        var pathParameters, event, context, lambdaSpy, lambdaSpyResult;
+        var qsParams, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    pathParameters = { thing: 'thing', thingType: 'thingTypeZero' };
-                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', pathParameters);
+                    qsParams = { thingType: 'thingTypeZero' };
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
                     context = (0, appHelper_1.createContext)('read-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore

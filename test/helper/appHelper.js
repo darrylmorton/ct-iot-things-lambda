@@ -114,24 +114,18 @@ var createContext = function (functionName) {
     };
 };
 exports.createContext = createContext;
-var pathParametersToPath = function (pathParameters) {
-    var path = '';
-    if (pathParameters) {
-        for (var pathParametersKey in pathParameters) {
-            path += "/".concat(pathParameters[pathParametersKey]);
-        }
-    }
-    else {
-        path = '/';
-    }
-    return path;
-};
-var createEventWrapper = function (body, httpMethod, pathParameters) {
-    var path = pathParametersToPath(pathParameters);
-    return (0, thingHelper_1.createEvent)(body, { 'content-type': 'application/json' }, httpMethod, path, {}, {}, pathParameters, {}, {
+// const qsParamsToQs = (qsParams: Record<string, string>): string =>
+//   `?${Object.keys(qsParams)
+//     .map((key) => {
+//       return `${key}=${encodeURIComponent(qsParams[key])}`
+//     })
+//     .join('&')}`
+// // `?${new URLSearchParams(qsParams).toString()}`
+var createEventWrapper = function (body, httpMethod, qsParams) {
+    return (0, thingHelper_1.createEvent)(body, { 'content-type': 'application/json' }, httpMethod, '/thing', {}, {}, {}, qsParams, {
         apiId: '',
         authorizer: undefined,
-        httpMethod: '',
+        httpMethod: httpMethod,
         identity: {
             accessKey: null,
             accountId: null,
@@ -149,7 +143,7 @@ var createEventWrapper = function (body, httpMethod, pathParameters) {
             userAgent: null,
             userArn: null
         },
-        path: path,
+        path: '/thing',
         protocol: '',
         requestId: '',
         requestTimeEpoch: 0,

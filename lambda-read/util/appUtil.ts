@@ -75,7 +75,6 @@ export const consoleErrorOutput = (value: string | unknown, err: any | unknown) 
 
 export const getItems = async (
   client: DynamoDBDocumentClient,
-  id: string,
   context: Context
 ): Promise<ThingResponse | ResponseError> => {
   try {

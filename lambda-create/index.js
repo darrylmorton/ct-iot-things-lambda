@@ -46,15 +46,17 @@ exports.handler = function run(event, context) {
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
-                    _c.trys.push([0, 5, , 6]);
-                    if (!event.body) return [3 /*break*/, 4];
-                    body = JSON.parse(event.body);
-                    if (!(body.thingName && body.thingType && body.description)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
+                    if (!(event.httpMethod.toUpperCase() === 'POST' && event.body)) return [3 /*break*/, 7];
+                    _c.label = 1;
                 case 1:
+                    _c.trys.push([1, 6, , 7]);
+                    body = JSON.parse(event.body);
+                    if (!(body.thingName && body.thingType && body.description)) return [3 /*break*/, 5];
+                    return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
+                case 2:
                     client = _c.sent();
                     return [4 /*yield*/, (0, appUtil_1.queryByThingName)(client, body.thingName)];
-                case 2:
+                case 3:
                     _b = _c.sent(), statusCode = _b.statusCode, message = _b.message;
                     if (statusCode === 409)
                         return [2 /*return*/, { statusCode: statusCode, message: message }];
@@ -72,17 +74,17 @@ exports.handler = function run(event, context) {
                         Item: thing
                     };
                     return [4 /*yield*/, client.send(new lib_dynamodb_1.PutCommand(params))];
-                case 3:
+                case 4:
                     result = _c.sent();
                     return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(thing) }];
-                case 4: return [2 /*return*/, { statusCode: 400, message: 'invalid thing' }
+                case 5: return [2 /*return*/, { statusCode: 400, message: 'invalid thing' }
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ];
-                case 5:
+                case 6:
                     err_1 = _c.sent();
                     (0, appUtil_1.consoleErrorOutput)(context.functionName, err_1);
                     return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
-                case 6: return [2 /*return*/];
+                case 7: return [2 /*return*/, { statusCode: 400, message: 'invalid request' }];
             }
         });
     });

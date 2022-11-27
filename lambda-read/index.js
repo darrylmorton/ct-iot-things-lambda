@@ -38,30 +38,30 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var appUtil_1 = require("./util/appUtil");
 exports.handler = function run(event, context) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function () {
         var client;
-        return __generator(this, function (_e) {
-            switch (_e.label) {
-                case 0: return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
+        return __generator(this, function (_d) {
+            switch (_d.label) {
+                case 0:
+                    if (!(event.httpMethod.toUpperCase() === 'GET')) return [3 /*break*/, 2];
+                    return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
                 case 1:
-                    client = _e.sent();
-                    if ((_a = event.pathParameters) === null || _a === void 0 ? void 0 : _a.id) {
-                        return [2 /*return*/, (0, appUtil_1.getItemById)(client, event.pathParameters.id, context)];
+                    client = _d.sent();
+                    if (!event.queryStringParameters || Object.keys(event.queryStringParameters).length === 0) {
+                        return [2 /*return*/, (0, appUtil_1.getItems)(client, context)];
                     }
-                    else if ((_b = event.pathParameters) === null || _b === void 0 ? void 0 : _b.thingName) {
-                        return [2 /*return*/, (0, appUtil_1.queryByThingName)(client, event.pathParameters.thingName, context)];
+                    else if ((_a = event.queryStringParameters) === null || _a === void 0 ? void 0 : _a.id) {
+                        return [2 /*return*/, (0, appUtil_1.getItemById)(client, event.queryStringParameters.id, context)];
                     }
-                    else if ((_c = event.pathParameters) === null || _c === void 0 ? void 0 : _c.thingType) {
-                        return [2 /*return*/, (0, appUtil_1.queryByThingType)(client, event.pathParameters.thingType, context)];
+                    else if ((_b = event.queryStringParameters) === null || _b === void 0 ? void 0 : _b.thingName) {
+                        return [2 /*return*/, (0, appUtil_1.queryByThingName)(client, event.queryStringParameters.thingName, context)];
                     }
-                    else if ((_d = event.pathParameters) === null || _d === void 0 ? void 0 : _d.thing) {
-                        return [2 /*return*/, (0, appUtil_1.getItems)(client, event.pathParameters.thing, context)];
+                    else if ((_c = event.queryStringParameters) === null || _c === void 0 ? void 0 : _c.thingType) {
+                        return [2 /*return*/, (0, appUtil_1.queryByThingType)(client, event.queryStringParameters.thingType, context)];
                     }
-                    else {
-                        return [2 /*return*/, { statusCode: 404, message: 'missing thing(s)' }];
-                    }
-                    return [2 /*return*/];
+                    return [2 /*return*/, { statusCode: 404, message: 'missing thing(s)' }];
+                case 2: return [2 /*return*/, { statusCode: 400, message: 'invalid request' }];
             }
         });
     });
