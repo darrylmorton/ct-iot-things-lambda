@@ -41,7 +41,6 @@ describe('thing tests', function () {
     const { body: createdThingBody } = await createThing(client, 'thingTwoB', thingTypeTwo)
     const thingId: string = createdThingBody?.id || ''
 
-    const qsParams = {}
     const body = JSON.stringify([
       {
         id: thingId,
@@ -56,7 +55,7 @@ describe('thing tests', function () {
       body,
     }
 
-    const event = createEventWrapper(null, 'GET', qsParams)
+    const event = createEventWrapper(null, 'GET', {})
     const context = createContext('read-thing-test-lambda')
 
     const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(

@@ -80,7 +80,7 @@ var thingHelper_1 = require("./helper/thingHelper");
         });
     });
     (0, mocha_1.it)('read things', function () { return __awaiter(_this, void 0, void 0, function () {
-        var thingTypeTwo, createdThingBody, thingId, qsParams, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
+        var thingTypeTwo, createdThingBody, thingId, body, expectedResult, event, context, lambdaSpy, lambdaSpyResult;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -89,7 +89,6 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 1:
                     createdThingBody = (_a.sent()).body;
                     thingId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
-                    qsParams = {};
                     body = JSON.stringify([
                         {
                             id: thingId,
@@ -103,7 +102,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                         message: 'ok',
                         body: body
                     };
-                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
+                    event = (0, appHelper_1.createEventWrapper)(null, 'GET', {});
                     context = (0, appHelper_1.createContext)('read-thing-test-lambda');
                     lambdaSpy = sinon.spy(
                     // @ts-ignore
