@@ -41,7 +41,7 @@ exports.handler = async function run(event: APIGatewayProxyEvent, context: Conte
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any | unknown) {
-      consoleErrorOutput(context.functionName, err)
+      consoleErrorOutput(context.functionName, 'handler.index', err)
 
       return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
     }

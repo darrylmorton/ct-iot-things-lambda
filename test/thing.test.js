@@ -193,12 +193,14 @@ var thingHelper_1 = require("./helper/thingHelper");
                     createdThingBody = (_a.sent()).body;
                     thingId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
                     qsParams = { id: thingId };
-                    body = JSON.stringify({
-                        id: thingId,
-                        thingName: 'thingTwo',
-                        thingType: thingTypeTwo,
-                        description: 'thingTwo'
-                    });
+                    body = JSON.stringify([
+                        {
+                            id: thingId,
+                            thingName: 'thingTwo',
+                            thingType: thingTypeTwo,
+                            description: 'thingTwo'
+                        },
+                    ]);
                     expectedResult = {
                         statusCode: 200,
                         message: 'ok',
@@ -213,7 +215,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 case 2:
                     lambdaSpyResult = _a.sent();
                     (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                    (0, thingHelper_1.assertThingResponse)(lambdaSpyResult, expectedResult);
+                    (0, thingHelper_1.assertThingsResponse)(lambdaSpyResult, expectedResult);
                     return [2 /*return*/];
             }
         });

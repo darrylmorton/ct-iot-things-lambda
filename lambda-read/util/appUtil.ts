@@ -1,15 +1,7 @@
-import {
-  DynamoDBClient,
-  GetItemCommand,
-  GetItemCommandInput,
-  GetItemCommandOutput,
-  ScanCommand,
-  ScanCommandInput,
-  ScanCommandOutput,
-} from '@aws-sdk/client-dynamodb'
+import { DynamoDBClient, ScanCommand, ScanCommandInput, ScanCommandOutput } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
 import { ResponseError, ThingResponse } from '../../types'
-import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
+import { unmarshall } from '@aws-sdk/util-dynamodb'
 import { Context } from 'aws-lambda'
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
@@ -20,7 +12,7 @@ export const getDbName = () => {
 
   switch (NODE_ENV) {
     case 'production':
-      return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${DB_TABLE_NAME_SUFFIX}`
+      return process.env.THINGS_DB_TABLE_NAME
     case 'test':
       return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${DB_TABLE_NAME_SUFFIX}`
     default:
@@ -66,10 +58,10 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const consoleErrorOutput = (value: string | unknown, err: any | unknown) => {
+export const consoleErrorOutput = (lambdaFunctionName: string | unknown, functionName: string, err: any | unknown) => {
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line no-console
-    console.error(`${value} db write error`, err)
+    console.error(`${lambdaFunctionName}: ${functionName} - error`, err)
   }
 }
 
@@ -102,37 +94,36 @@ export const getItems = async (
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any | unknown) {
-    consoleErrorOutput(context.functionName, err)
+    consoleErrorOutput(context.functionName, 'getItems', err)
 
     return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }
 }
 
-export const getItemById = async (
+export const queryById = async (
   client: DynamoDBDocumentClient,
   id: string,
   context: Context
 ): Promise<ThingResponse | ResponseError> => {
   try {
-    const params: GetItemCommandInput = {
+    const params: QueryCommandInput = {
       TableName: getDbName(),
-      Key: marshall({ id }),
-      AttributesToGet: ['id', 'thingName', 'thingType', 'description'],
+      KeyConditionExpression: 'id = :id',
+      ExpressionAttributeValues: { ':id': id },
+      Select: 'SPECIFIC_ATTRIBUTES',
+      ProjectionExpression: 'id, thingName, thingType, description',
     }
 
-    // @ts-ignore
-    const result: GetItemCommandOutput = await client.send(new GetItemCommand(params))
+    const result: QueryCommandOutput = await client.send(new QueryCommand(params))
 
-    if (result.Item) {
-      const body = unmarshall(result.Item)
-
-      return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }
+    if (result.Items?.length) {
+      return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
     } else {
       return { statusCode: 404, message: 'missing thing' }
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any | unknown) {
-    consoleErrorOutput(context.functionName, err)
+    consoleErrorOutput(context.functionName, 'queryById', err)
 
     return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }
@@ -162,7 +153,7 @@ export const queryByThingName = async (
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any | unknown) {
-    consoleErrorOutput(context.functionName, err)
+    consoleErrorOutput(context.functionName, 'queryByThingName', err)
 
     return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }
@@ -192,7 +183,7 @@ export const queryByThingType = async (
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any | unknown) {
-    consoleErrorOutput(context.functionName, err)
+    consoleErrorOutput(context.functionName, 'queryByThingName', err)
 
     return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }

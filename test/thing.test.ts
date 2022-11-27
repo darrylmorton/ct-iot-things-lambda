@@ -128,12 +128,14 @@ describe('thing tests', function () {
     const thingId: string = createdThingBody?.id || ''
 
     const qsParams = { id: thingId }
-    const body = JSON.stringify({
-      id: thingId,
-      thingName: 'thingTwo',
-      thingType: thingTypeTwo,
-      description: 'thingTwo',
-    })
+    const body = JSON.stringify([
+      {
+        id: thingId,
+        thingName: 'thingTwo',
+        thingType: thingTypeTwo,
+        description: 'thingTwo',
+      },
+    ])
     const expectedResult: ThingResponse = {
       statusCode: 200,
       message: 'ok',
@@ -150,7 +152,7 @@ describe('thing tests', function () {
     const lambdaSpyResult = await lambdaSpy(event, context)
 
     assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertThingResponse(lambdaSpyResult, expectedResult)
+    assertThingsResponse(lambdaSpyResult, expectedResult)
   })
 
   it('read missing thing by id', async () => {

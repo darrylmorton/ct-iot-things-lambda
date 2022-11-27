@@ -44,7 +44,7 @@ exports.handler = function run(event, context) {
         return __generator(this, function (_d) {
             switch (_d.label) {
                 case 0:
-                    if (!(event.httpMethod.toUpperCase() === 'GET')) return [3 /*break*/, 2];
+                    if (!(event.requestContext.http.method.toUpperCase() === 'GET')) return [3 /*break*/, 2];
                     return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
                 case 1:
                     client = _d.sent();
@@ -52,7 +52,7 @@ exports.handler = function run(event, context) {
                         return [2 /*return*/, (0, appUtil_1.getItems)(client, context)];
                     }
                     else if ((_a = event.queryStringParameters) === null || _a === void 0 ? void 0 : _a.id) {
-                        return [2 /*return*/, (0, appUtil_1.getItemById)(client, event.queryStringParameters.id, context)];
+                        return [2 /*return*/, (0, appUtil_1.queryById)(client, event.queryStringParameters.id, context)];
                     }
                     else if ((_b = event.queryStringParameters) === null || _b === void 0 ? void 0 : _b.thingName) {
                         return [2 /*return*/, (0, appUtil_1.queryByThingName)(client, event.queryStringParameters.thingName, context)];

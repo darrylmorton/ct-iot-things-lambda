@@ -1,7 +1,6 @@
 import { CreateTableCommand, DeleteTableCommand, DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { expect } from 'chai'
 import { validate as uuidValidate, version as uuidVersion } from 'uuid'
-import { APIGatewayEventDefaultAuthorizerContext, APIGatewayEventRequestContextWithAuthorizer } from 'aws-lambda'
 import {
   APIGatewayProxyEventMultiValueQueryStringParameters,
   APIGatewayProxyEvent,
@@ -123,7 +122,37 @@ export const createEvent = (
   multiValueQueryStringParameters: APIGatewayProxyEventMultiValueQueryStringParameters,
   pathParameters: APIGatewayProxyEventPathParameters,
   queryStringParameters: APIGatewayProxyEventQueryStringParameters,
-  requestContext: APIGatewayEventRequestContextWithAuthorizer<APIGatewayEventDefaultAuthorizerContext>,
+  requestContext: {
+    resourceId: string
+    authorizer: undefined
+    resourcePath: string
+    httpMethod: string
+    path: string
+    accountId: string
+    protocol: string
+    stage: string
+    requestTimeEpoch: number
+    identity: {
+      cognitoIdentityPoolId: null
+      clientCert: null
+      cognitoIdentityId: null
+      apiKey: null
+      principalOrgId: null
+      cognitoAuthenticationType: null
+      userArn: null
+      apiKeyId: null
+      userAgent: null
+      accountId: null
+      caller: null
+      sourceIp: string
+      accessKey: null
+      cognitoAuthenticationProvider: null
+      user: null
+    }
+    requestId: string
+    http: { path: string; protocol: string; method: string; sourceIp: string; userAgent: string }
+    apiId: string
+  },
   resource: string,
   stageVariables: APIGatewayProxyEventStageVariables
 ): APIGatewayProxyEvent => {

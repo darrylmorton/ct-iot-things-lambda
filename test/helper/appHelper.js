@@ -114,18 +114,18 @@ var createContext = function (functionName) {
     };
 };
 exports.createContext = createContext;
-// const qsParamsToQs = (qsParams: Record<string, string>): string =>
-//   `?${Object.keys(qsParams)
-//     .map((key) => {
-//       return `${key}=${encodeURIComponent(qsParams[key])}`
-//     })
-//     .join('&')}`
-// // `?${new URLSearchParams(qsParams).toString()}`
 var createEventWrapper = function (body, httpMethod, qsParams) {
     return (0, thingHelper_1.createEvent)(body, { 'content-type': 'application/json' }, httpMethod, '/thing', {}, {}, {}, qsParams, {
+        httpMethod: httpMethod,
         apiId: '',
         authorizer: undefined,
-        httpMethod: httpMethod,
+        http: {
+            method: httpMethod,
+            path: '/favicon.ico',
+            protocol: 'HTTP/1.1',
+            sourceIp: '111.11.11.11',
+            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
+        },
         identity: {
             accessKey: null,
             accountId: null,
@@ -182,7 +182,7 @@ var createThing = function (client, thingName, thingType) { return __awaiter(voi
                 return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: thing }];
             case 3:
                 err_1 = _b.sent();
-                (0, appUtil_1.consoleErrorOutput)('create-thing-test-lambda', err_1);
+                (0, appUtil_1.consoleErrorOutput)('create-thing-test-lambda', 'createThing', err_1);
                 return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
             case 4: return [2 /*return*/];
         }

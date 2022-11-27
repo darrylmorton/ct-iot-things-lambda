@@ -22,7 +22,7 @@ export const getDbName = () => {
 
   switch (NODE_ENV) {
     case 'production':
-      return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${DB_TABLE_NAME_SUFFIX}`
+      return process.env.THINGS_DB_TABLE_NAME
     case 'test':
       return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${DB_TABLE_NAME_SUFFIX}`
     default:
@@ -67,10 +67,10 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const consoleErrorOutput = (value: string | unknown, err: any | unknown) => {
+export const consoleErrorOutput = (lambdaFunctionName: string | unknown, functionName: string, err: any | unknown) => {
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line no-console
-    console.error(`${value} db write error`, err)
+    console.error(`${lambdaFunctionName}: ${functionName} - error`, err)
   }
 }
 

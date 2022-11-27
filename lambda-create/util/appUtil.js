@@ -56,7 +56,7 @@ var getDbName = function () {
     var NODE_ENV = process.env.NODE_ENV;
     switch (NODE_ENV) {
         case 'production':
-            return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(DB_TABLE_NAME_SUFFIX);
+            return process.env.THINGS_DB_TABLE_NAME;
         case 'test':
             return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(DB_TABLE_NAME_SUFFIX);
         default:
@@ -109,10 +109,10 @@ var getDbDocumentClient = function () { return __awaiter(void 0, void 0, void 0,
 }); };
 exports.getDbDocumentClient = getDbDocumentClient;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-var consoleErrorOutput = function (value, err) {
+var consoleErrorOutput = function (lambdaFunctionName, functionName, err) {
     if (process.env.NODE_ENV !== 'test') {
         // eslint-disable-next-line no-console
-        console.error("".concat(value, " db write error"), err);
+        console.error("".concat(lambdaFunctionName, ": ").concat(functionName, " - error"), err);
     }
 };
 exports.consoleErrorOutput = consoleErrorOutput;

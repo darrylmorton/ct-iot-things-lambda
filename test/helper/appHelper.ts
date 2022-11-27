@@ -69,14 +69,6 @@ export const createContext = (functionName: string) => {
   }
 }
 
-// const qsParamsToQs = (qsParams: Record<string, string>): string =>
-//   `?${Object.keys(qsParams)
-//     .map((key) => {
-//       return `${key}=${encodeURIComponent(qsParams[key])}`
-//     })
-//     .join('&')}`
-// // `?${new URLSearchParams(qsParams).toString()}`
-
 export const createEventWrapper = (body: string | null, httpMethod: string, qsParams: Record<string, string>) => {
   return createEvent(
     body,
@@ -88,9 +80,17 @@ export const createEventWrapper = (body: string | null, httpMethod: string, qsPa
     {},
     qsParams,
     {
+      httpMethod,
       apiId: '',
       authorizer: undefined,
-      httpMethod,
+      http: {
+        method: httpMethod,
+        path: '/favicon.ico',
+        protocol: 'HTTP/1.1',
+        sourceIp: '111.11.11.11',
+        userAgent:
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
+      },
       identity: {
         accessKey: null,
         accountId: null,
@@ -144,7 +144,7 @@ export const createThing = async (client: DynamoDBDocumentClient, thingName: str
 
     return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: thing }
   } catch (err: any | unknown) {
-    consoleErrorOutput('create-thing-test-lambda', err)
+    consoleErrorOutput('create-thing-test-lambda', 'createThing', err)
 
     return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
   }

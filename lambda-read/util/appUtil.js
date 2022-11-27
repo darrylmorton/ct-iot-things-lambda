@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.queryByThingType = exports.queryByThingName = exports.getItemById = exports.getItems = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = void 0;
+exports.queryByThingType = exports.queryByThingName = exports.queryById = exports.getItems = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
@@ -46,7 +46,7 @@ var getDbName = function () {
     var NODE_ENV = process.env.NODE_ENV;
     switch (NODE_ENV) {
         case 'production':
-            return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(DB_TABLE_NAME_SUFFIX);
+            return process.env.THINGS_DB_TABLE_NAME;
         case 'test':
             return "".concat(DB_TABLE_NAME_PREFIX, "-").concat(NODE_ENV, "-").concat(DB_TABLE_NAME_SUFFIX);
         default:
@@ -101,10 +101,10 @@ var getDbDocumentClient = function () { return __awaiter(void 0, void 0, void 0,
 }); };
 exports.getDbDocumentClient = getDbDocumentClient;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-var consoleErrorOutput = function (value, err) {
+var consoleErrorOutput = function (lambdaFunctionName, functionName, err) {
     if (process.env.NODE_ENV !== 'test') {
         // eslint-disable-next-line no-console
-        console.error("".concat(value, " db write error"), err);
+        console.error("".concat(lambdaFunctionName, ": ").concat(functionName, " - error"), err);
     }
 };
 exports.consoleErrorOutput = consoleErrorOutput;
@@ -138,45 +138,46 @@ var getItems = function (client, context) { return __awaiter(void 0, void 0, voi
                 return [3 /*break*/, 3];
             case 2:
                 err_1 = _c.sent();
-                (0, exports.consoleErrorOutput)(context.functionName, err_1);
+                (0, exports.consoleErrorOutput)(context.functionName, 'getItems', err_1);
                 return [2 /*return*/, { statusCode: (_b = err_1.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
             case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.getItems = getItems;
-var getItemById = function (client, id, context) { return __awaiter(void 0, void 0, void 0, function () {
-    var params, result, body, err_2;
-    var _a;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+var queryById = function (client, id, context) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, result, err_2;
+    var _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0:
-                _b.trys.push([0, 2, , 3]);
+                _c.trys.push([0, 2, , 3]);
                 params = {
                     TableName: (0, exports.getDbName)(),
-                    Key: (0, util_dynamodb_1.marshall)({ id: id }),
-                    AttributesToGet: ['id', 'thingName', 'thingType', 'description']
+                    KeyConditionExpression: 'id = :id',
+                    ExpressionAttributeValues: { ':id': id },
+                    Select: 'SPECIFIC_ATTRIBUTES',
+                    ProjectionExpression: 'id, thingName, thingType, description'
                 };
-                return [4 /*yield*/, client.send(new client_dynamodb_1.GetItemCommand(params))];
+                return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
             case 1:
-                result = _b.sent();
-                if (result.Item) {
-                    body = (0, util_dynamodb_1.unmarshall)(result.Item);
-                    return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }];
+                result = _c.sent();
+                if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
+                    return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
                 }
                 else {
                     return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
                 }
                 return [3 /*break*/, 3];
             case 2:
-                err_2 = _b.sent();
-                (0, exports.consoleErrorOutput)(context.functionName, err_2);
-                return [2 /*return*/, { statusCode: (_a = err_2.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
+                err_2 = _c.sent();
+                (0, exports.consoleErrorOutput)(context.functionName, 'queryById', err_2);
+                return [2 /*return*/, { statusCode: (_b = err_2.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
             case 3: return [2 /*return*/];
         }
     });
 }); };
-exports.getItemById = getItemById;
+exports.queryById = queryById;
 var queryByThingName = function (client, thingName, context) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result, err_3;
     var _a, _b;
@@ -204,7 +205,7 @@ var queryByThingName = function (client, thingName, context) { return __awaiter(
                 return [3 /*break*/, 3];
             case 2:
                 err_3 = _c.sent();
-                (0, exports.consoleErrorOutput)(context.functionName, err_3);
+                (0, exports.consoleErrorOutput)(context.functionName, 'queryByThingName', err_3);
                 return [2 /*return*/, { statusCode: (_b = err_3.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
             case 3: return [2 /*return*/];
         }
@@ -238,7 +239,7 @@ var queryByThingType = function (client, thingType, context) { return __awaiter(
                 return [3 /*break*/, 3];
             case 2:
                 err_4 = _c.sent();
-                (0, exports.consoleErrorOutput)(context.functionName, err_4);
+                (0, exports.consoleErrorOutput)(context.functionName, 'queryByThingName', err_4);
                 return [2 /*return*/, { statusCode: (_b = err_4.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
             case 3: return [2 /*return*/];
         }
