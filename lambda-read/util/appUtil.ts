@@ -1,11 +1,14 @@
 import { DynamoDBClient, ScanCommand, ScanCommandInput, ScanCommandOutput } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
-import { ResponseError, ThingResponse } from '../../types'
 import { unmarshall } from '@aws-sdk/util-dynamodb'
 import { Context } from 'aws-lambda'
 
+import { ResponseError, ThingResponse } from '../../types'
+
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
+
+export const LAMBDA_PATH = '/thing'
 
 export const getDbName = () => {
   const NODE_ENV = process.env.NODE_ENV

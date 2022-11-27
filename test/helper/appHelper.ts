@@ -85,7 +85,7 @@ export const createEventWrapper = (body: string | null, httpMethod: string, qsPa
       authorizer: undefined,
       http: {
         method: httpMethod,
-        path: '/favicon.ico',
+        path: '/thing',
         protocol: 'HTTP/1.1',
         sourceIp: '111.11.11.11',
         userAgent:

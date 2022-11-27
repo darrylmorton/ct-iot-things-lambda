@@ -44,7 +44,7 @@ exports.handler = function run(event, context) {
         return __generator(this, function (_d) {
             switch (_d.label) {
                 case 0:
-                    if (!(event.requestContext.http.method.toUpperCase() === 'GET')) return [3 /*break*/, 2];
+                    if (!(event.requestContext.http.path === appUtil_1.LAMBDA_PATH && event.requestContext.http.method.toUpperCase() === 'GET')) return [3 /*break*/, 2];
                     return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
                 case 1:
                     client = _d.sent();

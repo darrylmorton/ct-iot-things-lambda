@@ -1,7 +1,14 @@
 import { APIGatewayProxyEvent, Context } from 'aws-lambda'
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
 
-import { getDbDocumentClient, getItems, queryById, queryByThingName, queryByThingType } from './util/appUtil'
+import {
+  getDbDocumentClient,
+  getItems,
+  queryById,
+  queryByThingName,
+  queryByThingType,
+  LAMBDA_PATH,
+} from './util/appUtil'
 import { ResponseError, ThingResponse } from '../types'
 
 exports.handler = async function run(
@@ -9,7 +16,7 @@ exports.handler = async function run(
   context: Context
 ): Promise<ThingResponse | ResponseError> {
   // @ts-ignore
-  if (event.requestContext.http.method.toUpperCase() === 'GET') {
+  if (event.requestContext.http.path === LAMBDA_PATH && event.requestContext.http.method.toUpperCase() === 'GET') {
     const client: DynamoDBDocumentClient = await getDbDocumentClient()
 
     if (!event.queryStringParameters || Object.keys(event.queryStringParameters).length === 0) {
