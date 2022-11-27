@@ -46,7 +46,14 @@ exports.handler = function run(event, context) {
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
-                    if (!(event.httpMethod.toUpperCase() === 'POST' && event.body)) return [3 /*break*/, 7];
+                    if (!
+                    // @ts-ignore
+                    (event.requestContext.http.path === appUtil_1.LAMBDA_PATH &&
+                        // @ts-ignore
+                        event.requestContext.http.method.toUpperCase() === 'POST' &&
+                        event.body)) 
+                    // @ts-ignore
+                    return [3 /*break*/, 7];
                     _c.label = 1;
                 case 1:
                     _c.trys.push([1, 6, , 7]);

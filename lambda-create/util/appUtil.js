@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.queryByThingName = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.createCurrentTime = void 0;
+exports.queryByThingName = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.createCurrentTime = exports.LAMBDA_PATH = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var dayjs = require("dayjs");
@@ -48,6 +48,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
 var DB_TABLE_NAME_SUFFIX = 'things';
+exports.LAMBDA_PATH = '/thing';
 var createCurrentTime = function () {
     return dayjs.tz(Date.now(), 'Europe/London').format('YYYY-MM-DDThh:mm:ss:SSS');
 };

@@ -13,6 +13,8 @@ dayjs.extend(timezone)
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
 
+export const LAMBDA_PATH = '/thing'
+
 export const createCurrentTime = (): string => {
   return dayjs.tz(Date.now(), 'Europe/London').format('YYYY-MM-DDThh:mm:ss:SSS')
 }

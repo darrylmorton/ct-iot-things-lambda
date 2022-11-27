@@ -3,10 +3,23 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda'
 import { PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 
 import { Thing } from '../types'
-import { consoleErrorOutput, createCurrentTime, getDbDocumentClient, getDbName, queryByThingName } from './util/appUtil'
+import {
+  consoleErrorOutput,
+  createCurrentTime,
+  getDbDocumentClient,
+  getDbName,
+  LAMBDA_PATH,
+  queryByThingName,
+} from './util/appUtil'
 
 exports.handler = async function run(event: APIGatewayProxyEvent, context: Context) {
-  if (event.httpMethod.toUpperCase() === 'POST' && event.body) {
+  if (
+    // @ts-ignore
+    event.requestContext.http.path === LAMBDA_PATH &&
+    // @ts-ignore
+    event.requestContext.http.method.toUpperCase() === 'POST' &&
+    event.body
+  ) {
     try {
       const body = JSON.parse(event.body)
 
