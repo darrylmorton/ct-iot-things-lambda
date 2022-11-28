@@ -111,11 +111,11 @@ var consoleErrorOutput = function (lambdaFunctionName, functionName, err) {
 exports.consoleErrorOutput = consoleErrorOutput;
 var getItems = function (client, context) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result, body, err_1;
-    var _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                _c.trys.push([0, 2, , 3]);
+                _b.trys.push([0, 2, , 3]);
                 params = {
                     TableName: (0, exports.getDbName)(),
                     Select: 'SPECIFIC_ATTRIBUTES',
@@ -123,8 +123,8 @@ var getItems = function (client, context) { return __awaiter(void 0, void 0, voi
                 };
                 return [4 /*yield*/, client.send(new client_dynamodb_1.ScanCommand(params))];
             case 1:
-                result = _c.sent();
-                if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
+                result = _b.sent();
+                if (result.Items) {
                     body = result.Items.reduce(function (acc, item) {
                         var unmarshalledItem = (0, util_dynamodb_1.unmarshall)(item);
                         // @ts-ignore
@@ -134,13 +134,13 @@ var getItems = function (client, context) { return __awaiter(void 0, void 0, voi
                     return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }];
                 }
                 else {
-                    return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
+                    return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify([]) }];
                 }
                 return [3 /*break*/, 3];
             case 2:
-                err_1 = _c.sent();
+                err_1 = _b.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'getItems', err_1);
-                return [2 /*return*/, { statusCode: (_b = err_1.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
+                return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
             case 3: return [2 /*return*/];
         }
     });

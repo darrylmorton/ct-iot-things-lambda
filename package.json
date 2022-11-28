@@ -7,8 +7,9 @@
     "lint": "eslint . --ext .ts",
     "depcheck": "depcheck",
     "test": "NODE_ENV=test AWS_ACCESS_KEY_ID=1 AWS_SECRET_ACCESS_KEY=2 AWS_REGION=localhost mocha -r ts-node/register --config ./test/mocharc.json ./test/**/*.test.ts",
-    "create:package": "zip -r ../ct-iot-serverless-infrastructure/create-thing-lambda-function.zip ./lambda-create",
-    "read:package": "zip -r ../ct-iot-serverless-infrastructure/read-thing-lambda-function.zip ./lambda-read"
+    "package:create": "zip -r ../ct-iot-serverless-infrastructure/create-thing-lambda-function.zip ./lambda-create",
+    "package:read": "zip -r ../ct-iot-serverless-infrastructure/read-thing-lambda-function.zip ./lambda-read",
+    "package:all": "npm run package:create && npm run package:read"
   },
   "engines": {
     "node": ">=16.15"
