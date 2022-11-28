@@ -82,7 +82,7 @@ export const getItems = async (
     // @ts-ignore
     const result: ScanCommandOutput = await client.send(new ScanCommand(params))
 
-    if (result.Items?.length) {
+    if (result.Items) {
       const body = result.Items.reduce((acc, item) => {
         const unmarshalledItem = unmarshall(item)
         // @ts-ignore
@@ -93,7 +93,7 @@ export const getItems = async (
 
       return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }
     } else {
-      return { statusCode: 404, message: 'missing thing' }
+      return { statusCode: 200, message: 'ok', body: JSON.stringify([]) }
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any | unknown) {
