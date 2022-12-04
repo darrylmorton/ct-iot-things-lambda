@@ -15,7 +15,7 @@ export const getDbName = () => {
 
   switch (NODE_ENV) {
     case 'production':
-      return process.env.THINGS_DB_TABLE_NAME
+      return process.env.DB_TABLE_NAME
     case 'test':
       return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${DB_TABLE_NAME_SUFFIX}`
     default:

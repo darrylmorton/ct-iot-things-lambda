@@ -2,8 +2,15 @@
 
 ## zip and move to ct-iot-serverless-infrastructure for deployment
 ```
-npm run package:create
-npm run package:read
+# development
+npm run dev:package-create
+npm run dev:package-read
 # or
-npm run package:all
+npm run dev:package-all
+
+# production
+npm run prod:package-create
+npm run prod:package-read
+# or
+npm run prod:package-all
 ```
