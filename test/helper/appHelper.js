@@ -160,7 +160,7 @@ var createThing = function (client, thingName, thingType) { return __awaiter(voi
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                currentDate = (0, appUtil_1.createCurrentTime)();
+                currentDate = new Date().toISOString();
                 thing = {
                     id: (0, uuid_1.v4)(),
                     thingName: thingName,

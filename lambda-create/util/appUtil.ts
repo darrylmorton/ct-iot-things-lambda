@@ -1,23 +1,12 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
-import * as dayjs from 'dayjs'
-import * as utc from 'dayjs/plugin/utc'
-import * as timezone from 'dayjs/plugin/timezone'
 
 import { ResponseError } from '../../types'
-// @ts-ignore
-dayjs.extend(utc)
-// @ts-ignore
-dayjs.extend(timezone)
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
 
 export const LAMBDA_PATH = '/thing'
-
-export const createCurrentTime = (): string => {
-  return dayjs.tz(Date.now(), 'Europe/London').format('YYYY-MM-DDThh:mm:ss:SSS')
-}
 
 export const getDbName = () => {
   const NODE_ENV = process.env.NODE_ENV

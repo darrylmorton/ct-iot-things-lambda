@@ -67,7 +67,7 @@ exports.handler = function run(event, context) {
                     _b = _c.sent(), statusCode = _b.statusCode, message = _b.message;
                     if (statusCode === 409)
                         return [2 /*return*/, { statusCode: statusCode, message: message }];
-                    currentDate = (0, appUtil_1.createCurrentTime)();
+                    currentDate = new Date().toISOString();
                     thing = {
                         id: (0, uuid_1.v4)(),
                         thingName: body.thingName,

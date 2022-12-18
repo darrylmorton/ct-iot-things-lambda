@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { createEvent, DB_NAME } from './thingHelper'
 import { Thing } from '../../types'
-import { consoleErrorOutput, createCurrentTime } from '../../lambda-create/util/appUtil'
+import { consoleErrorOutput } from '../../lambda-create/util/appUtil'
 
 export const getDbClient = async (): Promise<DynamoDBClient> => {
   if (process.env.NODE_ENV === 'test') {
@@ -123,7 +123,7 @@ export const createEventWrapper = (body: string | null, httpMethod: string, qsPa
 }
 
 export const createThing = async (client: DynamoDBDocumentClient, thingName: string, thingType: string) => {
-  const currentDate: string = createCurrentTime()
+  const currentDate: string = new Date().toISOString()
 
   const thing: Thing = {
     id: uuidv4(),

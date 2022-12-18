@@ -3,14 +3,7 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda'
 import { PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 
 import { Thing } from '../types'
-import {
-  consoleErrorOutput,
-  createCurrentTime,
-  getDbDocumentClient,
-  getDbName,
-  LAMBDA_PATH,
-  queryByThingName,
-} from './util/appUtil'
+import { consoleErrorOutput, getDbDocumentClient, getDbName, LAMBDA_PATH, queryByThingName } from './util/appUtil'
 
 exports.handler = async function run(event: APIGatewayProxyEvent, context: Context) {
   if (
@@ -29,7 +22,7 @@ exports.handler = async function run(event: APIGatewayProxyEvent, context: Conte
         const { statusCode, message } = await queryByThingName(client, body.thingName)
         if (statusCode === 409) return { statusCode, message }
 
-        const currentDate: string = createCurrentTime()
+        const currentDate: string = new Date().toISOString()
 
         const thing: Thing = {
           id: uuidv4(),

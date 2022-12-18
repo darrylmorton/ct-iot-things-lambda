@@ -10,15 +10,15 @@
     "dev:package-create": "zip -r ../ct-iot-serverless-infrastructure/terraform/development/create-thing-development-lambda-function.zip ./lambda-create",
     "dev:package-read": "zip -r ../ct-iot-serverless-infrastructure/terraform/development/read-thing-development-lambda-function.zip ./lambda-read",
     "dev:package-all": "npm run dev:package-create && npm run dev:package-read",
-    "prod:package-create": "zip -r ../ct-iot-serverless-infrastructure/create-thing-production-lambda-function.zip ./lambda-create",
-    "prod:package-read": "zip -r ../ct-iot-serverless-infrastructure/read-thing-production-lambda-function.zip ./lambda-read",
+    "stage:package-create": "zip -r ../ct-iot-serverless-infrastructure/terraform/staging/create-thing-staging-lambda-function.zip ./lambda-create",
+    "stage:package-read": "zip -r ../ct-iot-serverless-infrastructure/terraform/staging/read-thing-staging-lambda-function.zip ./lambda-read",
+    "stage:package-all": "npm run stage:package-create && npm run stage:package-read",
+    "prod:package-create": "zip -r ../ct-iot-serverless-infrastructure/terraform/production/create-thing-production-lambda-function.zip ./lambda-create",
+    "prod:package-read": "zip -r ../ct-iot-serverless-infrastructure/terraform/production/read-thing-production-lambda-function.zip ./lambda-read",
     "prod:package-all": "npm run prod:package-create && npm run prod:package-read"
   },
   "engines": {
     "node": ">=16.15"
-  },
-  "peerDependencies": {
-    "dayjs": "^1.11.6"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.150.0",
