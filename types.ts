@@ -5,8 +5,9 @@ export interface ThingEvent {
 }
 
 export interface SimpleThing {
-  thingName: string | number | undefined
-  thingType: string
+  thingName: string
+  deviceId: string
+  thingTypeId: string
   description: string
   updatedAt: string
   createdAt: string
@@ -24,7 +25,8 @@ export interface ResponseError {
 export type ResponseBody = {
   id: string
   thingName: string
-  thingType: string
+  deviceId: string
+  thingTypeId: string
   description: string
 }
 

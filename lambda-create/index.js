@@ -42,9 +42,9 @@ var appUtil_1 = require("./util/appUtil");
 exports.handler = function run(event, context) {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var body, client, _b, statusCode, message, currentDate, thing, params, result, err_1;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var body, client, _b, queryByThingNameStatusCode, queryByThingNameMessage, _c, queryByDeviceIdStatusCode, queryByDeviceIdMessage, currentDate, thing, params, result, err_1;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
                 case 0:
                     if (!
                     // @ts-ignore
@@ -53,25 +53,33 @@ exports.handler = function run(event, context) {
                         event.requestContext.http.method.toUpperCase() === 'POST' &&
                         event.body)) 
                     // @ts-ignore
-                    return [3 /*break*/, 7];
-                    _c.label = 1;
+                    return [3 /*break*/, 8];
+                    _d.label = 1;
                 case 1:
-                    _c.trys.push([1, 6, , 7]);
+                    _d.trys.push([1, 7, , 8]);
                     body = JSON.parse(event.body);
-                    if (!(body.thingName && body.thingType && body.description)) return [3 /*break*/, 5];
+                    if (!(body.thingName && body.deviceId && body.thingTypeId && body.description)) return [3 /*break*/, 6];
                     return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
                 case 2:
-                    client = _c.sent();
+                    client = _d.sent();
                     return [4 /*yield*/, (0, appUtil_1.queryByThingName)(client, body.thingName)];
                 case 3:
-                    _b = _c.sent(), statusCode = _b.statusCode, message = _b.message;
-                    if (statusCode === 409)
-                        return [2 /*return*/, { statusCode: statusCode, message: message }];
+                    _b = _d.sent(), queryByThingNameStatusCode = _b.statusCode, queryByThingNameMessage = _b.message;
+                    if (queryByThingNameStatusCode === 409) {
+                        return [2 /*return*/, { statusCode: queryByThingNameStatusCode, message: queryByThingNameMessage }];
+                    }
+                    return [4 /*yield*/, (0, appUtil_1.queryByDeviceId)(client, body.deviceId)];
+                case 4:
+                    _c = _d.sent(), queryByDeviceIdStatusCode = _c.statusCode, queryByDeviceIdMessage = _c.message;
+                    if (queryByDeviceIdStatusCode === 409) {
+                        return [2 /*return*/, { statusCode: queryByDeviceIdStatusCode, message: queryByDeviceIdMessage }];
+                    }
                     currentDate = new Date().toISOString();
                     thing = {
                         id: (0, uuid_1.v4)(),
                         thingName: body.thingName,
-                        thingType: body.thingType,
+                        deviceId: body.deviceId,
+                        thingTypeId: body.thingTypeId,
                         description: body.description,
                         updatedAt: currentDate,
                         createdAt: currentDate
@@ -81,17 +89,17 @@ exports.handler = function run(event, context) {
                         Item: thing
                     };
                     return [4 /*yield*/, client.send(new lib_dynamodb_1.PutCommand(params))];
-                case 4:
-                    result = _c.sent();
+                case 5:
+                    result = _d.sent();
                     return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(thing) }];
-                case 5: return [2 /*return*/, { statusCode: 400, message: 'invalid thing' }
+                case 6: return [2 /*return*/, { statusCode: 400, message: 'invalid thing' }
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ];
-                case 6:
-                    err_1 = _c.sent();
+                case 7:
+                    err_1 = _d.sent();
                     (0, appUtil_1.consoleErrorOutput)(context.functionName, 'handler.index', err_1);
                     return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
-                case 7: return [2 /*return*/, { statusCode: 400, message: 'invalid request' }];
+                case 8: return [2 /*return*/, { statusCode: 400, message: 'invalid request' }];
             }
         });
     });

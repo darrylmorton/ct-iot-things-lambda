@@ -76,7 +76,7 @@ export const getItems = async (
     const params: ScanCommandInput = {
       TableName: getDbName(),
       Select: 'SPECIFIC_ATTRIBUTES',
-      ProjectionExpression: 'id, thingName, thingType, description',
+      ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description',
     }
 
     // @ts-ignore
@@ -114,7 +114,7 @@ export const queryById = async (
       KeyConditionExpression: 'id = :id',
       ExpressionAttributeValues: { ':id': id },
       Select: 'SPECIFIC_ATTRIBUTES',
-      ProjectionExpression: 'id, thingName, thingType, description',
+      ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description',
     }
 
     const result: QueryCommandOutput = await client.send(new QueryCommand(params))
@@ -144,7 +144,7 @@ export const queryByThingName = async (
       KeyConditionExpression: 'thingName = :thingName',
       ExpressionAttributeValues: { ':thingName': thingName },
       Select: 'SPECIFIC_ATTRIBUTES',
-      ProjectionExpression: 'id, thingName, thingType, description',
+      ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description',
     }
 
     const result: QueryCommandOutput = await client.send(new QueryCommand(params))
@@ -162,19 +162,49 @@ export const queryByThingName = async (
   }
 }
 
-export const queryByThingType = async (
+export const queryByDeviceId = async (
   client: DynamoDBDocumentClient,
-  thingType: string,
+  deviceId: string,
   context: Context
 ): Promise<ThingResponse | ResponseError> => {
   try {
     const params: QueryCommandInput = {
       TableName: getDbName(),
-      IndexName: 'thingTypeIndex',
-      KeyConditionExpression: 'thingType = :thingType',
-      ExpressionAttributeValues: { ':thingType': thingType },
+      IndexName: 'deviceIdIndex',
+      KeyConditionExpression: 'deviceId = :deviceId',
+      ExpressionAttributeValues: { ':deviceId': deviceId },
       Select: 'SPECIFIC_ATTRIBUTES',
-      ProjectionExpression: 'id, thingName, thingType, description',
+      ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description',
+    }
+
+    const result: QueryCommandOutput = await client.send(new QueryCommand(params))
+
+    if (result.Items?.length) {
+      return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
+    } else {
+      return { statusCode: 404, message: 'missing thing' }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any | unknown) {
+    consoleErrorOutput(context.functionName, 'queryByDeviceId', err)
+
+    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
+  }
+}
+
+export const queryByThingTypeId = async (
+  client: DynamoDBDocumentClient,
+  thingTypeId: string,
+  context: Context
+): Promise<ThingResponse | ResponseError> => {
+  try {
+    const params: QueryCommandInput = {
+      TableName: getDbName(),
+      IndexName: 'thingTypeIdIndex',
+      KeyConditionExpression: 'thingTypeId = :thingTypeId',
+      ExpressionAttributeValues: { ':thingTypeId': thingTypeId },
+      Select: 'SPECIFIC_ATTRIBUTES',
+      ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description',
     }
 
     const result: QueryCommandOutput = await client.send(new QueryCommand(params))

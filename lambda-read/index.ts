@@ -6,8 +6,9 @@ import {
   getItems,
   queryById,
   queryByThingName,
-  queryByThingType,
   LAMBDA_PATH,
+  queryByDeviceId,
+  queryByThingTypeId,
 } from './util/appUtil'
 import { ResponseError, ThingResponse } from '../types'
 
@@ -25,8 +26,10 @@ exports.handler = async function run(
       return queryById(client, event.queryStringParameters.id, context)
     } else if (event.queryStringParameters?.thingName) {
       return queryByThingName(client, event.queryStringParameters.thingName, context)
-    } else if (event.queryStringParameters?.thingType) {
-      return queryByThingType(client, event.queryStringParameters.thingType, context)
+    } else if (event.queryStringParameters?.deviceId) {
+      return queryByDeviceId(client, event.queryStringParameters.deviceId, context)
+    } else if (event.queryStringParameters?.thingTypeId) {
+      return queryByThingTypeId(client, event.queryStringParameters.thingTypeId, context)
     }
 
     return { statusCode: 404, message: 'missing thing(s)' }

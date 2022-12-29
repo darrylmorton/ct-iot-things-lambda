@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.queryByThingType = exports.queryByThingName = exports.queryById = exports.getItems = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.LAMBDA_PATH = void 0;
+exports.queryByThingTypeId = exports.queryByDeviceId = exports.queryByThingName = exports.queryById = exports.getItems = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.LAMBDA_PATH = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
@@ -119,7 +119,7 @@ var getItems = function (client, context) { return __awaiter(void 0, void 0, voi
                 params = {
                     TableName: (0, exports.getDbName)(),
                     Select: 'SPECIFIC_ATTRIBUTES',
-                    ProjectionExpression: 'id, thingName, thingType, description'
+                    ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description'
                 };
                 return [4 /*yield*/, client.send(new client_dynamodb_1.ScanCommand(params))];
             case 1:
@@ -158,7 +158,7 @@ var queryById = function (client, id, context) { return __awaiter(void 0, void 0
                     KeyConditionExpression: 'id = :id',
                     ExpressionAttributeValues: { ':id': id },
                     Select: 'SPECIFIC_ATTRIBUTES',
-                    ProjectionExpression: 'id, thingName, thingType, description'
+                    ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description'
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
             case 1:
@@ -192,7 +192,7 @@ var queryByThingName = function (client, thingName, context) { return __awaiter(
                     KeyConditionExpression: 'thingName = :thingName',
                     ExpressionAttributeValues: { ':thingName': thingName },
                     Select: 'SPECIFIC_ATTRIBUTES',
-                    ProjectionExpression: 'id, thingName, thingType, description'
+                    ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description'
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
             case 1:
@@ -213,7 +213,7 @@ var queryByThingName = function (client, thingName, context) { return __awaiter(
     });
 }); };
 exports.queryByThingName = queryByThingName;
-var queryByThingType = function (client, thingType, context) { return __awaiter(void 0, void 0, void 0, function () {
+var queryByDeviceId = function (client, deviceId, context) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result, err_4;
     var _a, _b;
     return __generator(this, function (_c) {
@@ -222,11 +222,11 @@ var queryByThingType = function (client, thingType, context) { return __awaiter(
                 _c.trys.push([0, 2, , 3]);
                 params = {
                     TableName: (0, exports.getDbName)(),
-                    IndexName: 'thingTypeIndex',
-                    KeyConditionExpression: 'thingType = :thingType',
-                    ExpressionAttributeValues: { ':thingType': thingType },
+                    IndexName: 'deviceIdIndex',
+                    KeyConditionExpression: 'deviceId = :deviceId',
+                    ExpressionAttributeValues: { ':deviceId': deviceId },
                     Select: 'SPECIFIC_ATTRIBUTES',
-                    ProjectionExpression: 'id, thingName, thingType, description'
+                    ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description'
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
             case 1:
@@ -240,10 +240,44 @@ var queryByThingType = function (client, thingType, context) { return __awaiter(
                 return [3 /*break*/, 3];
             case 2:
                 err_4 = _c.sent();
-                (0, exports.consoleErrorOutput)(context.functionName, 'queryByThingName', err_4);
+                (0, exports.consoleErrorOutput)(context.functionName, 'queryByDeviceId', err_4);
                 return [2 /*return*/, { statusCode: (_b = err_4.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
             case 3: return [2 /*return*/];
         }
     });
 }); };
-exports.queryByThingType = queryByThingType;
+exports.queryByDeviceId = queryByDeviceId;
+var queryByThingTypeId = function (client, thingTypeId, context) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, result, err_5;
+    var _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                _c.trys.push([0, 2, , 3]);
+                params = {
+                    TableName: (0, exports.getDbName)(),
+                    IndexName: 'thingTypeIdIndex',
+                    KeyConditionExpression: 'thingTypeId = :thingTypeId',
+                    ExpressionAttributeValues: { ':thingTypeId': thingTypeId },
+                    Select: 'SPECIFIC_ATTRIBUTES',
+                    ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description'
+                };
+                return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
+            case 1:
+                result = _c.sent();
+                if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
+                    return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
+                }
+                else {
+                    return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                err_5 = _c.sent();
+                (0, exports.consoleErrorOutput)(context.functionName, 'queryByThingName', err_5);
+                return [2 /*return*/, { statusCode: (_b = err_5.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.queryByThingTypeId = queryByThingTypeId;

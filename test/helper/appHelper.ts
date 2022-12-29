@@ -122,13 +122,19 @@ export const createEventWrapper = (body: string | null, httpMethod: string, qsPa
   )
 }
 
-export const createThing = async (client: DynamoDBDocumentClient, thingName: string, thingType: string) => {
+export const createThing = async (
+  client: DynamoDBDocumentClient,
+  thingName: string,
+  deviceId: string,
+  thingTypeId: string
+) => {
   const currentDate: string = new Date().toISOString()
 
   const thing: Thing = {
     id: uuidv4(),
     thingName,
-    thingType,
+    deviceId,
+    thingTypeId,
     description: thingName,
     updatedAt: currentDate,
     createdAt: currentDate,

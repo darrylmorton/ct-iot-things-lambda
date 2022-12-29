@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.queryByThingName = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.LAMBDA_PATH = void 0;
+exports.queryByDeviceId = exports.queryByThingName = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.LAMBDA_PATH = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
@@ -118,7 +118,7 @@ var queryByThingName = function (client, thingName) { return __awaiter(void 0, v
                     KeyConditionExpression: 'thingName = :thingName',
                     ExpressionAttributeValues: { ':thingName': thingName },
                     Select: 'SPECIFIC_ATTRIBUTES',
-                    ProjectionExpression: 'id, thingName, thingType, description'
+                    ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description'
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
             case 1:
@@ -134,3 +134,32 @@ var queryByThingName = function (client, thingName) { return __awaiter(void 0, v
     });
 }); };
 exports.queryByThingName = queryByThingName;
+// TODO can this be a single query with an OR on 2 different GSIs???
+var queryByDeviceId = function (client, deviceId) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, result;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                params = {
+                    TableName: (0, exports.getDbName)(),
+                    IndexName: 'deviceIdIndex',
+                    KeyConditionExpression: 'deviceId = :deviceId',
+                    ExpressionAttributeValues: { ':deviceId': deviceId },
+                    Select: 'SPECIFIC_ATTRIBUTES',
+                    ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description'
+                };
+                return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
+            case 1:
+                result = _b.sent();
+                if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
+                    return [2 /*return*/, { statusCode: 409, message: 'thing exists' }];
+                }
+                else {
+                    return [2 /*return*/, { statusCode: 404, message: 'thing missing' }];
+                }
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.queryByDeviceId = queryByDeviceId;

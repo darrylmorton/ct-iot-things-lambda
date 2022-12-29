@@ -60,7 +60,11 @@ var createTable = function (dbClient) { return __awaiter(void 0, void 0, void 0,
                     AttributeType: 'S'
                 },
                 {
-                    AttributeName: 'thingType',
+                    AttributeName: 'deviceId',
+                    AttributeType: 'S'
+                },
+                {
+                    AttributeName: 'thingTypeId',
                     AttributeType: 'S'
                 },
                 {
@@ -104,10 +108,30 @@ var createTable = function (dbClient) { return __awaiter(void 0, void 0, void 0,
                     }
                 },
                 {
-                    IndexName: 'thingTypeIndex',
+                    IndexName: 'deviceIdIndex',
                     KeySchema: [
                         {
-                            AttributeName: 'thingType',
+                            AttributeName: 'deviceId',
+                            KeyType: 'HASH'
+                        },
+                        {
+                            AttributeName: 'updatedAt',
+                            KeyType: 'RANGE'
+                        },
+                    ],
+                    Projection: {
+                        ProjectionType: 'ALL'
+                    },
+                    ProvisionedThroughput: {
+                        ReadCapacityUnits: 1,
+                        WriteCapacityUnits: 1
+                    }
+                },
+                {
+                    IndexName: 'thingTypeIdIndex',
+                    KeySchema: [
+                        {
+                            AttributeName: 'thingTypeId',
                             KeyType: 'HASH'
                         },
                         {
@@ -180,7 +204,8 @@ exports.assertThingsResponse = assertThingsResponse;
 var assertThingResponseBody = function (actualResultBody, expectedResultBody) {
     (0, chai_1.expect)((0, exports.uuidValidateV4)(actualResultBody.id)).to.deep.equal(true);
     (0, chai_1.expect)(actualResultBody.thingName).to.equal(expectedResultBody.thingName);
-    (0, chai_1.expect)(actualResultBody.thingType).to.equal(expectedResultBody.thingType);
+    (0, chai_1.expect)(actualResultBody.deviceId).to.equal(expectedResultBody.deviceId);
+    (0, chai_1.expect)(actualResultBody.thingTypeId).to.equal(expectedResultBody.thingTypeId);
     (0, chai_1.expect)(actualResultBody.description).to.equal(expectedResultBody.description);
 };
 exports.assertThingResponseBody = assertThingResponseBody;

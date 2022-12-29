@@ -3,7 +3,14 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda'
 import { PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 
 import { Thing } from '../types'
-import { consoleErrorOutput, getDbDocumentClient, getDbName, LAMBDA_PATH, queryByThingName } from './util/appUtil'
+import {
+  consoleErrorOutput,
+  getDbDocumentClient,
+  getDbName,
+  LAMBDA_PATH,
+  queryByDeviceId,
+  queryByThingName,
+} from './util/appUtil'
 
 exports.handler = async function run(event: APIGatewayProxyEvent, context: Context) {
   if (
@@ -16,18 +23,32 @@ exports.handler = async function run(event: APIGatewayProxyEvent, context: Conte
     try {
       const body = JSON.parse(event.body)
 
-      if (body.thingName && body.thingType && body.description) {
+      if (body.thingName && body.deviceId && body.thingTypeId && body.description) {
         const client = await getDbDocumentClient()
 
-        const { statusCode, message } = await queryByThingName(client, body.thingName)
-        if (statusCode === 409) return { statusCode, message }
+        const { statusCode: queryByThingNameStatusCode, message: queryByThingNameMessage } = await queryByThingName(
+          client,
+          body.thingName
+        )
+        if (queryByThingNameStatusCode === 409) {
+          return { statusCode: queryByThingNameStatusCode, message: queryByThingNameMessage }
+        }
+
+        const { statusCode: queryByDeviceIdStatusCode, message: queryByDeviceIdMessage } = await queryByDeviceId(
+          client,
+          body.deviceId
+        )
+        if (queryByDeviceIdStatusCode === 409) {
+          return { statusCode: queryByDeviceIdStatusCode, message: queryByDeviceIdMessage }
+        }
 
         const currentDate: string = new Date().toISOString()
 
         const thing: Thing = {
           id: uuidv4(),
           thingName: body.thingName,
-          thingType: body.thingType,
+          deviceId: body.deviceId,
+          thingTypeId: body.thingTypeId,
           description: body.description,
           updatedAt: currentDate,
           createdAt: currentDate,

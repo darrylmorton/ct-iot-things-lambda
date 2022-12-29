@@ -32,7 +32,11 @@ export const createTable = async (dbClient: DynamoDBClient) => {
         AttributeType: 'S',
       },
       {
-        AttributeName: 'thingType',
+        AttributeName: 'deviceId',
+        AttributeType: 'S',
+      },
+      {
+        AttributeName: 'thingTypeId',
         AttributeType: 'S',
       },
       {
@@ -76,10 +80,30 @@ export const createTable = async (dbClient: DynamoDBClient) => {
         },
       },
       {
-        IndexName: 'thingTypeIndex',
+        IndexName: 'deviceIdIndex',
         KeySchema: [
           {
-            AttributeName: 'thingType',
+            AttributeName: 'deviceId',
+            KeyType: 'HASH',
+          },
+          {
+            AttributeName: 'updatedAt',
+            KeyType: 'RANGE',
+          },
+        ],
+        Projection: {
+          ProjectionType: 'ALL',
+        },
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 1,
+          WriteCapacityUnits: 1,
+        },
+      },
+      {
+        IndexName: 'thingTypeIdIndex',
+        KeySchema: [
+          {
+            AttributeName: 'thingTypeId',
             KeyType: 'HASH',
           },
           {
@@ -199,7 +223,8 @@ export const assertThingsResponse = (actualResult: ThingResponse, expectedResult
 export const assertThingResponseBody = (actualResultBody: ResponseBody, expectedResultBody: ResponseBody) => {
   expect(uuidValidateV4(actualResultBody.id)).to.deep.equal(true)
   expect(actualResultBody.thingName).to.equal(expectedResultBody.thingName)
-  expect(actualResultBody.thingType).to.equal(expectedResultBody.thingType)
+  expect(actualResultBody.deviceId).to.equal(expectedResultBody.deviceId)
+  expect(actualResultBody.thingTypeId).to.equal(expectedResultBody.thingTypeId)
   expect(actualResultBody.description).to.equal(expectedResultBody.description)
 }
 

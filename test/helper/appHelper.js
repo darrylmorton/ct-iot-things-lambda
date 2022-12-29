@@ -154,7 +154,7 @@ var createEventWrapper = function (body, httpMethod, qsParams) {
     }, '', {});
 };
 exports.createEventWrapper = createEventWrapper;
-var createThing = function (client, thingName, thingType) { return __awaiter(void 0, void 0, void 0, function () {
+var createThing = function (client, thingName, deviceId, thingTypeId) { return __awaiter(void 0, void 0, void 0, function () {
     var currentDate, thing, params, result, err_1;
     var _a;
     return __generator(this, function (_b) {
@@ -164,7 +164,8 @@ var createThing = function (client, thingName, thingType) { return __awaiter(voi
                 thing = {
                     id: (0, uuid_1.v4)(),
                     thingName: thingName,
-                    thingType: thingType,
+                    deviceId: deviceId,
+                    thingTypeId: thingTypeId,
                     description: thingName,
                     updatedAt: currentDate,
                     createdAt: currentDate

@@ -5,6 +5,7 @@ import * as sinon from 'sinon'
 import { assert } from 'chai'
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
+import { Context } from 'aws-lambda'
 
 import * as createThingLambda from '../lambda-create/index'
 import * as readThingLambda from '../lambda-read/index'
@@ -20,252 +21,326 @@ import { ThingResponse } from '../types'
 
 describe('thing tests', function () {
   let client: DynamoDBDocumentClient
+  let context: Context
 
-  let thingName: string
-  let thingType: string
+  let thingZeroId: string, thingOneId: string
+  let thingZeroName: string, thingOneName: string, thingTwoName: string
+  let deviceZeroId: string, deviceOneId: string, deviceTwoId: string
+  let thingTypeZeroId: string, thingTypeOneId: string, thingTypeTwoId: string
+
+  before(async function () {
+    deviceZeroId = 'esp-aaaaaa000000'
+    deviceOneId = 'esp-bbbbbb111111'
+    deviceTwoId = 'esp-abcdef123456'
+
+    thingZeroName = 'thingZero'
+    thingOneName = 'thingOne'
+    thingTwoName = 'thingTwo'
+
+    thingTypeZeroId = uuidv4()
+    thingTypeOneId = uuidv4()
+    thingTypeTwoId = uuidv4()
+  })
 
   before(async function () {
     client = await getDbDocumentClient()
-    thingName = 'thingOne'
-    thingType = uuidv4()
-
     await createTable(client)
+
+    const { body: createdThingBody } = await createThing(client, thingOneName, deviceOneId, thingTypeOneId)
+    thingOneId = createdThingBody?.id || ''
+
+    context = createContext('read-thing-test-lambda')
   })
 
   after(async function () {
     await dropTable(client)
   })
 
-  it('read things', async () => {
-    const thingTypeTwo = uuidv4()
-    const { body: createdThingBody } = await createThing(client, 'thingTwoB', thingTypeTwo)
-    const thingId: string = createdThingBody?.id || ''
+  describe('read things', function () {
+    it('read things', async () => {
+      const body = JSON.stringify([
+        {
+          id: thingOneId,
+          thingName: thingOneName,
+          deviceId: deviceOneId,
+          thingTypeId: thingTypeOneId,
+          description: thingOneName,
+        },
+      ])
+      const expectedResult: ThingResponse = {
+        statusCode: 200,
+        message: 'ok',
+        body,
+      }
 
-    const body = JSON.stringify([
-      {
-        id: thingId,
-        thingName: 'thingTwoB',
-        thingType: thingTypeTwo,
-        description: 'thingTwoB',
-      },
-    ])
-    const expectedResult: ThingResponse = {
-      statusCode: 200,
-      message: 'ok',
-      body,
-    }
+      const event = createEventWrapper(null, 'GET', {})
 
-    const event = createEventWrapper(null, 'GET', {})
-    const context = createContext('read-thing-test-lambda')
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        readThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
 
-    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
-      // @ts-ignore
-      readThingLambda.handler
-    )
-    const lambdaSpyResult = await lambdaSpy(event, context)
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertThingsResponse(lambdaSpyResult, expectedResult)
+    })
 
-    assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertThingsResponse(lambdaSpyResult, expectedResult)
+    it('read thing by id', async () => {
+      const qsParams = { id: thingOneId }
+      const body = JSON.stringify([
+        {
+          id: thingOneId,
+          thingName: thingOneName,
+          deviceId: deviceOneId,
+          thingTypeId: thingTypeOneId,
+          description: thingOneName,
+        },
+      ])
+      const expectedResult: ThingResponse = {
+        statusCode: 200,
+        message: 'ok',
+        body,
+      }
+
+      const event = createEventWrapper(null, 'GET', qsParams)
+
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        readThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
+
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertThingsResponse(lambdaSpyResult, expectedResult)
+    })
+
+    it('read missing thing by id', async () => {
+      const qsParams = { id: thingZeroId }
+
+      const event = createEventWrapper(null, 'GET', qsParams)
+
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        readThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
+
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertResponseError(lambdaSpyResult, 404, 'missing thing(s)')
+    })
+
+    it('read thing by name', async () => {
+      const qsParams = { thingName: thingOneName }
+      const body = JSON.stringify([
+        {
+          id: thingOneId,
+          thingName: thingOneName,
+          deviceId: deviceOneId,
+          thingTypeId: thingTypeOneId,
+          description: thingOneName,
+        },
+      ])
+      const expectedResult: ThingResponse = {
+        statusCode: 200,
+        message: 'ok',
+        body,
+      }
+
+      const event = createEventWrapper(null, 'GET', qsParams)
+
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        readThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
+
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertThingsResponse(lambdaSpyResult, expectedResult)
+    })
+
+    it('read missing thing by name', async () => {
+      const qsParams = { thingName: thingZeroName }
+
+      const event = createEventWrapper(null, 'GET', qsParams)
+
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        readThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
+
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertResponseError(lambdaSpyResult, 404, 'missing thing')
+    })
+
+    it('read thing by device id', async () => {
+      const qsParams = { deviceId: deviceOneId }
+      const body = JSON.stringify([
+        {
+          id: thingOneId,
+          thingName: thingOneName,
+          deviceId: deviceOneId,
+          thingTypeId: thingTypeOneId,
+          description: thingOneName,
+        },
+      ])
+      const expectedResult: ThingResponse = {
+        statusCode: 200,
+        message: 'ok',
+        body,
+      }
+
+      const event = createEventWrapper(null, 'GET', qsParams)
+
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        readThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
+
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertThingsResponse(lambdaSpyResult, expectedResult)
+    })
+
+    it('read missing thing by device id', async () => {
+      const qsParams = { deviceId: deviceZeroId }
+
+      const event = createEventWrapper(null, 'GET', qsParams)
+
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        readThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
+
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertResponseError(lambdaSpyResult, 404, 'missing thing')
+    })
+
+    it('read thing by type', async () => {
+      const qsParams = { thingTypeId: thingTypeOneId }
+      const body = JSON.stringify([
+        {
+          id: thingOneId,
+          thingName: thingOneName,
+          deviceId: deviceOneId,
+          thingTypeId: thingTypeOneId,
+          description: thingOneName,
+        },
+      ])
+      const expectedResult: ThingResponse = {
+        statusCode: 200,
+        message: 'ok',
+        body,
+      }
+
+      const event = createEventWrapper(null, 'GET', qsParams)
+
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        readThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
+
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertThingsResponse(lambdaSpyResult, expectedResult)
+    })
+
+    it('read missing thing by type', async () => {
+      const qsParams = { thingTypeId: thingTypeZeroId }
+
+      const event = createEventWrapper(null, 'GET', qsParams)
+
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        readThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
+
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertResponseError(lambdaSpyResult, 404, 'missing thing')
+    })
   })
 
-  it('create thing', async () => {
-    const body = JSON.stringify({ thingName, thingType, description: thingName })
-    const expectedResult: ThingResponse = {
-      statusCode: 200,
-      message: 'ok',
-      body,
-    }
+  describe('create things', function () {
+    it('create bad thing', async () => {
+      const body = JSON.stringify({ thingName: '', deviceId: '', thingTypeId: '', description: '' })
 
-    const event = createEventWrapper(body, 'POST', {})
-    const context = createContext('create-thing-test-lambda')
+      const event = createEventWrapper(body, 'POST', {})
 
-    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
-      // @ts-ignore
-      createThingLambda.handler
-    )
-    const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        createThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
 
-    assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertThingResponse(lambdaSpyResult, expectedResult)
-  })
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertResponseError(lambdaSpyResult, 400, 'invalid thing')
+    })
 
-  it('create existing thing', async () => {
-    const body = JSON.stringify({ thingName, thingType, description: thingName })
+    it('create thing', async () => {
+      const body = JSON.stringify({
+        thingName: thingTwoName,
+        deviceId: deviceTwoId,
+        thingTypeId: thingTypeTwoId,
+        description: thingTwoName,
+      })
+      const expectedResult: ThingResponse = {
+        statusCode: 200,
+        message: 'ok',
+        body,
+      }
 
-    const event = createEventWrapper(body, 'POST', {})
-    const context = createContext('create-thing-test-lambda')
+      const event = createEventWrapper(body, 'POST', {})
 
-    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
-      // @ts-ignore
-      createThingLambda.handler
-    )
-    const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        createThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
 
-    assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertResponseError(lambdaSpyResult, 409, 'thing exists')
-  })
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertThingResponse(lambdaSpyResult, expectedResult)
+    })
 
-  it('create bad thing', async () => {
-    const body = JSON.stringify({ thingName: 'thingOne', thingType: '', description: '' })
+    it('create existing thing', async () => {
+      const body = JSON.stringify({
+        thingName: thingTwoName,
+        deviceId: deviceTwoId,
+        thingTypeId: thingTypeTwoId,
+        description: thingTwoName,
+      })
 
-    const event = createEventWrapper(body, 'POST', {})
-    const context = createContext('create-thing-test-lambda')
+      const event = createEventWrapper(body, 'POST', {})
 
-    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
-      // @ts-ignore
-      createThingLambda.handler
-    )
-    const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        createThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
 
-    assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertResponseError(lambdaSpyResult, 400, 'invalid thing')
-  })
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertResponseError(lambdaSpyResult, 409, 'thing exists')
+    })
 
-  it('read thing by id', async () => {
-    const thingTypeTwo = uuidv4()
-    const { body: createdThingBody } = await createThing(client, 'thingTwo', thingTypeTwo)
-    const thingId: string = createdThingBody?.id || ''
+    it('create existing thing', async () => {
+      const body = JSON.stringify({
+        thingName: thingZeroName,
+        deviceId: deviceTwoId,
+        thingTypeId: thingTypeTwoId,
+        description: thingTwoName,
+      })
 
-    const qsParams = { id: thingId }
-    const body = JSON.stringify([
-      {
-        id: thingId,
-        thingName: 'thingTwo',
-        thingType: thingTypeTwo,
-        description: 'thingTwo',
-      },
-    ])
-    const expectedResult: ThingResponse = {
-      statusCode: 200,
-      message: 'ok',
-      body,
-    }
+      const event = createEventWrapper(body, 'POST', {})
 
-    const event = createEventWrapper(null, 'GET', qsParams)
-    const context = createContext('read-thing-test-lambda')
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        createThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
 
-    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
-      // @ts-ignore
-      readThingLambda.handler
-    )
-    const lambdaSpyResult = await lambdaSpy(event, context)
-
-    assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertThingsResponse(lambdaSpyResult, expectedResult)
-  })
-
-  it('read missing thing by id', async () => {
-    const thingId = '43961f67-fcfe-4515-8b5d-f59ccca6c041'
-    const qsParams = { id: thingId }
-
-    const event = createEventWrapper(null, 'GET', qsParams)
-    const context = createContext('read-thing-test-lambda')
-
-    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
-      // @ts-ignore
-      readThingLambda.handler
-    )
-    const lambdaSpyResult = await lambdaSpy(event, context)
-
-    assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertResponseError(lambdaSpyResult, 404, 'missing thing')
-  })
-
-  it('read thing by name', async () => {
-    const thingTypeTwo = uuidv4()
-    const { body: createdThingBody } = await createThing(client, 'thingThree', thingTypeTwo)
-    const thingId: string = createdThingBody?.id || ''
-
-    const qsParams = { thingName: 'thingThree' }
-    const body = JSON.stringify([
-      {
-        id: thingId,
-        thingName: 'thingThree',
-        thingType: thingTypeTwo,
-        description: 'thingThree',
-      },
-    ])
-    const expectedResult: ThingResponse = {
-      statusCode: 200,
-      message: 'ok',
-      body,
-    }
-
-    const event = createEventWrapper(null, 'GET', qsParams)
-    const context = createContext('read-thing-test-lambda')
-
-    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
-      // @ts-ignore
-      readThingLambda.handler
-    )
-    const lambdaSpyResult = await lambdaSpy(event, context)
-
-    assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertThingsResponse(lambdaSpyResult, expectedResult)
-  })
-
-  it('read missing thing by name', async () => {
-    const qsParams = { thingName: 'thingZero' }
-
-    const event = createEventWrapper(null, 'GET', qsParams)
-    const context = createContext('read-thing-test-lambda')
-
-    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
-      // @ts-ignore
-      readThingLambda.handler
-    )
-    const lambdaSpyResult = await lambdaSpy(event, context)
-
-    assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertResponseError(lambdaSpyResult, 404, 'missing thing')
-  })
-
-  it('read thing by type', async () => {
-    const thingTypeTwo = uuidv4()
-    const { body: createdThingBody } = await createThing(client, thingName, thingTypeTwo)
-    const thingId: string = createdThingBody?.id || ''
-
-    const qsParams = { thingType: thingTypeTwo }
-    const body = JSON.stringify([
-      {
-        id: thingId,
-        thingName,
-        thingType: thingTypeTwo,
-        description: 'thingOne',
-      },
-    ])
-    const expectedResult: ThingResponse = {
-      statusCode: 200,
-      message: 'ok',
-      body,
-    }
-
-    const event = createEventWrapper(null, 'GET', qsParams)
-    const context = createContext('read-thing-test-lambda')
-
-    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
-      // @ts-ignore
-      readThingLambda.handler
-    )
-    const lambdaSpyResult = await lambdaSpy(event, context)
-
-    assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertThingsResponse(lambdaSpyResult, expectedResult)
-  })
-
-  it('read missing thing by type', async () => {
-    const qsParams = { thingType: 'thingTypeZero' }
-
-    const event = createEventWrapper(null, 'GET', qsParams)
-    const context = createContext('read-thing-test-lambda')
-
-    const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
-      // @ts-ignore
-      readThingLambda.handler
-    )
-    const lambdaSpyResult = await lambdaSpy(event, context)
-
-    assert(lambdaSpy.withArgs(event, context).calledOnce)
-    assertResponseError(lambdaSpyResult, 404, 'missing thing')
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertResponseError(lambdaSpyResult, 409, 'thing exists')
+    })
   })
 })

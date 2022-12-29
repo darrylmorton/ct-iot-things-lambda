@@ -1,7 +1,8 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
 
-import { ResponseError } from '../../types'
+import { ResponseError, ThingResponse } from '../../types'
+import { Context } from 'aws-lambda'
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
@@ -72,7 +73,27 @@ export const queryByThingName = async (client: DynamoDBDocumentClient, thingName
     KeyConditionExpression: 'thingName = :thingName',
     ExpressionAttributeValues: { ':thingName': thingName },
     Select: 'SPECIFIC_ATTRIBUTES',
-    ProjectionExpression: 'id, thingName, thingType, description',
+    ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description',
+  }
+
+  const result: QueryCommandOutput = await client.send(new QueryCommand(params))
+
+  if (result.Items?.length) {
+    return { statusCode: 409, message: 'thing exists' }
+  } else {
+    return { statusCode: 404, message: 'thing missing' }
+  }
+}
+
+// TODO can this be a single query with an OR on 2 different GSIs???
+export const queryByDeviceId = async (client: DynamoDBDocumentClient, deviceId: string): Promise<ResponseError> => {
+  const params: QueryCommandInput = {
+    TableName: getDbName(),
+    IndexName: 'deviceIdIndex',
+    KeyConditionExpression: 'deviceId = :deviceId',
+    ExpressionAttributeValues: { ':deviceId': deviceId },
+    Select: 'SPECIFIC_ATTRIBUTES',
+    ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description',
   }
 
   const result: QueryCommandOutput = await client.send(new QueryCommand(params))
