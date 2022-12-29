@@ -2,9 +2,9 @@ import { DynamoDBClient, ScanCommand, ScanCommandInput, ScanCommandOutput } from
 import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
 import { unmarshall } from '@aws-sdk/util-dynamodb'
 import { Context } from 'aws-lambda'
+import { validate as uuidValidate, version as uuidVersion } from 'uuid'
 
 import { ResponseError, ThingResponse } from '../../types'
-import { validate as uuidValidate, version as uuidVersion } from 'uuid'
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
