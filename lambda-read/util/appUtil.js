@@ -36,10 +36,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.queryByThingTypeId = exports.queryByDeviceId = exports.queryByThingName = exports.queryById = exports.getItems = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.LAMBDA_PATH = void 0;
+exports.queryByThingTypeId = exports.queryByDeviceId = exports.queryByThingName = exports.queryById = exports.getItems = exports.uuidValidateV4 = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.LAMBDA_PATH = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
+var uuid_1 = require("uuid");
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
 var DB_TABLE_NAME_SUFFIX = 'things';
 exports.LAMBDA_PATH = '/thing';
@@ -109,6 +110,10 @@ var consoleErrorOutput = function (lambdaFunctionName, functionName, err) {
     }
 };
 exports.consoleErrorOutput = consoleErrorOutput;
+var uuidValidateV4 = function (uuid) {
+    return (0, uuid_1.validate)(uuid) && (0, uuid_1.version)(uuid) === 4;
+};
+exports.uuidValidateV4 = uuidValidateV4;
 var getItems = function (client, context) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result, body, err_1;
     var _a;
@@ -152,7 +157,12 @@ var queryById = function (client, id, context) { return __awaiter(void 0, void 0
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                _c.trys.push([0, 2, , 3]);
+                if (!(0, exports.uuidValidateV4)(id)) {
+                    return [2 /*return*/, { statusCode: 400, message: 'invalid uuid' }];
+                }
+                _c.label = 1;
+            case 1:
+                _c.trys.push([1, 3, , 4]);
                 params = {
                     TableName: (0, exports.getDbName)(),
                     KeyConditionExpression: 'id = :id',
@@ -161,7 +171,7 @@ var queryById = function (client, id, context) { return __awaiter(void 0, void 0
                     ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description'
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
-            case 1:
+            case 2:
                 result = _c.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
                     return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
@@ -169,12 +179,12 @@ var queryById = function (client, id, context) { return __awaiter(void 0, void 0
                 else {
                     return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
                 }
-                return [3 /*break*/, 3];
-            case 2:
+                return [3 /*break*/, 4];
+            case 3:
                 err_2 = _c.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'queryById', err_2);
                 return [2 /*return*/, { statusCode: (_b = err_2.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
-            case 3: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
@@ -219,7 +229,12 @@ var queryByDeviceId = function (client, deviceId, context) { return __awaiter(vo
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                _c.trys.push([0, 2, , 3]);
+                if (!deviceId) {
+                    return [2 /*return*/, { statusCode: 400, message: 'invalid deviceId' }];
+                }
+                _c.label = 1;
+            case 1:
+                _c.trys.push([1, 3, , 4]);
                 params = {
                     TableName: (0, exports.getDbName)(),
                     IndexName: 'deviceIdIndex',
@@ -229,7 +244,7 @@ var queryByDeviceId = function (client, deviceId, context) { return __awaiter(vo
                     ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description'
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
-            case 1:
+            case 2:
                 result = _c.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
                     return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
@@ -237,12 +252,12 @@ var queryByDeviceId = function (client, deviceId, context) { return __awaiter(vo
                 else {
                     return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
                 }
-                return [3 /*break*/, 3];
-            case 2:
+                return [3 /*break*/, 4];
+            case 3:
                 err_4 = _c.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'queryByDeviceId', err_4);
                 return [2 /*return*/, { statusCode: (_b = err_4.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
-            case 3: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
@@ -253,7 +268,12 @@ var queryByThingTypeId = function (client, thingTypeId, context) { return __awai
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                _c.trys.push([0, 2, , 3]);
+                if (!(0, exports.uuidValidateV4)(thingTypeId)) {
+                    return [2 /*return*/, { statusCode: 400, message: 'invalid uuid' }];
+                }
+                _c.label = 1;
+            case 1:
+                _c.trys.push([1, 3, , 4]);
                 params = {
                     TableName: (0, exports.getDbName)(),
                     IndexName: 'thingTypeIdIndex',
@@ -263,7 +283,7 @@ var queryByThingTypeId = function (client, thingTypeId, context) { return __awai
                     ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description'
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
-            case 1:
+            case 2:
                 result = _c.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
                     return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
@@ -271,12 +291,12 @@ var queryByThingTypeId = function (client, thingTypeId, context) { return __awai
                 else {
                     return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
                 }
-                return [3 /*break*/, 3];
-            case 2:
+                return [3 /*break*/, 4];
+            case 3:
                 err_5 = _c.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'queryByThingName', err_5);
                 return [2 /*return*/, { statusCode: (_b = err_5.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
-            case 3: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); };

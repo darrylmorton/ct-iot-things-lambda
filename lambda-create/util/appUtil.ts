@@ -1,8 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
 
-import { ResponseError, ThingResponse } from '../../types'
-import { Context } from 'aws-lambda'
+import { ResponseError } from '../../types'
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
@@ -85,7 +84,6 @@ export const queryByThingName = async (client: DynamoDBDocumentClient, thingName
   }
 }
 
-// TODO can this be a single query with an OR on 2 different GSIs???
 export const queryByDeviceId = async (client: DynamoDBDocumentClient, deviceId: string): Promise<ResponseError> => {
   const params: QueryCommandInput = {
     TableName: getDbName(),

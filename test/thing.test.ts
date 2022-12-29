@@ -19,7 +19,7 @@ import {
 } from './helper/thingHelper'
 import { ThingResponse } from '../types'
 
-describe('thing tests', function () {
+describe('thing tests', () => {
   let client: DynamoDBDocumentClient
   let context: Context
 
@@ -28,7 +28,7 @@ describe('thing tests', function () {
   let deviceZeroId: string, deviceOneId: string, deviceTwoId: string
   let thingTypeZeroId: string, thingTypeOneId: string, thingTypeTwoId: string
 
-  before(async function () {
+  before(async () => {
     deviceZeroId = 'esp-aaaaaa000000'
     deviceOneId = 'esp-bbbbbb111111'
     deviceTwoId = 'esp-abcdef123456'
@@ -42,7 +42,7 @@ describe('thing tests', function () {
     thingTypeTwoId = uuidv4()
   })
 
-  before(async function () {
+  before(async () => {
     client = await getDbDocumentClient()
     await createTable(client)
 
@@ -52,11 +52,11 @@ describe('thing tests', function () {
     context = createContext('read-thing-test-lambda')
   })
 
-  after(async function () {
+  after(async () => {
     await dropTable(client)
   })
 
-  describe('read things', function () {
+  describe('read things', () => {
     it('read things', async () => {
       const body = JSON.stringify([
         {
@@ -83,6 +83,21 @@ describe('thing tests', function () {
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertThingsResponse(lambdaSpyResult, expectedResult)
+    })
+
+    it('read thing by id', async () => {
+      const qsParams = { id: 'ABC' }
+
+      const event = createEventWrapper(null, 'GET', qsParams)
+
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        readThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
+
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertResponseError(lambdaSpyResult, 400, 'invalid uuid')
     })
 
     it('read thing by id', async () => {
@@ -218,6 +233,21 @@ describe('thing tests', function () {
     })
 
     it('read thing by type', async () => {
+      const qsParams = { thingTypeId: 'ABC' }
+
+      const event = createEventWrapper(null, 'GET', qsParams)
+
+      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+        // @ts-ignore
+        readThingLambda.handler
+      )
+      const lambdaSpyResult = await lambdaSpy(event, context)
+
+      assert(lambdaSpy.withArgs(event, context).calledOnce)
+      assertResponseError(lambdaSpyResult, 400, 'invalid uuid')
+    })
+
+    it('read thing by type', async () => {
       const qsParams = { thingTypeId: thingTypeOneId }
       const body = JSON.stringify([
         {
@@ -262,7 +292,7 @@ describe('thing tests', function () {
     })
   })
 
-  describe('create things', function () {
+  describe('create things', () => {
     it('create bad thing', async () => {
       const body = JSON.stringify({ thingName: '', deviceId: '', thingTypeId: '', description: '' })
 

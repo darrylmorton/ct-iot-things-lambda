@@ -36,14 +36,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.assertResponseError = exports.assertThingResponseBody = exports.assertThingsResponse = exports.assertThingResponse = exports.createEvent = exports.dropTable = exports.createTable = exports.DB_NAME = exports.uuidValidateV4 = void 0;
+exports.assertResponseError = exports.assertThingResponseBody = exports.assertThingsResponse = exports.assertThingResponse = exports.createEvent = exports.dropTable = exports.createTable = exports.DB_NAME = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var chai_1 = require("chai");
-var uuid_1 = require("uuid");
-var uuidValidateV4 = function (uuid) {
-    return (0, uuid_1.validate)(uuid) && (0, uuid_1.version)(uuid) === 4;
-};
-exports.uuidValidateV4 = uuidValidateV4;
+var appUtil_1 = require("../../lambda-read/util/appUtil");
 exports.DB_NAME = 'ct-iot-test-things';
 var createTable = function (dbClient) { return __awaiter(void 0, void 0, void 0, function () {
     var input, command;
@@ -202,7 +198,7 @@ var assertThingsResponse = function (actualResult, expectedResult) {
 };
 exports.assertThingsResponse = assertThingsResponse;
 var assertThingResponseBody = function (actualResultBody, expectedResultBody) {
-    (0, chai_1.expect)((0, exports.uuidValidateV4)(actualResultBody.id)).to.deep.equal(true);
+    (0, chai_1.expect)((0, appUtil_1.uuidValidateV4)(actualResultBody.id)).to.deep.equal(true);
     (0, chai_1.expect)(actualResultBody.thingName).to.equal(expectedResultBody.thingName);
     (0, chai_1.expect)(actualResultBody.deviceId).to.equal(expectedResultBody.deviceId);
     (0, chai_1.expect)(actualResultBody.thingTypeId).to.equal(expectedResultBody.thingTypeId);

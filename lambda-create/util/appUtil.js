@@ -134,7 +134,6 @@ var queryByThingName = function (client, thingName) { return __awaiter(void 0, v
     });
 }); };
 exports.queryByThingName = queryByThingName;
-// TODO can this be a single query with an OR on 2 different GSIs???
 var queryByDeviceId = function (client, deviceId) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result;
     var _a;

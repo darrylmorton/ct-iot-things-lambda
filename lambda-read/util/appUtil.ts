@@ -4,6 +4,7 @@ import { unmarshall } from '@aws-sdk/util-dynamodb'
 import { Context } from 'aws-lambda'
 
 import { ResponseError, ThingResponse } from '../../types'
+import { validate as uuidValidate, version as uuidVersion } from 'uuid'
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
@@ -68,6 +69,10 @@ export const consoleErrorOutput = (lambdaFunctionName: string | unknown, functio
   }
 }
 
+export const uuidValidateV4 = (uuid: string) => {
+  return uuidValidate(uuid) && uuidVersion(uuid) === 4
+}
+
 export const getItems = async (
   client: DynamoDBDocumentClient,
   context: Context
@@ -108,6 +113,10 @@ export const queryById = async (
   id: string,
   context: Context
 ): Promise<ThingResponse | ResponseError> => {
+  if (!uuidValidateV4(id)) {
+    return { statusCode: 400, message: 'invalid uuid' }
+  }
+
   try {
     const params: QueryCommandInput = {
       TableName: getDbName(),
@@ -167,6 +176,10 @@ export const queryByDeviceId = async (
   deviceId: string,
   context: Context
 ): Promise<ThingResponse | ResponseError> => {
+  if (!deviceId) {
+    return { statusCode: 400, message: 'invalid deviceId' }
+  }
+
   try {
     const params: QueryCommandInput = {
       TableName: getDbName(),
@@ -197,6 +210,10 @@ export const queryByThingTypeId = async (
   thingTypeId: string,
   context: Context
 ): Promise<ThingResponse | ResponseError> => {
+  if (!uuidValidateV4(thingTypeId)) {
+    return { statusCode: 400, message: 'invalid uuid' }
+  }
+
   try {
     const params: QueryCommandInput = {
       TableName: getDbName(),

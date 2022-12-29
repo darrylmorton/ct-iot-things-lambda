@@ -1,6 +1,5 @@
 import { CreateTableCommand, DeleteTableCommand, DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { expect } from 'chai'
-import { validate as uuidValidate, version as uuidVersion } from 'uuid'
 import {
   APIGatewayProxyEventMultiValueQueryStringParameters,
   APIGatewayProxyEvent,
@@ -12,10 +11,7 @@ import {
 } from 'aws-lambda/trigger/api-gateway-proxy'
 
 import { ThingResponse, ResponseBody, ResponseError } from '../../types'
-
-export const uuidValidateV4 = (uuid: string) => {
-  return uuidValidate(uuid) && uuidVersion(uuid) === 4
-}
+import { uuidValidateV4 } from '../../lambda-read/util/appUtil'
 
 export const DB_NAME = 'ct-iot-test-things'
 

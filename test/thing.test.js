@@ -52,58 +52,51 @@ var thingHelper_1 = require("./helper/thingHelper");
     var thingZeroName, thingOneName, thingTwoName;
     var deviceZeroId, deviceOneId, deviceTwoId;
     var thingTypeZeroId, thingTypeOneId, thingTypeTwoId;
-    (0, mocha_1.before)(function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                deviceZeroId = 'esp-aaaaaa000000';
-                deviceOneId = 'esp-bbbbbb111111';
-                deviceTwoId = 'esp-abcdef123456';
-                thingZeroName = 'thingZero';
-                thingOneName = 'thingOne';
-                thingTwoName = 'thingTwo';
-                thingTypeZeroId = (0, uuid_1.v4)();
-                thingTypeOneId = (0, uuid_1.v4)();
-                thingTypeTwoId = (0, uuid_1.v4)();
-                return [2 /*return*/];
-            });
+    (0, mocha_1.before)(function () { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            deviceZeroId = 'esp-aaaaaa000000';
+            deviceOneId = 'esp-bbbbbb111111';
+            deviceTwoId = 'esp-abcdef123456';
+            thingZeroName = 'thingZero';
+            thingOneName = 'thingOne';
+            thingTwoName = 'thingTwo';
+            thingTypeZeroId = (0, uuid_1.v4)();
+            thingTypeOneId = (0, uuid_1.v4)();
+            thingTypeTwoId = (0, uuid_1.v4)();
+            return [2 /*return*/];
         });
-    });
-    (0, mocha_1.before)(function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var createdThingBody;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, appHelper_1.getDbDocumentClient)()];
-                    case 1:
-                        client = _a.sent();
-                        return [4 /*yield*/, (0, thingHelper_1.createTable)(client)];
-                    case 2:
-                        _a.sent();
-                        return [4 /*yield*/, (0, appHelper_1.createThing)(client, thingOneName, deviceOneId, thingTypeOneId)];
-                    case 3:
-                        createdThingBody = (_a.sent()).body;
-                        thingOneId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
-                        context = (0, appHelper_1.createContext)('read-thing-test-lambda');
-                        return [2 /*return*/];
-                }
-            });
+    }); });
+    (0, mocha_1.before)(function () { return __awaiter(void 0, void 0, void 0, function () {
+        var createdThingBody;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, (0, appHelper_1.getDbDocumentClient)()];
+                case 1:
+                    client = _a.sent();
+                    return [4 /*yield*/, (0, thingHelper_1.createTable)(client)];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, (0, appHelper_1.createThing)(client, thingOneName, deviceOneId, thingTypeOneId)];
+                case 3:
+                    createdThingBody = (_a.sent()).body;
+                    thingOneId = (createdThingBody === null || createdThingBody === void 0 ? void 0 : createdThingBody.id) || '';
+                    context = (0, appHelper_1.createContext)('read-thing-test-lambda');
+                    return [2 /*return*/];
+            }
         });
-    });
-    (0, mocha_1.after)(function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, thingHelper_1.dropTable)(client)];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/];
-                }
-            });
+    }); });
+    (0, mocha_1.after)(function () { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, (0, thingHelper_1.dropTable)(client)];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
         });
-    });
+    }); });
     (0, mocha_1.describe)('read things', function () {
-        var _this = this;
-        (0, mocha_1.it)('read things', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('read things', function () { return __awaiter(void 0, void 0, void 0, function () {
             var body, expectedResult, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -135,7 +128,26 @@ var thingHelper_1 = require("./helper/thingHelper");
                 }
             });
         }); });
-        (0, mocha_1.it)('read thing by id', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('read thing by id', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var qsParams, event, lambdaSpy, lambdaSpyResult;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        qsParams = { id: 'ABC' };
+                        event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
+                        lambdaSpy = sinon.spy(
+                        // @ts-ignore
+                        readThingLambda.handler);
+                        return [4 /*yield*/, lambdaSpy(event, context)];
+                    case 1:
+                        lambdaSpyResult = _a.sent();
+                        (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400, 'invalid uuid');
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        (0, mocha_1.it)('read thing by id', function () { return __awaiter(void 0, void 0, void 0, function () {
             var qsParams, body, expectedResult, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -168,7 +180,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 }
             });
         }); });
-        (0, mocha_1.it)('read missing thing by id', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('read missing thing by id', function () { return __awaiter(void 0, void 0, void 0, function () {
             var qsParams, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -187,7 +199,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 }
             });
         }); });
-        (0, mocha_1.it)('read thing by name', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('read thing by name', function () { return __awaiter(void 0, void 0, void 0, function () {
             var qsParams, body, expectedResult, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -220,7 +232,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 }
             });
         }); });
-        (0, mocha_1.it)('read missing thing by name', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('read missing thing by name', function () { return __awaiter(void 0, void 0, void 0, function () {
             var qsParams, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -239,7 +251,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 }
             });
         }); });
-        (0, mocha_1.it)('read thing by device id', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('read thing by device id', function () { return __awaiter(void 0, void 0, void 0, function () {
             var qsParams, body, expectedResult, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -272,7 +284,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 }
             });
         }); });
-        (0, mocha_1.it)('read missing thing by device id', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('read missing thing by device id', function () { return __awaiter(void 0, void 0, void 0, function () {
             var qsParams, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -291,7 +303,26 @@ var thingHelper_1 = require("./helper/thingHelper");
                 }
             });
         }); });
-        (0, mocha_1.it)('read thing by type', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('read thing by type', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var qsParams, event, lambdaSpy, lambdaSpyResult;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        qsParams = { thingTypeId: 'ABC' };
+                        event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
+                        lambdaSpy = sinon.spy(
+                        // @ts-ignore
+                        readThingLambda.handler);
+                        return [4 /*yield*/, lambdaSpy(event, context)];
+                    case 1:
+                        lambdaSpyResult = _a.sent();
+                        (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400, 'invalid uuid');
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        (0, mocha_1.it)('read thing by type', function () { return __awaiter(void 0, void 0, void 0, function () {
             var qsParams, body, expectedResult, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -324,7 +355,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 }
             });
         }); });
-        (0, mocha_1.it)('read missing thing by type', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('read missing thing by type', function () { return __awaiter(void 0, void 0, void 0, function () {
             var qsParams, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -345,8 +376,7 @@ var thingHelper_1 = require("./helper/thingHelper");
         }); });
     });
     (0, mocha_1.describe)('create things', function () {
-        var _this = this;
-        (0, mocha_1.it)('create bad thing', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('create bad thing', function () { return __awaiter(void 0, void 0, void 0, function () {
             var body, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -365,7 +395,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 }
             });
         }); });
-        (0, mocha_1.it)('create thing', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('create thing', function () { return __awaiter(void 0, void 0, void 0, function () {
             var body, expectedResult, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -394,7 +424,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 }
             });
         }); });
-        (0, mocha_1.it)('create existing thing', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('create existing thing', function () { return __awaiter(void 0, void 0, void 0, function () {
             var body, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -418,7 +448,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                 }
             });
         }); });
-        (0, mocha_1.it)('create existing thing', function () { return __awaiter(_this, void 0, void 0, function () {
+        (0, mocha_1.it)('create existing thing', function () { return __awaiter(void 0, void 0, void 0, function () {
             var body, event, lambdaSpy, lambdaSpyResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
