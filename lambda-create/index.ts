@@ -2,44 +2,34 @@ import { v4 as uuidv4 } from 'uuid'
 import { APIGatewayProxyEvent, Context } from 'aws-lambda'
 import { PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 
-import { Thing } from '../types'
-import {
-  consoleErrorOutput,
-  getDbDocumentClient,
-  getDbName,
-  LAMBDA_PATH,
-  queryByDeviceId,
-  queryByThingName,
-} from './util/appUtil'
+import { ResponseError, Thing, ThingResponse } from '../types'
+import { consoleErrorOutput, getDbDocumentClient, getDbName, queryByDeviceId, queryByThingName } from './util/appUtil'
 
-exports.handler = async function run(event: APIGatewayProxyEvent, context: Context) {
-  if (
-    // @ts-ignore
-    event.requestContext.http.path === LAMBDA_PATH &&
-    // @ts-ignore
-    event.requestContext.http.method.toUpperCase() === 'POST' &&
-    event.body
-  ) {
+export const handler = async function run(
+  event: APIGatewayProxyEvent,
+  context: Context
+): Promise<ThingResponse | ResponseError> {
+  if (event.body) {
     try {
       const body = JSON.parse(event.body)
 
       if (body.thingName && body.deviceId && body.thingTypeId && body.description) {
         const client = await getDbDocumentClient()
 
-        const { statusCode: queryByThingNameStatusCode, message: queryByThingNameMessage } = await queryByThingName(
-          client,
-          body.thingName
-        )
+        const { statusCode: queryByThingNameStatusCode } = await queryByThingName(client, body.thingName)
         if (queryByThingNameStatusCode === 409) {
-          return { statusCode: queryByThingNameStatusCode, message: queryByThingNameMessage }
+          return {
+            headers: { 'Content-Type': 'application/json' },
+            statusCode: queryByThingNameStatusCode,
+          }
         }
 
-        const { statusCode: queryByDeviceIdStatusCode, message: queryByDeviceIdMessage } = await queryByDeviceId(
-          client,
-          body.deviceId
-        )
+        const { statusCode: queryByDeviceIdStatusCode } = await queryByDeviceId(client, body.deviceId)
         if (queryByDeviceIdStatusCode === 409) {
-          return { statusCode: queryByDeviceIdStatusCode, message: queryByDeviceIdMessage }
+          return {
+            headers: { 'Content-Type': 'application/json' },
+            statusCode: queryByDeviceIdStatusCode,
+          }
         }
 
         const currentDate: string = new Date().toISOString()
@@ -61,18 +51,29 @@ exports.handler = async function run(event: APIGatewayProxyEvent, context: Conte
 
         const result: PutCommandOutput = await client.send(new PutCommand(params))
 
-        return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(thing) }
+        return {
+          headers: { 'Content-Type': 'application/json' },
+          statusCode: result.$metadata.httpStatusCode,
+          body: JSON.stringify(thing),
+        }
       }
 
-      return { statusCode: 400, message: 'invalid thing' }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any | unknown) {
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: 400,
+      }
+    } catch (err: unknown) {
       consoleErrorOutput(context.functionName, 'handler.index', err)
 
-      return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: 500,
+      }
     }
   }
 
-  return { statusCode: 400, message: 'invalid request' }
+  return {
+    headers: { 'Content-Type': 'application/json' },
+    statusCode: 400,
+  }
 }

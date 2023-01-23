@@ -194,7 +194,7 @@ export const createEvent = (
 
 export const assertThingResponse = (actualResult: ThingResponse, expectedResult: ThingResponse) => {
   expect(actualResult.statusCode).to.equal(expectedResult.statusCode)
-  expect(actualResult.message).to.equal(expectedResult.message)
+  expect(actualResult.headers).to.deep.equal(expectedResult.headers)
 
   const actualResultBody: ResponseBody = JSON.parse(actualResult.body)
   const expectedResultBody: ResponseBody = JSON.parse(expectedResult.body)
@@ -204,7 +204,7 @@ export const assertThingResponse = (actualResult: ThingResponse, expectedResult:
 
 export const assertThingsResponse = (actualResult: ThingResponse, expectedResult: ThingResponse) => {
   expect(actualResult.statusCode).to.equal(expectedResult.statusCode)
-  expect(actualResult.message).to.equal(expectedResult.message)
+  expect(actualResult.headers).to.deep.equal(expectedResult.headers)
 
   const actualResultBody: ResponseBody[] = JSON.parse(actualResult.body)
   const expectedResultBody: ResponseBody[] = JSON.parse(expectedResult.body)
@@ -224,7 +224,7 @@ export const assertThingResponseBody = (actualResultBody: ResponseBody, expected
   expect(actualResultBody.description).to.equal(expectedResultBody.description)
 }
 
-export const assertResponseError = (actualResult: ResponseError, statusCode: number, message: string) => {
+export const assertResponseError = (actualResult: ResponseError, statusCode: number) => {
   expect(actualResult.statusCode).to.equal(statusCode)
-  expect(actualResult.message).to.equal(message)
+  expect(actualResult.headers).to.deep.equal({ 'Content-Type': 'application/json' })
 }

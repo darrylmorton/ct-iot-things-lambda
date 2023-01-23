@@ -6,8 +6,6 @@ import { ResponseError } from '../../types'
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
 
-export const LAMBDA_PATH = '/thing'
-
 export const getDbName = () => {
   const NODE_ENV = process.env.NODE_ENV
 
@@ -29,7 +27,6 @@ const getDbClient = async (): Promise<DynamoDBClient> => {
         accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
         secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
       },
-      tls: false,
       endpoint: 'http://localhost:8000',
     })
   } else {
@@ -78,9 +75,15 @@ export const queryByThingName = async (client: DynamoDBDocumentClient, thingName
   const result: QueryCommandOutput = await client.send(new QueryCommand(params))
 
   if (result.Items?.length) {
-    return { statusCode: 409, message: 'thing exists' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 409,
+    }
   } else {
-    return { statusCode: 404, message: 'thing missing' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 404,
+    }
   }
 }
 
@@ -97,8 +100,14 @@ export const queryByDeviceId = async (client: DynamoDBDocumentClient, deviceId: 
   const result: QueryCommandOutput = await client.send(new QueryCommand(params))
 
   if (result.Items?.length) {
-    return { statusCode: 409, message: 'thing exists' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 409,
+    }
   } else {
-    return { statusCode: 404, message: 'thing missing' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 404,
+    }
   }
 }

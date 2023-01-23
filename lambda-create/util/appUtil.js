@@ -36,12 +36,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.queryByDeviceId = exports.queryByThingName = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.LAMBDA_PATH = void 0;
+exports.queryByDeviceId = exports.queryByThingName = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
 var DB_TABLE_NAME_SUFFIX = 'things';
-exports.LAMBDA_PATH = '/thing';
 var getDbName = function () {
     var NODE_ENV = process.env.NODE_ENV;
     switch (NODE_ENV) {
@@ -63,7 +62,6 @@ var getDbClient = function () { return __awaiter(void 0, void 0, void 0, functio
                         accessKeyId: "".concat(process.env.AWS_ACCESS_KEY_ID),
                         secretAccessKey: "".concat(process.env.AWS_SECRET_ACCESS_KEY)
                     },
-                    tls: false,
                     endpoint: 'http://localhost:8000'
                 })];
         }
@@ -124,10 +122,16 @@ var queryByThingName = function (client, thingName) { return __awaiter(void 0, v
             case 1:
                 result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
-                    return [2 /*return*/, { statusCode: 409, message: 'thing exists' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 409
+                        }];
                 }
                 else {
-                    return [2 /*return*/, { statusCode: 404, message: 'thing missing' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 404
+                        }];
                 }
                 return [2 /*return*/];
         }
@@ -152,10 +156,16 @@ var queryByDeviceId = function (client, deviceId) { return __awaiter(void 0, voi
             case 1:
                 result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
-                    return [2 /*return*/, { statusCode: 409, message: 'thing exists' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 409
+                        }];
                 }
                 else {
-                    return [2 /*return*/, { statusCode: 404, message: 'thing missing' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 404
+                        }];
                 }
                 return [2 /*return*/];
         }

@@ -36,16 +36,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+exports.handler = void 0;
 var appUtil_1 = require("./util/appUtil");
-exports.handler = function run(event, context) {
+var handler = function run(event, context) {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function () {
         var client;
         return __generator(this, function (_e) {
             switch (_e.label) {
-                case 0:
-                    if (!(event.requestContext.http.path === appUtil_1.LAMBDA_PATH && event.requestContext.http.method.toUpperCase() === 'GET')) return [3 /*break*/, 2];
-                    return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
+                case 0: return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
                 case 1:
                     client = _e.sent();
                     if (!event.queryStringParameters || Object.keys(event.queryStringParameters).length === 0) {
@@ -63,9 +62,12 @@ exports.handler = function run(event, context) {
                     else if ((_d = event.queryStringParameters) === null || _d === void 0 ? void 0 : _d.thingTypeId) {
                         return [2 /*return*/, (0, appUtil_1.queryByThingTypeId)(client, event.queryStringParameters.thingTypeId, context)];
                     }
-                    return [2 /*return*/, { statusCode: 404, message: 'missing thing(s)' }];
-                case 2: return [2 /*return*/, { statusCode: 400, message: 'invalid request' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 400
+                        }];
             }
         });
     });
 };
+exports.handler = handler;

@@ -18,8 +18,8 @@ export interface Thing extends SimpleThing {
 }
 
 export interface ResponseError {
-  statusCode: number
-  message: string
+  headers: Record<string, string>
+  statusCode: number | undefined
 }
 
 export type ResponseBody = {

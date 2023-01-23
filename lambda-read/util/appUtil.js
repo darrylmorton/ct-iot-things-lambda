@@ -36,14 +36,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.queryByThingTypeId = exports.queryByDeviceId = exports.queryByThingName = exports.queryById = exports.getItems = exports.uuidValidateV4 = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.LAMBDA_PATH = void 0;
+exports.queryByThingTypeId = exports.queryByDeviceId = exports.queryByThingName = exports.queryById = exports.getItems = exports.uuidValidateV4 = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
 var uuid_1 = require("uuid");
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
 var DB_TABLE_NAME_SUFFIX = 'things';
-exports.LAMBDA_PATH = '/thing';
 var getDbName = function () {
     var NODE_ENV = process.env.NODE_ENV;
     switch (NODE_ENV) {
@@ -65,7 +64,6 @@ var getDbClient = function () { return __awaiter(void 0, void 0, void 0, functio
                         accessKeyId: "".concat(process.env.AWS_ACCESS_KEY_ID),
                         secretAccessKey: "".concat(process.env.AWS_SECRET_ACCESS_KEY)
                     },
-                    tls: false,
                     endpoint: 'http://localhost:8000'
                 })];
         }
@@ -95,9 +93,7 @@ var getDbDocumentClient = function () { return __awaiter(void 0, void 0, void 0,
                 translateConfig = { marshallOptions: marshallOptions, unmarshallOptions: unmarshallOptions };
                 _b = (_a = lib_dynamodb_1.DynamoDBDocumentClient).from;
                 return [4 /*yield*/, getDbClient()];
-            case 1: 
-            // @ts-ignore
-            return [2 /*return*/, _b.apply(_a, [_c.sent(), translateConfig])];
+            case 1: return [2 /*return*/, _b.apply(_a, [_c.sent(), translateConfig])];
         }
     });
 }); };
@@ -116,11 +112,10 @@ var uuidValidateV4 = function (uuid) {
 exports.uuidValidateV4 = uuidValidateV4;
 var getItems = function (client, context) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result, body, err_1;
-    var _a;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
-                _b.trys.push([0, 2, , 3]);
+                _a.trys.push([0, 2, , 3]);
                 params = {
                     TableName: (0, exports.getDbName)(),
                     Select: 'SPECIFIC_ATTRIBUTES',
@@ -128,24 +123,34 @@ var getItems = function (client, context) { return __awaiter(void 0, void 0, voi
                 };
                 return [4 /*yield*/, client.send(new client_dynamodb_1.ScanCommand(params))];
             case 1:
-                result = _b.sent();
+                result = _a.sent();
                 if (result.Items) {
                     body = result.Items.reduce(function (acc, item) {
                         var unmarshalledItem = (0, util_dynamodb_1.unmarshall)(item);
-                        // @ts-ignore
                         acc.push(unmarshalledItem);
                         return acc;
                     }, []);
-                    return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: result.$metadata.httpStatusCode,
+                            body: JSON.stringify(body)
+                        }];
                 }
                 else {
-                    return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify([]) }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 200,
+                            body: JSON.stringify([])
+                        }];
                 }
                 return [3 /*break*/, 3];
             case 2:
-                err_1 = _b.sent();
+                err_1 = _a.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'getItems', err_1);
-                return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
+                return [2 /*return*/, {
+                        headers: { 'Content-Type': 'application/json' },
+                        statusCode: 500
+                    }];
             case 3: return [2 /*return*/];
         }
     });
@@ -153,16 +158,19 @@ var getItems = function (client, context) { return __awaiter(void 0, void 0, voi
 exports.getItems = getItems;
 var queryById = function (client, id, context) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result, err_2;
-    var _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
                 if (!(0, exports.uuidValidateV4)(id)) {
-                    return [2 /*return*/, { statusCode: 400, message: 'invalid uuid' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 400
+                        }];
                 }
-                _c.label = 1;
+                _b.label = 1;
             case 1:
-                _c.trys.push([1, 3, , 4]);
+                _b.trys.push([1, 3, , 4]);
                 params = {
                     TableName: (0, exports.getDbName)(),
                     KeyConditionExpression: 'id = :id',
@@ -172,18 +180,28 @@ var queryById = function (client, id, context) { return __awaiter(void 0, void 0
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
             case 2:
-                result = _c.sent();
+                result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
-                    return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 200,
+                            body: JSON.stringify(result.Items)
+                        }];
                 }
                 else {
-                    return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 404
+                        }];
                 }
                 return [3 /*break*/, 4];
             case 3:
-                err_2 = _c.sent();
+                err_2 = _b.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'queryById', err_2);
-                return [2 /*return*/, { statusCode: (_b = err_2.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
+                return [2 /*return*/, {
+                        headers: { 'Content-Type': 'application/json' },
+                        statusCode: 500
+                    }];
             case 4: return [2 /*return*/];
         }
     });
@@ -191,11 +209,11 @@ var queryById = function (client, id, context) { return __awaiter(void 0, void 0
 exports.queryById = queryById;
 var queryByThingName = function (client, thingName, context) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result, err_3;
-    var _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                _c.trys.push([0, 2, , 3]);
+                _b.trys.push([0, 2, , 3]);
                 params = {
                     TableName: (0, exports.getDbName)(),
                     IndexName: 'thingNameIndex',
@@ -206,18 +224,28 @@ var queryByThingName = function (client, thingName, context) { return __awaiter(
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
             case 1:
-                result = _c.sent();
+                result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
-                    return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 200,
+                            body: JSON.stringify(result.Items)
+                        }];
                 }
                 else {
-                    return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 404
+                        }];
                 }
                 return [3 /*break*/, 3];
             case 2:
-                err_3 = _c.sent();
+                err_3 = _b.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'queryByThingName', err_3);
-                return [2 /*return*/, { statusCode: (_b = err_3.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
+                return [2 /*return*/, {
+                        headers: { 'Content-Type': 'application/json' },
+                        statusCode: 500
+                    }];
             case 3: return [2 /*return*/];
         }
     });
@@ -225,16 +253,19 @@ var queryByThingName = function (client, thingName, context) { return __awaiter(
 exports.queryByThingName = queryByThingName;
 var queryByDeviceId = function (client, deviceId, context) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result, err_4;
-    var _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
                 if (!deviceId) {
-                    return [2 /*return*/, { statusCode: 400, message: 'invalid deviceId' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 400
+                        }];
                 }
-                _c.label = 1;
+                _b.label = 1;
             case 1:
-                _c.trys.push([1, 3, , 4]);
+                _b.trys.push([1, 3, , 4]);
                 params = {
                     TableName: (0, exports.getDbName)(),
                     IndexName: 'deviceIdIndex',
@@ -245,18 +276,28 @@ var queryByDeviceId = function (client, deviceId, context) { return __awaiter(vo
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
             case 2:
-                result = _c.sent();
+                result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
-                    return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 200,
+                            body: JSON.stringify(result.Items)
+                        }];
                 }
                 else {
-                    return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 404
+                        }];
                 }
                 return [3 /*break*/, 4];
             case 3:
-                err_4 = _c.sent();
+                err_4 = _b.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'queryByDeviceId', err_4);
-                return [2 /*return*/, { statusCode: (_b = err_4.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
+                return [2 /*return*/, {
+                        headers: { 'Content-Type': 'application/json' },
+                        statusCode: 500
+                    }];
             case 4: return [2 /*return*/];
         }
     });
@@ -264,16 +305,19 @@ var queryByDeviceId = function (client, deviceId, context) { return __awaiter(vo
 exports.queryByDeviceId = queryByDeviceId;
 var queryByThingTypeId = function (client, thingTypeId, context) { return __awaiter(void 0, void 0, void 0, function () {
     var params, result, err_5;
-    var _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
                 if (!(0, exports.uuidValidateV4)(thingTypeId)) {
-                    return [2 /*return*/, { statusCode: 400, message: 'invalid uuid' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 400
+                        }];
                 }
-                _c.label = 1;
+                _b.label = 1;
             case 1:
-                _c.trys.push([1, 3, , 4]);
+                _b.trys.push([1, 3, , 4]);
                 params = {
                     TableName: (0, exports.getDbName)(),
                     IndexName: 'thingTypeIdIndex',
@@ -284,18 +328,28 @@ var queryByThingTypeId = function (client, thingTypeId, context) { return __awai
                 };
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.QueryCommand(params))];
             case 2:
-                result = _c.sent();
+                result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
-                    return [2 /*return*/, { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 200,
+                            body: JSON.stringify(result.Items)
+                        }];
                 }
                 else {
-                    return [2 /*return*/, { statusCode: 404, message: 'missing thing' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 404
+                        }];
                 }
                 return [3 /*break*/, 4];
             case 3:
-                err_5 = _c.sent();
+                err_5 = _b.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'queryByThingName', err_5);
-                return [2 /*return*/, { statusCode: (_b = err_5.$metadata) === null || _b === void 0 ? void 0 : _b.httpStatusCode, message: 'error' }];
+                return [2 /*return*/, {
+                        headers: { 'Content-Type': 'application/json' },
+                        statusCode: 500
+                    }];
             case 4: return [2 /*return*/];
         }
     });

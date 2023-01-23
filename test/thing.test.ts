@@ -68,14 +68,14 @@ describe('thing tests', () => {
         },
       ])
       const expectedResult: ThingResponse = {
+        headers: { 'Content-Type': 'application/json' },
         statusCode: 200,
-        message: 'ok',
         body,
       }
 
       const event = createEventWrapper(null, 'GET', {})
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         readThingLambda.handler
       )
@@ -90,14 +90,14 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         readThingLambda.handler
       )
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 400, 'invalid uuid')
+      assertResponseError(lambdaSpyResult, 400)
     })
 
     it('read thing by id', async () => {
@@ -112,14 +112,14 @@ describe('thing tests', () => {
         },
       ])
       const expectedResult: ThingResponse = {
+        headers: { 'Content-Type': 'application/json' },
         statusCode: 200,
-        message: 'ok',
         body,
       }
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         readThingLambda.handler
       )
@@ -134,14 +134,14 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         readThingLambda.handler
       )
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 404, 'missing thing(s)')
+      assertResponseError(lambdaSpyResult, 400)
     })
 
     it('read thing by name', async () => {
@@ -156,14 +156,14 @@ describe('thing tests', () => {
         },
       ])
       const expectedResult: ThingResponse = {
+        headers: { 'Content-Type': 'application/json' },
         statusCode: 200,
-        message: 'ok',
         body,
       }
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         readThingLambda.handler
       )
@@ -178,14 +178,14 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         readThingLambda.handler
       )
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 404, 'missing thing')
+      assertResponseError(lambdaSpyResult, 404)
     })
 
     it('read thing by device id', async () => {
@@ -200,14 +200,14 @@ describe('thing tests', () => {
         },
       ])
       const expectedResult: ThingResponse = {
+        headers: { 'Content-Type': 'application/json' },
         statusCode: 200,
-        message: 'ok',
         body,
       }
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         readThingLambda.handler
       )
@@ -222,14 +222,14 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         readThingLambda.handler
       )
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 404, 'missing thing')
+      assertResponseError(lambdaSpyResult, 404)
     })
 
     it('read thing by type', async () => {
@@ -237,14 +237,14 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         readThingLambda.handler
       )
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 400, 'invalid uuid')
+      assertResponseError(lambdaSpyResult, 400)
     })
 
     it('read thing by type', async () => {
@@ -259,14 +259,14 @@ describe('thing tests', () => {
         },
       ])
       const expectedResult: ThingResponse = {
+        headers: { 'Content-Type': 'application/json' },
         statusCode: 200,
-        message: 'ok',
         body,
       }
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         readThingLambda.handler
       )
@@ -281,14 +281,14 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         readThingLambda.handler
       )
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 404, 'missing thing')
+      assertResponseError(lambdaSpyResult, 404)
     })
   })
 
@@ -298,14 +298,14 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         createThingLambda.handler
       )
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 400, 'invalid thing')
+      assertResponseError(lambdaSpyResult, 400)
     })
 
     it('create thing', async () => {
@@ -316,14 +316,14 @@ describe('thing tests', () => {
         description: thingTwoName,
       })
       const expectedResult: ThingResponse = {
+        headers: { 'Content-Type': 'application/json' },
         statusCode: 200,
-        message: 'ok',
         body,
       }
 
       const event = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         createThingLambda.handler
       )
@@ -343,14 +343,14 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         createThingLambda.handler
       )
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 409, 'thing exists')
+      assertResponseError(lambdaSpyResult, 409)
     })
 
     it('create existing thing', async () => {
@@ -363,14 +363,14 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy<unknown[], any> = sinon.spy(
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(
         // @ts-ignore
         createThingLambda.handler
       )
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 409, 'thing exists')
+      assertResponseError(lambdaSpyResult, 409)
     })
   })
 })

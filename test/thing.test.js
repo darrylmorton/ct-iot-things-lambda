@@ -111,8 +111,8 @@ var thingHelper_1 = require("./helper/thingHelper");
                             },
                         ]);
                         expectedResult = {
+                            headers: { 'Content-Type': 'application/json' },
                             statusCode: 200,
-                            message: 'ok',
                             body: body
                         };
                         event = (0, appHelper_1.createEventWrapper)(null, 'GET', {});
@@ -142,7 +142,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400, 'invalid uuid');
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400);
                         return [2 /*return*/];
                 }
             });
@@ -163,8 +163,8 @@ var thingHelper_1 = require("./helper/thingHelper");
                             },
                         ]);
                         expectedResult = {
+                            headers: { 'Content-Type': 'application/json' },
                             statusCode: 200,
-                            message: 'ok',
                             body: body
                         };
                         event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
@@ -194,7 +194,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404, 'missing thing(s)');
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400);
                         return [2 /*return*/];
                 }
             });
@@ -215,8 +215,8 @@ var thingHelper_1 = require("./helper/thingHelper");
                             },
                         ]);
                         expectedResult = {
+                            headers: { 'Content-Type': 'application/json' },
                             statusCode: 200,
-                            message: 'ok',
                             body: body
                         };
                         event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
@@ -246,7 +246,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404, 'missing thing');
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404);
                         return [2 /*return*/];
                 }
             });
@@ -267,8 +267,8 @@ var thingHelper_1 = require("./helper/thingHelper");
                             },
                         ]);
                         expectedResult = {
+                            headers: { 'Content-Type': 'application/json' },
                             statusCode: 200,
-                            message: 'ok',
                             body: body
                         };
                         event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
@@ -298,7 +298,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404, 'missing thing');
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404);
                         return [2 /*return*/];
                 }
             });
@@ -317,7 +317,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400, 'invalid uuid');
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400);
                         return [2 /*return*/];
                 }
             });
@@ -338,8 +338,8 @@ var thingHelper_1 = require("./helper/thingHelper");
                             },
                         ]);
                         expectedResult = {
+                            headers: { 'Content-Type': 'application/json' },
                             statusCode: 200,
-                            message: 'ok',
                             body: body
                         };
                         event = (0, appHelper_1.createEventWrapper)(null, 'GET', qsParams);
@@ -369,7 +369,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404, 'missing thing');
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404);
                         return [2 /*return*/];
                 }
             });
@@ -390,7 +390,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400, 'invalid thing');
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400);
                         return [2 /*return*/];
                 }
             });
@@ -407,8 +407,8 @@ var thingHelper_1 = require("./helper/thingHelper");
                             description: thingTwoName
                         });
                         expectedResult = {
+                            headers: { 'Content-Type': 'application/json' },
                             statusCode: 200,
-                            message: 'ok',
                             body: body
                         };
                         event = (0, appHelper_1.createEventWrapper)(body, 'POST', {});
@@ -443,7 +443,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 409, 'thing exists');
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 409);
                         return [2 /*return*/];
                 }
             });
@@ -467,7 +467,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 409, 'thing exists');
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 409);
                         return [2 /*return*/];
                 }
             });

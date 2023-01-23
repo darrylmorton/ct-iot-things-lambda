@@ -36,43 +36,42 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+exports.handler = void 0;
 var uuid_1 = require("uuid");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var appUtil_1 = require("./util/appUtil");
-exports.handler = function run(event, context) {
-    var _a;
+var handler = function run(event, context) {
     return __awaiter(this, void 0, void 0, function () {
-        var body, client, _b, queryByThingNameStatusCode, queryByThingNameMessage, _c, queryByDeviceIdStatusCode, queryByDeviceIdMessage, currentDate, thing, params, result, err_1;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
+        var body, client, queryByThingNameStatusCode, queryByDeviceIdStatusCode, currentDate, thing, params, result, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
-                    if (!
-                    // @ts-ignore
-                    (event.requestContext.http.path === appUtil_1.LAMBDA_PATH &&
-                        // @ts-ignore
-                        event.requestContext.http.method.toUpperCase() === 'POST' &&
-                        event.body)) 
-                    // @ts-ignore
-                    return [3 /*break*/, 8];
-                    _d.label = 1;
+                    if (!event.body) return [3 /*break*/, 8];
+                    _a.label = 1;
                 case 1:
-                    _d.trys.push([1, 7, , 8]);
+                    _a.trys.push([1, 7, , 8]);
                     body = JSON.parse(event.body);
                     if (!(body.thingName && body.deviceId && body.thingTypeId && body.description)) return [3 /*break*/, 6];
                     return [4 /*yield*/, (0, appUtil_1.getDbDocumentClient)()];
                 case 2:
-                    client = _d.sent();
+                    client = _a.sent();
                     return [4 /*yield*/, (0, appUtil_1.queryByThingName)(client, body.thingName)];
                 case 3:
-                    _b = _d.sent(), queryByThingNameStatusCode = _b.statusCode, queryByThingNameMessage = _b.message;
+                    queryByThingNameStatusCode = (_a.sent()).statusCode;
                     if (queryByThingNameStatusCode === 409) {
-                        return [2 /*return*/, { statusCode: queryByThingNameStatusCode, message: queryByThingNameMessage }];
+                        return [2 /*return*/, {
+                                headers: { 'Content-Type': 'application/json' },
+                                statusCode: queryByThingNameStatusCode
+                            }];
                     }
                     return [4 /*yield*/, (0, appUtil_1.queryByDeviceId)(client, body.deviceId)];
                 case 4:
-                    _c = _d.sent(), queryByDeviceIdStatusCode = _c.statusCode, queryByDeviceIdMessage = _c.message;
+                    queryByDeviceIdStatusCode = (_a.sent()).statusCode;
                     if (queryByDeviceIdStatusCode === 409) {
-                        return [2 /*return*/, { statusCode: queryByDeviceIdStatusCode, message: queryByDeviceIdMessage }];
+                        return [2 /*return*/, {
+                                headers: { 'Content-Type': 'application/json' },
+                                statusCode: queryByDeviceIdStatusCode
+                            }];
                     }
                     currentDate = new Date().toISOString();
                     thing = {
@@ -90,17 +89,29 @@ exports.handler = function run(event, context) {
                     };
                     return [4 /*yield*/, client.send(new lib_dynamodb_1.PutCommand(params))];
                 case 5:
-                    result = _d.sent();
-                    return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(thing) }];
-                case 6: return [2 /*return*/, { statusCode: 400, message: 'invalid thing' }
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                ];
+                    result = _a.sent();
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: result.$metadata.httpStatusCode,
+                            body: JSON.stringify(thing)
+                        }];
+                case 6: return [2 /*return*/, {
+                        headers: { 'Content-Type': 'application/json' },
+                        statusCode: 400
+                    }];
                 case 7:
-                    err_1 = _d.sent();
+                    err_1 = _a.sent();
                     (0, appUtil_1.consoleErrorOutput)(context.functionName, 'handler.index', err_1);
-                    return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
-                case 8: return [2 /*return*/, { statusCode: 400, message: 'invalid request' }];
+                    return [2 /*return*/, {
+                            headers: { 'Content-Type': 'application/json' },
+                            statusCode: 500
+                        }];
+                case 8: return [2 /*return*/, {
+                        headers: { 'Content-Type': 'application/json' },
+                        statusCode: 400
+                    }];
             }
         });
     });
 };
+exports.handler = handler;

@@ -180,7 +180,7 @@ var createEvent = function (body, headers, httpMethod, path, multiValueHeaders, 
 exports.createEvent = createEvent;
 var assertThingResponse = function (actualResult, expectedResult) {
     (0, chai_1.expect)(actualResult.statusCode).to.equal(expectedResult.statusCode);
-    (0, chai_1.expect)(actualResult.message).to.equal(expectedResult.message);
+    (0, chai_1.expect)(actualResult.headers).to.deep.equal(expectedResult.headers);
     var actualResultBody = JSON.parse(actualResult.body);
     var expectedResultBody = JSON.parse(expectedResult.body);
     (0, exports.assertThingResponseBody)(actualResultBody, expectedResultBody);
@@ -188,7 +188,7 @@ var assertThingResponse = function (actualResult, expectedResult) {
 exports.assertThingResponse = assertThingResponse;
 var assertThingsResponse = function (actualResult, expectedResult) {
     (0, chai_1.expect)(actualResult.statusCode).to.equal(expectedResult.statusCode);
-    (0, chai_1.expect)(actualResult.message).to.equal(expectedResult.message);
+    (0, chai_1.expect)(actualResult.headers).to.deep.equal(expectedResult.headers);
     var actualResultBody = JSON.parse(actualResult.body);
     var expectedResultBody = JSON.parse(expectedResult.body);
     (0, chai_1.expect)(actualResultBody).to.have.length(expectedResultBody.length);
@@ -205,8 +205,8 @@ var assertThingResponseBody = function (actualResultBody, expectedResultBody) {
     (0, chai_1.expect)(actualResultBody.description).to.equal(expectedResultBody.description);
 };
 exports.assertThingResponseBody = assertThingResponseBody;
-var assertResponseError = function (actualResult, statusCode, message) {
+var assertResponseError = function (actualResult, statusCode) {
     (0, chai_1.expect)(actualResult.statusCode).to.equal(statusCode);
-    (0, chai_1.expect)(actualResult.message).to.equal(message);
+    (0, chai_1.expect)(actualResult.headers).to.deep.equal({ 'Content-Type': 'application/json' });
 };
 exports.assertResponseError = assertResponseError;

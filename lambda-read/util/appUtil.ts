@@ -1,4 +1,10 @@
-import { DynamoDBClient, ScanCommand, ScanCommandInput, ScanCommandOutput } from '@aws-sdk/client-dynamodb'
+import {
+  AttributeValue,
+  DynamoDBClient,
+  ScanCommand,
+  ScanCommandInput,
+  ScanCommandOutput,
+} from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
 import { unmarshall } from '@aws-sdk/util-dynamodb'
 import { Context } from 'aws-lambda'
@@ -8,8 +14,6 @@ import { ResponseError, ThingResponse } from '../../types'
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
-
-export const LAMBDA_PATH = '/thing'
 
 export const getDbName = () => {
   const NODE_ENV = process.env.NODE_ENV
@@ -32,7 +36,6 @@ const getDbClient = async (): Promise<DynamoDBClient> => {
         accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
         secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
       },
-      tls: false,
       endpoint: 'http://localhost:8000',
     })
   } else {
@@ -57,7 +60,6 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
 
   const translateConfig = { marshallOptions, unmarshallOptions }
 
-  // @ts-ignore
   return DynamoDBDocumentClient.from(await getDbClient(), translateConfig)
 }
 
@@ -84,27 +86,39 @@ export const getItems = async (
       ProjectionExpression: 'id, thingName, deviceId, thingTypeId, description',
     }
 
-    // @ts-ignore
     const result: ScanCommandOutput = await client.send(new ScanCommand(params))
 
     if (result.Items) {
-      const body = result.Items.reduce((acc, item) => {
-        const unmarshalledItem = unmarshall(item)
-        // @ts-ignore
-        acc.push(unmarshalledItem)
+      const body = result.Items.reduce(
+        (acc: Record<string, AttributeValue>[], item: Record<string, AttributeValue>) => {
+          const unmarshalledItem = unmarshall(item)
 
-        return acc
-      }, [])
+          acc.push(unmarshalledItem)
 
-      return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: JSON.stringify(body) }
+          return acc
+        },
+        []
+      )
+
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: result.$metadata.httpStatusCode,
+        body: JSON.stringify(body),
+      }
     } else {
-      return { statusCode: 200, message: 'ok', body: JSON.stringify([]) }
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: 200,
+        body: JSON.stringify([]),
+      }
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any | unknown) {
+  } catch (err: unknown) {
     consoleErrorOutput(context.functionName, 'getItems', err)
 
-    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 500,
+    }
   }
 }
 
@@ -114,7 +128,10 @@ export const queryById = async (
   context: Context
 ): Promise<ThingResponse | ResponseError> => {
   if (!uuidValidateV4(id)) {
-    return { statusCode: 400, message: 'invalid uuid' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 400,
+    }
   }
 
   try {
@@ -129,15 +146,24 @@ export const queryById = async (
     const result: QueryCommandOutput = await client.send(new QueryCommand(params))
 
     if (result.Items?.length) {
-      return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: 200,
+        body: JSON.stringify(result.Items),
+      }
     } else {
-      return { statusCode: 404, message: 'missing thing' }
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: 404,
+      }
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any | unknown) {
+  } catch (err: unknown) {
     consoleErrorOutput(context.functionName, 'queryById', err)
 
-    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 500,
+    }
   }
 }
 
@@ -159,15 +185,24 @@ export const queryByThingName = async (
     const result: QueryCommandOutput = await client.send(new QueryCommand(params))
 
     if (result.Items?.length) {
-      return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: 200,
+        body: JSON.stringify(result.Items),
+      }
     } else {
-      return { statusCode: 404, message: 'missing thing' }
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: 404,
+      }
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any | unknown) {
+  } catch (err: unknown) {
     consoleErrorOutput(context.functionName, 'queryByThingName', err)
 
-    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 500,
+    }
   }
 }
 
@@ -177,7 +212,10 @@ export const queryByDeviceId = async (
   context: Context
 ): Promise<ThingResponse | ResponseError> => {
   if (!deviceId) {
-    return { statusCode: 400, message: 'invalid deviceId' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 400,
+    }
   }
 
   try {
@@ -193,15 +231,24 @@ export const queryByDeviceId = async (
     const result: QueryCommandOutput = await client.send(new QueryCommand(params))
 
     if (result.Items?.length) {
-      return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: 200,
+        body: JSON.stringify(result.Items),
+      }
     } else {
-      return { statusCode: 404, message: 'missing thing' }
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: 404,
+      }
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any | unknown) {
+  } catch (err: unknown) {
     consoleErrorOutput(context.functionName, 'queryByDeviceId', err)
 
-    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 500,
+    }
   }
 }
 
@@ -211,7 +258,10 @@ export const queryByThingTypeId = async (
   context: Context
 ): Promise<ThingResponse | ResponseError> => {
   if (!uuidValidateV4(thingTypeId)) {
-    return { statusCode: 400, message: 'invalid uuid' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 400,
+    }
   }
 
   try {
@@ -227,14 +277,23 @@ export const queryByThingTypeId = async (
     const result: QueryCommandOutput = await client.send(new QueryCommand(params))
 
     if (result.Items?.length) {
-      return { statusCode: 200, message: 'ok', body: JSON.stringify(result.Items) }
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: 200,
+        body: JSON.stringify(result.Items),
+      }
     } else {
-      return { statusCode: 404, message: 'missing thing' }
+      return {
+        headers: { 'Content-Type': 'application/json' },
+        statusCode: 404,
+      }
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any | unknown) {
+  } catch (err: unknown) {
     consoleErrorOutput(context.functionName, 'queryByThingName', err)
 
-    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
+    return {
+      headers: { 'Content-Type': 'application/json' },
+      statusCode: 500,
+    }
   }
 }
