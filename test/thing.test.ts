@@ -18,6 +18,7 @@ import {
   assertThingsResponse,
 } from './helper/thingHelper'
 import { ThingResponse } from '../types'
+import { API_GATEWAY_HEADERS } from '../lambda-create/util/appUtil'
 
 describe('thing tests', () => {
   let client: DynamoDBDocumentClient
@@ -68,7 +69,7 @@ describe('thing tests', () => {
         },
       ])
       const expectedResult: ThingResponse = {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 200,
         body,
       }
@@ -97,7 +98,7 @@ describe('thing tests', () => {
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 400)
+      assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 400)
     })
 
     it('read thing by id', async () => {
@@ -112,7 +113,7 @@ describe('thing tests', () => {
         },
       ])
       const expectedResult: ThingResponse = {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 200,
         body,
       }
@@ -141,7 +142,7 @@ describe('thing tests', () => {
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 400)
+      assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 400)
     })
 
     it('read thing by name', async () => {
@@ -156,7 +157,7 @@ describe('thing tests', () => {
         },
       ])
       const expectedResult: ThingResponse = {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 200,
         body,
       }
@@ -185,7 +186,7 @@ describe('thing tests', () => {
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 404)
+      assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 404)
     })
 
     it('read thing by device id', async () => {
@@ -200,7 +201,7 @@ describe('thing tests', () => {
         },
       ])
       const expectedResult: ThingResponse = {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 200,
         body,
       }
@@ -229,7 +230,7 @@ describe('thing tests', () => {
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 404)
+      assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 404)
     })
 
     it('read thing by type', async () => {
@@ -244,7 +245,7 @@ describe('thing tests', () => {
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 400)
+      assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 400)
     })
 
     it('read thing by type', async () => {
@@ -259,7 +260,7 @@ describe('thing tests', () => {
         },
       ])
       const expectedResult: ThingResponse = {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 200,
         body,
       }
@@ -288,7 +289,7 @@ describe('thing tests', () => {
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 404)
+      assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 404)
     })
   })
 
@@ -305,7 +306,7 @@ describe('thing tests', () => {
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 400)
+      assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 400)
     })
 
     it('create thing', async () => {
@@ -316,7 +317,7 @@ describe('thing tests', () => {
         description: thingTwoName,
       })
       const expectedResult: ThingResponse = {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 200,
         body,
       }
@@ -350,7 +351,7 @@ describe('thing tests', () => {
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 409)
+      assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 409)
     })
 
     it('create existing thing', async () => {
@@ -370,7 +371,7 @@ describe('thing tests', () => {
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
-      assertResponseError(lambdaSpyResult, 409)
+      assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 409)
     })
   })
 })

@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { createEvent, DB_NAME } from './thingHelper'
 import { Thing } from '../../types'
-import { consoleErrorOutput } from '../../lambda-create/util/appUtil'
+import { API_GATEWAY_HEADERS, consoleErrorOutput } from '../../lambda-create/util/appUtil'
 
 export const getDbClient = async (): Promise<DynamoDBClient> => {
   if (process.env.NODE_ENV === 'test') {
@@ -148,10 +148,10 @@ export const createThing = async (
   try {
     const result: PutCommandOutput = await client.send(new PutCommand(params))
 
-    return { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: thing }
+    return { headers: API_GATEWAY_HEADERS, statusCode: result.$metadata.httpStatusCode, body: thing }
   } catch (err: any | unknown) {
     consoleErrorOutput('create-thing-test-lambda', 'createThing', err)
 
-    return { statusCode: err.$metadata?.httpStatusCode, message: 'error' }
+    return { headers: API_GATEWAY_HEADERS, statusCode: err.$metadata?.httpStatusCode }
   }
 }

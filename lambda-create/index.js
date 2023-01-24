@@ -60,7 +60,7 @@ var handler = function run(event, context) {
                     queryByThingNameStatusCode = (_a.sent()).statusCode;
                     if (queryByThingNameStatusCode === 409) {
                         return [2 /*return*/, {
-                                headers: { 'Content-Type': 'application/json' },
+                                headers: appUtil_1.API_GATEWAY_HEADERS,
                                 statusCode: queryByThingNameStatusCode
                             }];
                     }
@@ -69,7 +69,7 @@ var handler = function run(event, context) {
                     queryByDeviceIdStatusCode = (_a.sent()).statusCode;
                     if (queryByDeviceIdStatusCode === 409) {
                         return [2 /*return*/, {
-                                headers: { 'Content-Type': 'application/json' },
+                                headers: appUtil_1.API_GATEWAY_HEADERS,
                                 statusCode: queryByDeviceIdStatusCode
                             }];
                     }
@@ -91,23 +91,23 @@ var handler = function run(event, context) {
                 case 5:
                     result = _a.sent();
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: appUtil_1.API_GATEWAY_HEADERS,
                             statusCode: result.$metadata.httpStatusCode,
                             body: JSON.stringify(thing)
                         }];
                 case 6: return [2 /*return*/, {
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: appUtil_1.API_GATEWAY_HEADERS,
                         statusCode: 400
                     }];
                 case 7:
                     err_1 = _a.sent();
                     (0, appUtil_1.consoleErrorOutput)(context.functionName, 'handler.index', err_1);
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: appUtil_1.API_GATEWAY_HEADERS,
                             statusCode: 500
                         }];
                 case 8: return [2 /*return*/, {
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: appUtil_1.API_GATEWAY_HEADERS,
                         statusCode: 400
                     }];
             }

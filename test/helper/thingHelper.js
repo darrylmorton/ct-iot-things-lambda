@@ -205,8 +205,8 @@ var assertThingResponseBody = function (actualResultBody, expectedResultBody) {
     (0, chai_1.expect)(actualResultBody.description).to.equal(expectedResultBody.description);
 };
 exports.assertThingResponseBody = assertThingResponseBody;
-var assertResponseError = function (actualResult, statusCode) {
+var assertResponseError = function (actualResult, headers, statusCode) {
+    (0, chai_1.expect)(actualResult.headers).to.deep.equal(headers);
     (0, chai_1.expect)(actualResult.statusCode).to.equal(statusCode);
-    (0, chai_1.expect)(actualResult.headers).to.deep.equal({ 'Content-Type': 'application/json' });
 };
 exports.assertResponseError = assertResponseError;

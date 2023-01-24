@@ -36,11 +36,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.queryByDeviceId = exports.queryByThingName = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = void 0;
+exports.queryByDeviceId = exports.queryByThingName = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.API_GATEWAY_HEADERS = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
 var DB_TABLE_NAME_SUFFIX = 'things';
+exports.API_GATEWAY_HEADERS = { 'Content-Type': 'application/json' };
 var getDbName = function () {
     var NODE_ENV = process.env.NODE_ENV;
     switch (NODE_ENV) {
@@ -123,13 +124,13 @@ var queryByThingName = function (client, thingName) { return __awaiter(void 0, v
                 result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 409
                         }];
                 }
                 else {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 404
                         }];
                 }
@@ -157,13 +158,13 @@ var queryByDeviceId = function (client, deviceId) { return __awaiter(void 0, voi
                 result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 409
                         }];
                 }
                 else {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 404
                         }];
                 }

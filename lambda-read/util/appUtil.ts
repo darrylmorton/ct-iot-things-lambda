@@ -15,6 +15,8 @@ import { ResponseError, ThingResponse } from '../../types'
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
 
+export const API_GATEWAY_HEADERS = { 'Content-Type': 'application/json' }
+
 export const getDbName = () => {
   const NODE_ENV = process.env.NODE_ENV
 
@@ -101,13 +103,13 @@ export const getItems = async (
       )
 
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: result.$metadata.httpStatusCode,
         body: JSON.stringify(body),
       }
     } else {
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 200,
         body: JSON.stringify([]),
       }
@@ -116,7 +118,7 @@ export const getItems = async (
     consoleErrorOutput(context.functionName, 'getItems', err)
 
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 500,
     }
   }
@@ -129,7 +131,7 @@ export const queryById = async (
 ): Promise<ThingResponse | ResponseError> => {
   if (!uuidValidateV4(id)) {
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 400,
     }
   }
@@ -147,13 +149,13 @@ export const queryById = async (
 
     if (result.Items?.length) {
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 200,
         body: JSON.stringify(result.Items),
       }
     } else {
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 404,
       }
     }
@@ -161,7 +163,7 @@ export const queryById = async (
     consoleErrorOutput(context.functionName, 'queryById', err)
 
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 500,
     }
   }
@@ -186,13 +188,13 @@ export const queryByThingName = async (
 
     if (result.Items?.length) {
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 200,
         body: JSON.stringify(result.Items),
       }
     } else {
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 404,
       }
     }
@@ -200,7 +202,7 @@ export const queryByThingName = async (
     consoleErrorOutput(context.functionName, 'queryByThingName', err)
 
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 500,
     }
   }
@@ -213,7 +215,7 @@ export const queryByDeviceId = async (
 ): Promise<ThingResponse | ResponseError> => {
   if (!deviceId) {
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 400,
     }
   }
@@ -232,13 +234,13 @@ export const queryByDeviceId = async (
 
     if (result.Items?.length) {
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 200,
         body: JSON.stringify(result.Items),
       }
     } else {
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 404,
       }
     }
@@ -246,7 +248,7 @@ export const queryByDeviceId = async (
     consoleErrorOutput(context.functionName, 'queryByDeviceId', err)
 
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 500,
     }
   }
@@ -259,7 +261,7 @@ export const queryByThingTypeId = async (
 ): Promise<ThingResponse | ResponseError> => {
   if (!uuidValidateV4(thingTypeId)) {
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 400,
     }
   }
@@ -278,13 +280,13 @@ export const queryByThingTypeId = async (
 
     if (result.Items?.length) {
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 200,
         body: JSON.stringify(result.Items),
       }
     } else {
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 404,
       }
     }
@@ -292,7 +294,7 @@ export const queryByThingTypeId = async (
     consoleErrorOutput(context.functionName, 'queryByThingName', err)
 
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 500,
     }
   }

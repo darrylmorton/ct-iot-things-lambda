@@ -63,7 +63,7 @@ var handler = function run(event, context) {
                         return [2 /*return*/, (0, appUtil_1.queryByThingTypeId)(client, event.queryStringParameters.thingTypeId, context)];
                     }
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: appUtil_1.API_GATEWAY_HEADERS,
                             statusCode: 400
                         }];
             }

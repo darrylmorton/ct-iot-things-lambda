@@ -6,6 +6,8 @@ import { ResponseError } from '../../types'
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
 
+export const API_GATEWAY_HEADERS = { 'Content-Type': 'application/json' }
+
 export const getDbName = () => {
   const NODE_ENV = process.env.NODE_ENV
 
@@ -76,12 +78,12 @@ export const queryByThingName = async (client: DynamoDBDocumentClient, thingName
 
   if (result.Items?.length) {
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 409,
     }
   } else {
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 404,
     }
   }
@@ -101,12 +103,12 @@ export const queryByDeviceId = async (client: DynamoDBDocumentClient, deviceId: 
 
   if (result.Items?.length) {
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 409,
     }
   } else {
     return {
-      headers: { 'Content-Type': 'application/json' },
+      headers: API_GATEWAY_HEADERS,
       statusCode: 404,
     }
   }

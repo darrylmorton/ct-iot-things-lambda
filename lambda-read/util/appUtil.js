@@ -36,13 +36,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.queryByThingTypeId = exports.queryByDeviceId = exports.queryByThingName = exports.queryById = exports.getItems = exports.uuidValidateV4 = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = void 0;
+exports.queryByThingTypeId = exports.queryByDeviceId = exports.queryByThingName = exports.queryById = exports.getItems = exports.uuidValidateV4 = exports.consoleErrorOutput = exports.getDbDocumentClient = exports.getDbName = exports.API_GATEWAY_HEADERS = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 var util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
 var uuid_1 = require("uuid");
 var DB_TABLE_NAME_PREFIX = 'ct-iot';
 var DB_TABLE_NAME_SUFFIX = 'things';
+exports.API_GATEWAY_HEADERS = { 'Content-Type': 'application/json' };
 var getDbName = function () {
     var NODE_ENV = process.env.NODE_ENV;
     switch (NODE_ENV) {
@@ -131,14 +132,14 @@ var getItems = function (client, context) { return __awaiter(void 0, void 0, voi
                         return acc;
                     }, []);
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: result.$metadata.httpStatusCode,
                             body: JSON.stringify(body)
                         }];
                 }
                 else {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 200,
                             body: JSON.stringify([])
                         }];
@@ -148,7 +149,7 @@ var getItems = function (client, context) { return __awaiter(void 0, void 0, voi
                 err_1 = _a.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'getItems', err_1);
                 return [2 /*return*/, {
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: exports.API_GATEWAY_HEADERS,
                         statusCode: 500
                     }];
             case 3: return [2 /*return*/];
@@ -164,7 +165,7 @@ var queryById = function (client, id, context) { return __awaiter(void 0, void 0
             case 0:
                 if (!(0, exports.uuidValidateV4)(id)) {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 400
                         }];
                 }
@@ -183,14 +184,14 @@ var queryById = function (client, id, context) { return __awaiter(void 0, void 0
                 result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 200,
                             body: JSON.stringify(result.Items)
                         }];
                 }
                 else {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 404
                         }];
                 }
@@ -199,7 +200,7 @@ var queryById = function (client, id, context) { return __awaiter(void 0, void 0
                 err_2 = _b.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'queryById', err_2);
                 return [2 /*return*/, {
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: exports.API_GATEWAY_HEADERS,
                         statusCode: 500
                     }];
             case 4: return [2 /*return*/];
@@ -227,14 +228,14 @@ var queryByThingName = function (client, thingName, context) { return __awaiter(
                 result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 200,
                             body: JSON.stringify(result.Items)
                         }];
                 }
                 else {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 404
                         }];
                 }
@@ -243,7 +244,7 @@ var queryByThingName = function (client, thingName, context) { return __awaiter(
                 err_3 = _b.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'queryByThingName', err_3);
                 return [2 /*return*/, {
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: exports.API_GATEWAY_HEADERS,
                         statusCode: 500
                     }];
             case 3: return [2 /*return*/];
@@ -259,7 +260,7 @@ var queryByDeviceId = function (client, deviceId, context) { return __awaiter(vo
             case 0:
                 if (!deviceId) {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 400
                         }];
                 }
@@ -279,14 +280,14 @@ var queryByDeviceId = function (client, deviceId, context) { return __awaiter(vo
                 result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 200,
                             body: JSON.stringify(result.Items)
                         }];
                 }
                 else {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 404
                         }];
                 }
@@ -295,7 +296,7 @@ var queryByDeviceId = function (client, deviceId, context) { return __awaiter(vo
                 err_4 = _b.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'queryByDeviceId', err_4);
                 return [2 /*return*/, {
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: exports.API_GATEWAY_HEADERS,
                         statusCode: 500
                     }];
             case 4: return [2 /*return*/];
@@ -311,7 +312,7 @@ var queryByThingTypeId = function (client, thingTypeId, context) { return __awai
             case 0:
                 if (!(0, exports.uuidValidateV4)(thingTypeId)) {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 400
                         }];
                 }
@@ -331,14 +332,14 @@ var queryByThingTypeId = function (client, thingTypeId, context) { return __awai
                 result = _b.sent();
                 if ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.length) {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 200,
                             body: JSON.stringify(result.Items)
                         }];
                 }
                 else {
                     return [2 /*return*/, {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: exports.API_GATEWAY_HEADERS,
                             statusCode: 404
                         }];
                 }
@@ -347,7 +348,7 @@ var queryByThingTypeId = function (client, thingTypeId, context) { return __awai
                 err_5 = _b.sent();
                 (0, exports.consoleErrorOutput)(context.functionName, 'queryByThingName', err_5);
                 return [2 /*return*/, {
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: exports.API_GATEWAY_HEADERS,
                         statusCode: 500
                     }];
             case 4: return [2 /*return*/];

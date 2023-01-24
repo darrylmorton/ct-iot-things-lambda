@@ -180,11 +180,11 @@ var createThing = function (client, thingName, deviceId, thingTypeId) { return _
                 return [4 /*yield*/, client.send(new lib_dynamodb_1.PutCommand(params))];
             case 2:
                 result = _b.sent();
-                return [2 /*return*/, { statusCode: result.$metadata.httpStatusCode, message: 'ok', body: thing }];
+                return [2 /*return*/, { headers: appUtil_1.API_GATEWAY_HEADERS, statusCode: result.$metadata.httpStatusCode, body: thing }];
             case 3:
                 err_1 = _b.sent();
                 (0, appUtil_1.consoleErrorOutput)('create-thing-test-lambda', 'createThing', err_1);
-                return [2 /*return*/, { statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode, message: 'error' }];
+                return [2 /*return*/, { headers: appUtil_1.API_GATEWAY_HEADERS, statusCode: (_a = err_1.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode }];
             case 4: return [2 /*return*/];
         }
     });

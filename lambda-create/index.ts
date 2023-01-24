@@ -3,7 +3,14 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda'
 import { PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 
 import { ResponseError, Thing, ThingResponse } from '../types'
-import { consoleErrorOutput, getDbDocumentClient, getDbName, queryByDeviceId, queryByThingName } from './util/appUtil'
+import {
+  consoleErrorOutput,
+  getDbDocumentClient,
+  getDbName,
+  API_GATEWAY_HEADERS,
+  queryByDeviceId,
+  queryByThingName,
+} from './util/appUtil'
 
 export const handler = async function run(
   event: APIGatewayProxyEvent,
@@ -19,7 +26,7 @@ export const handler = async function run(
         const { statusCode: queryByThingNameStatusCode } = await queryByThingName(client, body.thingName)
         if (queryByThingNameStatusCode === 409) {
           return {
-            headers: { 'Content-Type': 'application/json' },
+            headers: API_GATEWAY_HEADERS,
             statusCode: queryByThingNameStatusCode,
           }
         }
@@ -27,7 +34,7 @@ export const handler = async function run(
         const { statusCode: queryByDeviceIdStatusCode } = await queryByDeviceId(client, body.deviceId)
         if (queryByDeviceIdStatusCode === 409) {
           return {
-            headers: { 'Content-Type': 'application/json' },
+            headers: API_GATEWAY_HEADERS,
             statusCode: queryByDeviceIdStatusCode,
           }
         }
@@ -52,28 +59,28 @@ export const handler = async function run(
         const result: PutCommandOutput = await client.send(new PutCommand(params))
 
         return {
-          headers: { 'Content-Type': 'application/json' },
+          headers: API_GATEWAY_HEADERS,
           statusCode: result.$metadata.httpStatusCode,
           body: JSON.stringify(thing),
         }
       }
 
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 400,
       }
     } catch (err: unknown) {
       consoleErrorOutput(context.functionName, 'handler.index', err)
 
       return {
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_GATEWAY_HEADERS,
         statusCode: 500,
       }
     }
   }
 
   return {
-    headers: { 'Content-Type': 'application/json' },
+    headers: API_GATEWAY_HEADERS,
     statusCode: 400,
   }
 }

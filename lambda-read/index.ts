@@ -8,6 +8,7 @@ import {
   queryByThingName,
   queryByDeviceId,
   queryByThingTypeId,
+  API_GATEWAY_HEADERS,
 } from './util/appUtil'
 import { ResponseError, ThingResponse } from '../types'
 
@@ -30,7 +31,7 @@ export const handler = async function run(
   }
 
   return {
-    headers: { 'Content-Type': 'application/json' },
+    headers: API_GATEWAY_HEADERS,
     statusCode: 400,
   }
 }

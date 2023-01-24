@@ -224,7 +224,11 @@ export const assertThingResponseBody = (actualResultBody: ResponseBody, expected
   expect(actualResultBody.description).to.equal(expectedResultBody.description)
 }
 
-export const assertResponseError = (actualResult: ResponseError, statusCode: number) => {
+export const assertResponseError = (
+  actualResult: ResponseError,
+  headers: Record<string, string>,
+  statusCode: number
+) => {
+  expect(actualResult.headers).to.deep.equal(headers)
   expect(actualResult.statusCode).to.equal(statusCode)
-  expect(actualResult.headers).to.deep.equal({ 'Content-Type': 'application/json' })
 }

@@ -45,6 +45,7 @@ var createThingLambda = require("../lambda-create/index");
 var readThingLambda = require("../lambda-read/index");
 var appHelper_1 = require("./helper/appHelper");
 var thingHelper_1 = require("./helper/thingHelper");
+var appUtil_1 = require("../lambda-create/util/appUtil");
 (0, mocha_1.describe)('thing tests', function () {
     var client;
     var context;
@@ -111,7 +112,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                             },
                         ]);
                         expectedResult = {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: appUtil_1.API_GATEWAY_HEADERS,
                             statusCode: 200,
                             body: body
                         };
@@ -142,7 +143,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400);
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, appUtil_1.API_GATEWAY_HEADERS, 400);
                         return [2 /*return*/];
                 }
             });
@@ -163,7 +164,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                             },
                         ]);
                         expectedResult = {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: appUtil_1.API_GATEWAY_HEADERS,
                             statusCode: 200,
                             body: body
                         };
@@ -194,7 +195,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400);
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, appUtil_1.API_GATEWAY_HEADERS, 400);
                         return [2 /*return*/];
                 }
             });
@@ -215,7 +216,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                             },
                         ]);
                         expectedResult = {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: appUtil_1.API_GATEWAY_HEADERS,
                             statusCode: 200,
                             body: body
                         };
@@ -246,7 +247,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404);
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, appUtil_1.API_GATEWAY_HEADERS, 404);
                         return [2 /*return*/];
                 }
             });
@@ -267,7 +268,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                             },
                         ]);
                         expectedResult = {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: appUtil_1.API_GATEWAY_HEADERS,
                             statusCode: 200,
                             body: body
                         };
@@ -298,7 +299,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404);
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, appUtil_1.API_GATEWAY_HEADERS, 404);
                         return [2 /*return*/];
                 }
             });
@@ -317,7 +318,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400);
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, appUtil_1.API_GATEWAY_HEADERS, 400);
                         return [2 /*return*/];
                 }
             });
@@ -338,7 +339,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                             },
                         ]);
                         expectedResult = {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: appUtil_1.API_GATEWAY_HEADERS,
                             statusCode: 200,
                             body: body
                         };
@@ -369,7 +370,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 404);
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, appUtil_1.API_GATEWAY_HEADERS, 404);
                         return [2 /*return*/];
                 }
             });
@@ -390,7 +391,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 400);
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, appUtil_1.API_GATEWAY_HEADERS, 400);
                         return [2 /*return*/];
                 }
             });
@@ -407,7 +408,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                             description: thingTwoName
                         });
                         expectedResult = {
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: appUtil_1.API_GATEWAY_HEADERS,
                             statusCode: 200,
                             body: body
                         };
@@ -443,7 +444,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 409);
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, appUtil_1.API_GATEWAY_HEADERS, 409);
                         return [2 /*return*/];
                 }
             });
@@ -467,7 +468,7 @@ var thingHelper_1 = require("./helper/thingHelper");
                     case 1:
                         lambdaSpyResult = _a.sent();
                         (0, chai_1.assert)(lambdaSpy.withArgs(event, context).calledOnce);
-                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, 409);
+                        (0, thingHelper_1.assertResponseError)(lambdaSpyResult, appUtil_1.API_GATEWAY_HEADERS, 409);
                         return [2 /*return*/];
                 }
             });
