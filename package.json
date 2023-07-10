@@ -18,7 +18,7 @@
     "prod:package-all": "npm run prod:package-create && npm run prod:package-read"
   },
   "engines": {
-    "node": ">=16.15"
+    "node": ">=18.14"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.150.0",

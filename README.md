@@ -1,6 +1,25 @@
 # ct-iot-things-lambda
 
-## zip and move to ct-iot-serverless-infrastructure for deployment
+## Run
+
+### Lint
+```
+npm run lint
+```
+### Build
+```
+npm run build
+```
+
+### Test
+```
+docker-compose up
+npm run test
+```
+
+## Package
+The following NPM run scripts zip and move the packages to `../ct-iot-serverless-infrastructure` for deployment via 
+terraform
 ```
 # development
 npm run dev:package-create

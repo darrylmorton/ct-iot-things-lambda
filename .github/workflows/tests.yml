@@ -5,25 +5,6 @@ on:
     branches-ignore: ["main"]
 
 jobs:
-  repo_ids:
-    runs-on: ubuntu-latest
-    outputs:
-      repo_name: ${{ steps.repo_ids.outputs.REPO_NAME }}
-      owner_name: ${{ steps.repo_ids.outputs.OWNER_NAME }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Get repository identifiers
-        id: repo_ids
-        run: |
-          REPO_NAME=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
-          OWNER_NAME=$(echo "${{ github.event.repository.owner.name }}" | tr '[:upper:]' '[:lower:]')
-          echo "::set-output name=REPO_NAME::$REPO_NAME"
-          echo "::set-output name=OWNER_NAME::$OWNER_NAME"
-
   lint:
     name: Run lint
     runs-on: ubuntu-latest
@@ -32,7 +13,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-node@master
         with:
-          node-version: 16.x
+          node-version: 18.x
       - name: Cache Node.js modules
         uses: actions/cache@v1
         with:
@@ -54,7 +35,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-node@master
         with:
-          node-version: 16.x
+          node-version: 18.x
       - name: Cache Node.js modules
         uses: actions/cache@v1
         with:
@@ -76,7 +57,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-node@master
         with:
-          node-version: 16.x
+          node-version: 18.x
       - name: Cache Node.js modules
         uses: actions/cache@v1
         with:
@@ -97,21 +78,3 @@ jobs:
 #          time: '5s'
       - name: Run tests
         run: npm run test
-
-  check-version:
-    name: Check version
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - run: git fetch --depth=1 --tags origin
-      - name: Install yq
-        run: sudo snap install yq
-      - name: Check Build Version
-        id: get_version
-        run: ./scripts/check-version.sh
-        shell: bash
-      - name: Error if version is not increased
-        shell: bash
-        run: |
-          exit $([[ "${{steps.get_version.outputs.IS_NEW_VERSION}}" = "true" ]] && echo 0 || echo 1)
