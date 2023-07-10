@@ -1,0 +1,6 @@
+build
+node_modules
+package.json
+coverage
+.nyc_output
+.env
