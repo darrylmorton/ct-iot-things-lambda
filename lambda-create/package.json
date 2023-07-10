@@ -6,7 +6,7 @@
     "depcheck": "depcheck"
   },
   "engines": {
-    "node": ">=16.15"
+    "node": ">=18.14"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.150.0",
