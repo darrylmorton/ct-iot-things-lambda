@@ -1,5 +1,10 @@
 # ct-iot-things-lambda
 
+# Description
+The `ct-iot-things-lambda` reads/writes `things` to a database, and is placed behind an API Gateway.
+
+[Flow chart and sequence diagrams](./docs/DIAGRAMS.md)
+
 ## Run
 
 ### Lint
@@ -33,3 +38,6 @@ npm run prod:package-read
 # or
 npm run prod:package-all
 ```
+
+## Deployment
+Must be deployed **after** the `things` Database.
