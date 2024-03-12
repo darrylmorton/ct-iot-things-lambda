@@ -1,6 +1,6 @@
 # ct-iot-things-lambda
 
-# Description
+## Description
 The `ct-iot-things-lambda` reads/writes `things` to a database, and is placed behind an API Gateway.
 
 [Flow chart and sequence diagrams](./docs/DIAGRAMS.md)
