@@ -76,10 +76,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', {})
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -91,10 +88,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -120,10 +114,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -135,10 +126,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -164,10 +152,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -179,10 +164,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -208,10 +190,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -223,10 +202,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -238,10 +214,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -267,10 +240,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -282,10 +252,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -299,10 +266,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        createThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -324,10 +288,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        createThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -344,10 +305,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        createThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
@@ -364,10 +322,7 @@ describe('thing tests', () => {
 
       const event = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        createThingLambda.handler
-      )
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
       const lambdaSpyResult = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)

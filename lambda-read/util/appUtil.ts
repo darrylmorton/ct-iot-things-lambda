@@ -65,8 +65,7 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
   return DynamoDBDocumentClient.from(await getDbClient(), translateConfig)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const consoleErrorOutput = (lambdaFunctionName: string | unknown, functionName: string, err: any | unknown) => {
+export const consoleErrorOutput = (lambdaFunctionName: string | unknown, functionName: string, err: unknown) => {
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line no-console
     console.error(`${lambdaFunctionName}: ${functionName} - error`, err)
@@ -114,7 +113,7 @@ export const getItems = async (
         body: JSON.stringify([]),
       }
     }
-  } catch (err: unknown) {
+  } catch (err) {
     consoleErrorOutput(context.functionName, 'getItems', err)
 
     return {
@@ -159,7 +158,7 @@ export const queryById = async (
         statusCode: 404,
       }
     }
-  } catch (err: unknown) {
+  } catch (err) {
     consoleErrorOutput(context.functionName, 'queryById', err)
 
     return {
@@ -198,7 +197,7 @@ export const queryByThingName = async (
         statusCode: 404,
       }
     }
-  } catch (err: unknown) {
+  } catch (err) {
     consoleErrorOutput(context.functionName, 'queryByThingName', err)
 
     return {
@@ -244,7 +243,7 @@ export const queryByDeviceId = async (
         statusCode: 404,
       }
     }
-  } catch (err: unknown) {
+  } catch (err) {
     consoleErrorOutput(context.functionName, 'queryByDeviceId', err)
 
     return {
@@ -290,7 +289,7 @@ export const queryByThingTypeId = async (
         statusCode: 404,
       }
     }
-  } catch (err: unknown) {
+  } catch (err) {
     consoleErrorOutput(context.functionName, 'queryByThingName', err)
 
     return {

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
 import { DynamoDBDocumentClient, PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
@@ -41,7 +41,6 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
 
   const translateConfig = { marshallOptions, unmarshallOptions }
 
-  // @ts-ignore
   return DynamoDBDocumentClient.from(await getDbClient(), translateConfig)
 }
 
@@ -55,16 +54,11 @@ export const createContext = (functionName: string) => {
     logGroupName: '',
     logStreamName: '',
     memoryLimitInMB: '',
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
     done(error?: Error, result?: any): void {},
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
     fail(error: Error | string): void {},
     getRemainingTimeInMillis(): number {
       return 0
     },
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
     succeed(message: any, object?: any): void {},
   }
 }
@@ -149,9 +143,10 @@ export const createThing = async (
     const result: PutCommandOutput = await client.send(new PutCommand(params))
 
     return { headers: API_GATEWAY_HEADERS, statusCode: result.$metadata.httpStatusCode, body: thing }
-  } catch (err: any | unknown) {
+  } catch (err) {
     consoleErrorOutput('create-thing-test-lambda', 'createThing', err)
 
+    // @ts-ignore
     return { headers: API_GATEWAY_HEADERS, statusCode: err.$metadata?.httpStatusCode }
   }
 }

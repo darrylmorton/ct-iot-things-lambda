@@ -56,8 +56,7 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
   return DynamoDBDocumentClient.from(await getDbClient(), translateConfig)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const consoleErrorOutput = (lambdaFunctionName: string | unknown, functionName: string, err: any | unknown) => {
+export const consoleErrorOutput = (lambdaFunctionName: string | unknown, functionName: string, err: unknown) => {
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line no-console
     console.error(`${lambdaFunctionName}: ${functionName} - error`, err)

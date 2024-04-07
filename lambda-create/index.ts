@@ -69,7 +69,7 @@ export const handler = async function run(
         headers: API_GATEWAY_HEADERS,
         statusCode: 400,
       }
-    } catch (err: unknown) {
+    } catch (err) {
       consoleErrorOutput(context.functionName, 'handler.index', err)
 
       return {
