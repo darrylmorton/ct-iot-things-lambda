@@ -1,6 +1,6 @@
 {
   "name": "ct-iot-things-lambda",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Darryl Morton",
   "license": "GNU",
   "scripts": {
