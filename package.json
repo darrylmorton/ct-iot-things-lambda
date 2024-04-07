@@ -4,10 +4,10 @@
   "author": "Darryl Morton",
   "license": "GNU",
   "scripts": {
-    "build": "./node_modules/typescript/bin/tsc  **/*.ts",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts --ext .tsx",
     "depcheck": "depcheck",
-    "test": "NODE_ENV=test AWS_ACCESS_KEY_ID=1 AWS_SECRET_ACCESS_KEY=2 AWS_REGION=localhost mocha -r ts-node/register --config ./test/mocharc.json ./test/**/*.test.ts",
+    "test": "NODE_ENV=test AWS_ACCESS_KEY_ID=1 AWS_SECRET_ACCESS_KEY=2 AWS_REGION=localhost NODE_OPTIONS='--import tsx' nyc mocha --config ./test/mocharc.json ./test/",
+    "test:coverage": "NODE_ENV=test AWS_ACCESS_KEY_ID=1 AWS_SECRET_ACCESS_KEY=2 AWS_REGION=localhost NODE_OPTIONS='--import tsx' nyc mocha --config ./test/mocharc.json ./test/",
     "dev:package-create": "zip -r ../ct-iot-serverless-infrastructure/terraform/development/dev-create-thing-lambda.zip ./lambda-create",
     "dev:package-read": "zip -r ../ct-iot-serverless-infrastructure/terraform/development/dev-read-thing-lambda.zip ./lambda-read",
     "dev:package-all": "npm run dev:package-create && npm run dev:package-read",
@@ -21,9 +21,13 @@
   "engines": {
     "node": ">=18.14"
   },
+  "peerDependencies": {
+    "tsx": "^4.7.1"
+  },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.150.0",
     "@aws-sdk/lib-dynamodb": "^3.216.0",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/aws-lambda": "^8.10.109",
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.0",
@@ -38,9 +42,9 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.1.0",
     "mocha": "^10.1.0",
+    "nyc": "^15.1.0",
     "prettier": "^2.7.1",
     "sinon": "^14.0.2",
-    "ts-node": "^10.9.1",
     "typescript": "^4.7.4",
     "uuid": "^8.3.2"
   }
