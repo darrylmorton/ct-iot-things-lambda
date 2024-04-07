@@ -75,7 +75,5 @@ jobs:
         uses: kibertoad/wait-action@1.0.1
         with:
           time: '30s'
-      - name: Initialise DB
-        run: npm run test:migrate
       - name: Run tests
         run: npm run test:coverage
