@@ -15,10 +15,10 @@ import {
   APIGatewayProxyEventQueryStringParameters,
   APIGatewayProxyEventStageVariables,
 } from 'aws-lambda/trigger/api-gateway-proxy'
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
 
 import { ThingResponse, ResponseBody, ResponseError } from '../../types'
 import { uuidValidateV4 } from '../../lambda-read/util/appUtil'
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
 
 export const DB_NAME = 'ct-iot-test-things'
 

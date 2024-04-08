@@ -1,9 +1,3 @@
-export interface ThingEvent {
-  body: string
-  updatedAt: string
-  createdAt: string
-}
-
 export interface SimpleThing {
   thingName: string
   deviceId: string

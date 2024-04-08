@@ -4,11 +4,11 @@ import { DynamoDBDocumentClient, PutCommand, PutCommandInput, PutCommandOutput }
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
 import { Context } from 'aws-lambda'
+import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy'
 
 import { createEvent, DB_NAME } from './thingHelper'
 import { Thing, ThingResponse } from '../../types'
 import { API_GATEWAY_HEADERS, consoleErrorOutput } from '../../lambda-create/util/appUtil'
-import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy'
 
 export const getDbClient = async (): Promise<DynamoDBClient> => {
   if (process.env.NODE_ENV === 'test') {

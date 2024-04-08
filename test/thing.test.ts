@@ -19,6 +19,7 @@ import {
 } from './helper/thingHelper'
 import { Thing, ThingResponse } from '../types'
 import { API_GATEWAY_HEADERS } from '../lambda-create/util/appUtil'
+import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy'
 
 describe('thing tests', () => {
   let client: DynamoDBDocumentClient
@@ -75,7 +76,7 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(null, 'GET', {})
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', {})
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -86,7 +87,7 @@ describe('thing tests', () => {
     it('read thing by id', async () => {
       const qsParams = { id: 'ABC' }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -112,7 +113,7 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -124,7 +125,7 @@ describe('thing tests', () => {
     it('read missing thing by id', async () => {
       const qsParams = { id: thingZeroId }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -150,7 +151,7 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -162,7 +163,7 @@ describe('thing tests', () => {
     it('read missing thing by name', async () => {
       const qsParams = { thingName: thingZeroName }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -188,7 +189,7 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -200,7 +201,7 @@ describe('thing tests', () => {
     it('read missing thing by device id', async () => {
       const qsParams = { deviceId: deviceZeroId }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -212,7 +213,7 @@ describe('thing tests', () => {
     it('read thing by type', async () => {
       const qsParams = { thingTypeId: 'ABC' }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -238,7 +239,7 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -250,7 +251,7 @@ describe('thing tests', () => {
     it('read missing thing by type', async () => {
       const qsParams = { thingTypeId: thingTypeZeroId }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -264,7 +265,7 @@ describe('thing tests', () => {
     it('create bad thing', async () => {
       const body = JSON.stringify({ thingName: '', deviceId: '', thingTypeId: '', description: '' })
 
-      const event = createEventWrapper(body, 'POST', {})
+      const event: APIGatewayProxyEvent = createEventWrapper(body, 'POST', {})
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -286,7 +287,7 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(body, 'POST', {})
+      const event: APIGatewayProxyEvent = createEventWrapper(body, 'POST', {})
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -303,7 +304,7 @@ describe('thing tests', () => {
         description: thingTwoName,
       })
 
-      const event = createEventWrapper(body, 'POST', {})
+      const event: APIGatewayProxyEvent = createEventWrapper(body, 'POST', {})
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
@@ -320,7 +321,7 @@ describe('thing tests', () => {
         description: thingTwoName,
       })
 
-      const event = createEventWrapper(body, 'POST', {})
+      const event: APIGatewayProxyEvent = createEventWrapper(body, 'POST', {})
 
       const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
       const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
