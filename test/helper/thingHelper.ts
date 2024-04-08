@@ -177,7 +177,8 @@ export const createEvent = (
       user: null
     }
     requestId: string
-    http: { path: string; protocol: string; method: string; sourceIp: string; userAgent: string }
+    // prettier-ignore
+    http: { path: string, protocol: string, method: string, sourceIp: string, userAgent: string }
     apiId: string
   },
   resource: string,

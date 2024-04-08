@@ -59,8 +59,12 @@ export const createContext = (functionName: string): Context => {
     getRemainingTimeInMillis(): number {
       return 999
     },
-    done(error?: Error, result?: any) {},
-    fail(error: Error | string) {},
+    done(error?: Error, result?: any) {
+      console.error(error)
+    },
+    fail(error: Error | string) {
+      console.error(error)
+    },
     succeed(messageOrObject: any) {},
   }
 }
