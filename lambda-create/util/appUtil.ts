@@ -8,12 +8,12 @@ const DB_TABLE_NAME_SUFFIX = 'things'
 
 export const API_GATEWAY_HEADERS = { 'Content-Type': 'application/json' }
 
-export const getDbName = () => {
+export const getDbName = (): string => {
   const NODE_ENV = process.env.NODE_ENV
 
   switch (NODE_ENV) {
     case 'production':
-      return process.env.DB_TABLE_NAME
+      return `${process.env.DB_TABLE_NAME}`
     case 'test':
       return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${DB_TABLE_NAME_SUFFIX}`
     default:
@@ -56,7 +56,7 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
   return DynamoDBDocumentClient.from(await getDbClient(), translateConfig)
 }
 
-export const consoleErrorOutput = (lambdaFunctionName: string | unknown, functionName: string, err: unknown) => {
+export const consoleErrorOutput = (lambdaFunctionName: string | unknown, functionName: string, err: unknown): void => {
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line no-console
     console.error(`${lambdaFunctionName}: ${functionName} - error`, err)

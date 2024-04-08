@@ -3,10 +3,12 @@
 import { DynamoDBDocumentClient, PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
+import { Context } from 'aws-lambda'
 
 import { createEvent, DB_NAME } from './thingHelper'
-import { Thing } from '../../types'
+import { Thing, ThingResponse } from '../../types'
 import { API_GATEWAY_HEADERS, consoleErrorOutput } from '../../lambda-create/util/appUtil'
+import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy'
 
 export const getDbClient = async (): Promise<DynamoDBClient> => {
   if (process.env.NODE_ENV === 'test') {
@@ -44,26 +46,30 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
   return DynamoDBDocumentClient.from(await getDbClient(), translateConfig)
 }
 
-export const createContext = (functionName: string) => {
+export const createContext = (functionName: string): Context => {
   return {
-    awsRequestId: '',
     callbackWaitsForEmptyEventLoop: false,
     functionName,
-    functionVersion: '',
-    invokedFunctionArn: '',
-    logGroupName: '',
-    logStreamName: '',
-    memoryLimitInMB: '',
-    done(error?: Error, result?: any): void {},
-    fail(error: Error | string): void {},
+    functionVersion: 'mocked',
+    invokedFunctionArn: 'mocked',
+    memoryLimitInMB: 'mocked',
+    awsRequestId: 'mocked',
+    logGroupName: 'mocked',
+    logStreamName: 'mocked',
     getRemainingTimeInMillis(): number {
-      return 0
+      return 999
     },
-    succeed(message: any, object?: any): void {},
+    done(error?: Error, result?: any) {},
+    fail(error: Error | string) {},
+    succeed(messageOrObject: any) {},
   }
 }
 
-export const createEventWrapper = (body: string | null, httpMethod: string, qsParams: Record<string, string>) => {
+export const createEventWrapper = (
+  body: string | null,
+  httpMethod: string,
+  qsParams: Record<string, string>
+): APIGatewayProxyEvent => {
   return createEvent(
     body,
     { 'content-type': 'application/json' },
@@ -121,7 +127,7 @@ export const createThing = async (
   thingName: string,
   deviceId: string,
   thingTypeId: string
-) => {
+): Promise<ThingResponse> => {
   const currentDate: string = new Date().toISOString()
 
   const thing: Thing = {
@@ -142,11 +148,10 @@ export const createThing = async (
   try {
     const result: PutCommandOutput = await client.send(new PutCommand(params))
 
-    return { headers: API_GATEWAY_HEADERS, statusCode: result.$metadata.httpStatusCode, body: thing }
-  } catch (err) {
+    return { headers: API_GATEWAY_HEADERS, statusCode: result.$metadata.httpStatusCode, body: JSON.stringify(thing) }
+  } catch (err: any) {
     consoleErrorOutput('create-thing-test-lambda', 'createThing', err)
 
-    // @ts-ignore
-    return { headers: API_GATEWAY_HEADERS, statusCode: err.$metadata?.httpStatusCode }
+    return { headers: API_GATEWAY_HEADERS, statusCode: err.$metadata?.httpStatusCode, body: '' }
   }
 }

@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { APIGatewayProxyEvent, Context } from 'aws-lambda'
 import { PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 
-import { ResponseError, Thing, ThingResponse } from '../types'
+import { ResponseBody, Thing, ThingResponse } from '../types'
 import {
   consoleErrorOutput,
   getDbDocumentClient,
@@ -12,13 +12,10 @@ import {
   queryByThingName,
 } from './util/appUtil'
 
-export const handler = async function run(
-  event: APIGatewayProxyEvent,
-  context: Context
-): Promise<ThingResponse | ResponseError> {
+export const handler = async function run(event: APIGatewayProxyEvent, context: Context): Promise<ThingResponse> {
   if (event.body) {
     try {
-      const body = JSON.parse(event.body)
+      const body: ResponseBody = JSON.parse(event.body)
 
       if (body.thingName && body.deviceId && body.thingTypeId && body.description) {
         const client = await getDbDocumentClient()
@@ -28,6 +25,7 @@ export const handler = async function run(
           return {
             headers: API_GATEWAY_HEADERS,
             statusCode: queryByThingNameStatusCode,
+            body: '',
           }
         }
 
@@ -36,6 +34,7 @@ export const handler = async function run(
           return {
             headers: API_GATEWAY_HEADERS,
             statusCode: queryByDeviceIdStatusCode,
+            body: '',
           }
         }
 
@@ -68,6 +67,7 @@ export const handler = async function run(
       return {
         headers: API_GATEWAY_HEADERS,
         statusCode: 400,
+        body: '',
       }
     } catch (err) {
       consoleErrorOutput(context.functionName, 'handler.index', err)
@@ -75,6 +75,7 @@ export const handler = async function run(
       return {
         headers: API_GATEWAY_HEADERS,
         statusCode: 500,
+        body: '',
       }
     }
   }
@@ -82,5 +83,6 @@ export const handler = async function run(
   return {
     headers: API_GATEWAY_HEADERS,
     statusCode: 400,
+    body: '',
   }
 }
