@@ -76,7 +76,7 @@ export const uuidValidateV4 = (uuid: string): boolean => {
   return uuidValidate(uuid) && uuidVersion(uuid) === 4
 }
 
-export const getItems = async (client: DynamoDBDocumentClient, context: Context): Promise<ThingResponse> => {
+export const getItems = async (client: DynamoDBDocumentClient, context?: Context): Promise<ThingResponse> => {
   try {
     const params: ScanCommandInput = {
       TableName: getDbName(),
@@ -86,32 +86,24 @@ export const getItems = async (client: DynamoDBDocumentClient, context: Context)
 
     const result: ScanCommandOutput = await client.send(new ScanCommand(params))
 
-    if (result.Items) {
-      const body = result.Items.reduce(
-        (acc: Array<Record<string, AttributeValue>>, item: Record<string, AttributeValue>) => {
-          const unmarshalledItem = unmarshall(item)
+    const body = result.Items?.reduce(
+      (acc: Array<Record<string, AttributeValue>>, item: Record<string, AttributeValue>) => {
+        const unmarshalledItem = unmarshall(item)
 
-          acc.push(unmarshalledItem)
+        acc.push(unmarshalledItem)
 
-          return acc
-        },
-        []
-      )
+        return acc
+      },
+      []
+    )
 
-      return {
-        headers: API_GATEWAY_HEADERS,
-        statusCode: result.$metadata.httpStatusCode,
-        body: JSON.stringify(body),
-      }
-    } else {
-      return {
-        headers: API_GATEWAY_HEADERS,
-        statusCode: 200,
-        body: JSON.stringify([]),
-      }
+    return {
+      headers: API_GATEWAY_HEADERS,
+      statusCode: result.$metadata.httpStatusCode,
+      body: JSON.stringify(body),
     }
   } catch (err) {
-    consoleErrorOutput(context.functionName, 'getItems', err)
+    consoleErrorOutput(context?.functionName, 'getItems', err)
 
     return {
       headers: API_GATEWAY_HEADERS,
@@ -124,7 +116,7 @@ export const getItems = async (client: DynamoDBDocumentClient, context: Context)
 export const queryById = async (
   client: DynamoDBDocumentClient,
   id: string,
-  context: Context
+  context?: Context
 ): Promise<ThingResponse> => {
   if (!uuidValidateV4(id)) {
     return {
@@ -159,7 +151,7 @@ export const queryById = async (
       }
     }
   } catch (err) {
-    consoleErrorOutput(context.functionName, 'queryById', err)
+    consoleErrorOutput(context?.functionName, 'queryById', err)
 
     return {
       headers: API_GATEWAY_HEADERS,
@@ -172,7 +164,7 @@ export const queryById = async (
 export const queryByThingName = async (
   client: DynamoDBDocumentClient,
   thingName: string,
-  context: Context
+  context?: Context
 ): Promise<ThingResponse> => {
   try {
     const params: QueryCommandInput = {
@@ -200,7 +192,7 @@ export const queryByThingName = async (
       }
     }
   } catch (err) {
-    consoleErrorOutput(context.functionName, 'queryByThingName', err)
+    consoleErrorOutput(context?.functionName, 'queryByThingName', err)
 
     return {
       headers: API_GATEWAY_HEADERS,
@@ -213,7 +205,7 @@ export const queryByThingName = async (
 export const queryByDeviceId = async (
   client: DynamoDBDocumentClient,
   deviceId: string,
-  context: Context
+  context?: Context
 ): Promise<ThingResponse> => {
   if (!deviceId) {
     return {
@@ -249,7 +241,7 @@ export const queryByDeviceId = async (
       }
     }
   } catch (err) {
-    consoleErrorOutput(context.functionName, 'queryByDeviceId', err)
+    consoleErrorOutput(context?.functionName, 'queryByDeviceId', err)
 
     return {
       headers: API_GATEWAY_HEADERS,
@@ -262,7 +254,7 @@ export const queryByDeviceId = async (
 export const queryByThingTypeId = async (
   client: DynamoDBDocumentClient,
   thingTypeId: string,
-  context: Context
+  context?: Context
 ): Promise<ThingResponse> => {
   if (!uuidValidateV4(thingTypeId)) {
     return {
@@ -298,7 +290,7 @@ export const queryByThingTypeId = async (
       }
     }
   } catch (err) {
-    consoleErrorOutput(context.functionName, 'queryByThingName', err)
+    consoleErrorOutput(context?.functionName, 'queryByThingName', err)
 
     return {
       headers: API_GATEWAY_HEADERS,

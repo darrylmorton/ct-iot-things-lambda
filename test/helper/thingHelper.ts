@@ -1,204 +1,9 @@
-import {
-  CreateTableCommand,
-  CreateTableCommandInput,
-  CreateTableCommandOutput,
-  DeleteTableCommand,
-  DeleteTableCommandOutput,
-} from '@aws-sdk/client-dynamodb'
 import { expect } from 'chai'
-import {
-  APIGatewayProxyEventMultiValueQueryStringParameters,
-  APIGatewayProxyEvent,
-  APIGatewayProxyEventHeaders,
-  APIGatewayProxyEventMultiValueHeaders,
-  APIGatewayProxyEventPathParameters,
-  APIGatewayProxyEventQueryStringParameters,
-  APIGatewayProxyEventStageVariables,
-} from 'aws-lambda/trigger/api-gateway-proxy'
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
+import { validate as isValidUuid } from 'uuid'
+import { isValid, parseISO } from 'date-fns'
 
-import { ThingResponse, ResponseBody, ResponseError } from '../../types'
+import { ThingResponse, ResponseBody, ResponseError, Thing, PutThingResult } from '../../types'
 import { uuidValidateV4 } from '../../lambda-read/util/appUtil'
-
-export const DB_NAME = 'ct-iot-test-things'
-
-export const createTable = async (dbClient: DynamoDBDocumentClient): Promise<CreateTableCommandOutput> => {
-  const input: CreateTableCommandInput = {
-    TableName: DB_NAME,
-    AttributeDefinitions: [
-      {
-        AttributeName: 'id',
-        AttributeType: 'S',
-      },
-      {
-        AttributeName: 'thingName',
-        AttributeType: 'S',
-      },
-      {
-        AttributeName: 'deviceId',
-        AttributeType: 'S',
-      },
-      {
-        AttributeName: 'thingTypeId',
-        AttributeType: 'S',
-      },
-      {
-        AttributeName: 'updatedAt',
-        AttributeType: 'S',
-      },
-    ],
-    KeySchema: [
-      {
-        AttributeName: 'id',
-        KeyType: 'HASH',
-      },
-    ],
-    ProvisionedThroughput: {
-      ReadCapacityUnits: 1,
-      WriteCapacityUnits: 1,
-    },
-    StreamSpecification: {
-      StreamEnabled: false,
-    },
-    BillingMode: 'PAY_PER_REQUEST',
-    GlobalSecondaryIndexes: [
-      {
-        IndexName: 'thingNameIndex',
-        KeySchema: [
-          {
-            AttributeName: 'thingName',
-            KeyType: 'HASH',
-          },
-          {
-            AttributeName: 'updatedAt',
-            KeyType: 'RANGE',
-          },
-        ],
-        Projection: {
-          ProjectionType: 'ALL',
-        },
-        ProvisionedThroughput: {
-          ReadCapacityUnits: 1,
-          WriteCapacityUnits: 1,
-        },
-      },
-      {
-        IndexName: 'deviceIdIndex',
-        KeySchema: [
-          {
-            AttributeName: 'deviceId',
-            KeyType: 'HASH',
-          },
-          {
-            AttributeName: 'updatedAt',
-            KeyType: 'RANGE',
-          },
-        ],
-        Projection: {
-          ProjectionType: 'ALL',
-        },
-        ProvisionedThroughput: {
-          ReadCapacityUnits: 1,
-          WriteCapacityUnits: 1,
-        },
-      },
-      {
-        IndexName: 'thingTypeIdIndex',
-        KeySchema: [
-          {
-            AttributeName: 'thingTypeId',
-            KeyType: 'HASH',
-          },
-          {
-            AttributeName: 'updatedAt',
-            KeyType: 'RANGE',
-          },
-        ],
-        Projection: {
-          ProjectionType: 'ALL',
-        },
-        ProvisionedThroughput: {
-          ReadCapacityUnits: 1,
-          WriteCapacityUnits: 1,
-        },
-      },
-    ],
-  }
-
-  const command = new CreateTableCommand(input)
-
-  return dbClient.send(command)
-}
-
-export const dropTable = async (dbClient: DynamoDBDocumentClient): Promise<DeleteTableCommandOutput> => {
-  const params = {
-    TableName: DB_NAME,
-  }
-
-  const command = new DeleteTableCommand(params)
-
-  return dbClient.send(command)
-}
-
-export const createEvent = (
-  body: string | null,
-  headers: APIGatewayProxyEventHeaders,
-  httpMethod: string,
-  path: string,
-  multiValueHeaders: APIGatewayProxyEventMultiValueHeaders,
-  multiValueQueryStringParameters: APIGatewayProxyEventMultiValueQueryStringParameters,
-  pathParameters: APIGatewayProxyEventPathParameters,
-  queryStringParameters: APIGatewayProxyEventQueryStringParameters,
-  requestContext: {
-    resourceId: string
-    authorizer: undefined
-    resourcePath: string
-    httpMethod: string
-    path: string
-    accountId: string
-    protocol: string
-    stage: string
-    requestTimeEpoch: number
-    identity: {
-      cognitoIdentityPoolId: null
-      clientCert: null
-      cognitoIdentityId: null
-      apiKey: null
-      principalOrgId: null
-      cognitoAuthenticationType: null
-      userArn: null
-      apiKeyId: null
-      userAgent: null
-      accountId: null
-      caller: null
-      sourceIp: string
-      accessKey: null
-      cognitoAuthenticationProvider: null
-      user: null
-    }
-    requestId: string
-    // prettier-ignore
-    http: { path: string, protocol: string, method: string, sourceIp: string, userAgent: string }
-    apiId: string
-  },
-  resource: string,
-  stageVariables: APIGatewayProxyEventStageVariables
-): APIGatewayProxyEvent => {
-  return {
-    body,
-    headers,
-    httpMethod,
-    isBase64Encoded: false,
-    multiValueHeaders,
-    multiValueQueryStringParameters,
-    path,
-    pathParameters,
-    queryStringParameters,
-    requestContext,
-    resource,
-    stageVariables,
-  }
-}
 
 export const assertThingResponse = (actualResult: ThingResponse, expectedResult: ThingResponse): void => {
   expect(actualResult.statusCode).to.equal(expectedResult.statusCode)
@@ -239,4 +44,25 @@ export const assertResponseError = (
 ): void => {
   expect(actualResult.headers).to.deep.equal(headers)
   expect(actualResult.statusCode).to.equal(statusCode)
+}
+
+export const assertThing = (actualResult: Thing, expectedResult: Thing): void => {
+  expect(isValidUuid(actualResult.id)).to.equal(true)
+  expect(actualResult.thingName).to.equal(expectedResult.thingName)
+  expect(actualResult.description).to.equal(expectedResult.description)
+  expect(actualResult.deviceId).to.equal(expectedResult.deviceId)
+  expect(actualResult.thingTypeId).to.equal(expectedResult.thingTypeId)
+}
+
+export const assertThingWithDates = (actualResult: Thing, expectedResult: Thing): void => {
+  assertThing(actualResult, expectedResult)
+
+  expect(isValid(parseISO(actualResult.updatedAt))).to.equal(true)
+  expect(isValid(parseISO(actualResult.createdAt))).to.equal(true)
+}
+
+export const assertPutThingResult = (actualResult: PutThingResult, expectedResult: PutThingResult): void => {
+  expect(actualResult.statusCode).to.equal(expectedResult.statusCode)
+
+  assertThing(actualResult.result, expectedResult.result)
 }

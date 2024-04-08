@@ -1,14 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
 import { DynamoDBDocumentClient, PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import {
+  AttributeValue,
+  CreateTableCommand,
+  CreateTableCommandInput,
+  CreateTableCommandOutput,
+  DeleteTableCommand,
+  DeleteTableCommandOutput,
+  DynamoDBClient,
+  ScanCommandOutput,
+} from '@aws-sdk/client-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
 import { Context } from 'aws-lambda'
-import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy'
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyEventHeaders,
+  APIGatewayProxyEventMultiValueHeaders,
+  APIGatewayProxyEventMultiValueQueryStringParameters,
+  APIGatewayProxyEventPathParameters,
+  APIGatewayProxyEventQueryStringParameters,
+  APIGatewayProxyEventStageVariables,
+} from 'aws-lambda/trigger/api-gateway-proxy'
 
-import { createEvent, DB_NAME } from './thingHelper'
 import { Thing, ThingResponse } from '../../types'
-import { API_GATEWAY_HEADERS, consoleErrorOutput } from '../../lambda-create/util/appUtil'
+import { API_GATEWAY_HEADERS, consoleErrorOutput, createThing } from '../../lambda-create/util/appUtil'
+
+export const DB_NAME = 'ct-iot-test-things'
 
 export const getDbClient = async (): Promise<DynamoDBClient> => {
   if (process.env.NODE_ENV === 'test') {
@@ -126,23 +144,14 @@ export const createEventWrapper = (
   )
 }
 
-export const createThing = async (
+export const createThingDb = async (
   client: DynamoDBDocumentClient,
   thingName: string,
   deviceId: string,
-  thingTypeId: string
+  thingTypeId: string,
+  id: string = uuidv4()
 ): Promise<ThingResponse> => {
-  const currentDate: string = new Date().toISOString()
-
-  const thing: Thing = {
-    id: uuidv4(),
-    thingName,
-    deviceId,
-    thingTypeId,
-    description: thingName,
-    updatedAt: currentDate,
-    createdAt: currentDate,
-  }
+  const thing: Thing = createThing(thingName, deviceId, thingTypeId, thingName, id)
 
   const params: PutCommandInput = {
     TableName: DB_NAME,
@@ -157,5 +166,204 @@ export const createThing = async (
     consoleErrorOutput('create-thing-test-lambda', 'createThing', err)
 
     return { headers: API_GATEWAY_HEADERS, statusCode: err.$metadata?.httpStatusCode, body: '' }
+  }
+}
+
+export const createTable = async (dbClient: DynamoDBDocumentClient): Promise<CreateTableCommandOutput> => {
+  const input: CreateTableCommandInput = {
+    TableName: DB_NAME,
+    AttributeDefinitions: [
+      {
+        AttributeName: 'id',
+        AttributeType: 'S',
+      },
+      {
+        AttributeName: 'thingName',
+        AttributeType: 'S',
+      },
+      {
+        AttributeName: 'deviceId',
+        AttributeType: 'S',
+      },
+      {
+        AttributeName: 'thingTypeId',
+        AttributeType: 'S',
+      },
+      {
+        AttributeName: 'updatedAt',
+        AttributeType: 'S',
+      },
+    ],
+    KeySchema: [
+      {
+        AttributeName: 'id',
+        KeyType: 'HASH',
+      },
+    ],
+    ProvisionedThroughput: {
+      ReadCapacityUnits: 1,
+      WriteCapacityUnits: 1,
+    },
+    StreamSpecification: {
+      StreamEnabled: false,
+    },
+    BillingMode: 'PAY_PER_REQUEST',
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'thingNameIndex',
+        KeySchema: [
+          {
+            AttributeName: 'thingName',
+            KeyType: 'HASH',
+          },
+          {
+            AttributeName: 'updatedAt',
+            KeyType: 'RANGE',
+          },
+        ],
+        Projection: {
+          ProjectionType: 'ALL',
+        },
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 1,
+          WriteCapacityUnits: 1,
+        },
+      },
+      {
+        IndexName: 'deviceIdIndex',
+        KeySchema: [
+          {
+            AttributeName: 'deviceId',
+            KeyType: 'HASH',
+          },
+          {
+            AttributeName: 'updatedAt',
+            KeyType: 'RANGE',
+          },
+        ],
+        Projection: {
+          ProjectionType: 'ALL',
+        },
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 1,
+          WriteCapacityUnits: 1,
+        },
+      },
+      {
+        IndexName: 'thingTypeIdIndex',
+        KeySchema: [
+          {
+            AttributeName: 'thingTypeId',
+            KeyType: 'HASH',
+          },
+          {
+            AttributeName: 'updatedAt',
+            KeyType: 'RANGE',
+          },
+        ],
+        Projection: {
+          ProjectionType: 'ALL',
+        },
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 1,
+          WriteCapacityUnits: 1,
+        },
+      },
+    ],
+  }
+
+  const command = new CreateTableCommand(input)
+
+  return dbClient.send(command)
+}
+
+export const dropTable = async (dbClient: DynamoDBDocumentClient): Promise<DeleteTableCommandOutput> => {
+  const params = {
+    TableName: DB_NAME,
+  }
+
+  const command = new DeleteTableCommand(params)
+
+  return dbClient.send(command)
+}
+
+export const createEvent = (
+  body: string | null,
+  headers: APIGatewayProxyEventHeaders,
+  httpMethod: string,
+  path: string,
+  multiValueHeaders: APIGatewayProxyEventMultiValueHeaders,
+  multiValueQueryStringParameters: APIGatewayProxyEventMultiValueQueryStringParameters,
+  pathParameters: APIGatewayProxyEventPathParameters,
+  queryStringParameters: APIGatewayProxyEventQueryStringParameters,
+  requestContext: {
+    resourceId: string
+    authorizer: undefined
+    resourcePath: string
+    httpMethod: string
+    path: string
+    accountId: string
+    protocol: string
+    stage: string
+    requestTimeEpoch: number
+    identity: {
+      cognitoIdentityPoolId: null
+      clientCert: null
+      cognitoIdentityId: null
+      apiKey: null
+      principalOrgId: null
+      cognitoAuthenticationType: null
+      userArn: null
+      apiKeyId: null
+      userAgent: null
+      accountId: null
+      caller: null
+      sourceIp: string
+      accessKey: null
+      cognitoAuthenticationProvider: null
+      user: null
+    }
+    requestId: string
+    // prettier-ignore
+    http: { path: string, protocol: string, method: string, sourceIp: string, userAgent: string }
+    apiId: string
+  },
+  resource: string,
+  stageVariables: APIGatewayProxyEventStageVariables
+): APIGatewayProxyEvent => {
+  return {
+    body,
+    headers,
+    httpMethod,
+    isBase64Encoded: false,
+    multiValueHeaders,
+    multiValueQueryStringParameters,
+    path,
+    pathParameters,
+    queryStringParameters,
+    requestContext,
+    resource,
+    stageVariables,
+  }
+}
+
+export const createScanCommandOutput = (
+  statusCode: number,
+  count: number,
+  items: Array<Record<string, AttributeValue>> = [],
+  scannedCount: number = 0
+): ScanCommandOutput => {
+  return {
+    $metadata: {
+      httpStatusCode: statusCode,
+      requestId: '7a50b5e8-e91f-4ecb-882f-56e718a9e8d8',
+      extendedRequestId: undefined,
+      cfId: undefined,
+      attempts: 1,
+      totalRetryDelay: 0,
+    },
+    Count: count,
+    Items: items,
+    ScannedCount: scannedCount,
   }
 }

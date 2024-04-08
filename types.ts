@@ -27,3 +27,8 @@ export type ResponseBody = {
 export interface ThingResponse extends ResponseError {
   body: string
 }
+
+export type PutThingResult = {
+  statusCode: number | undefined
+  result: Thing
+}

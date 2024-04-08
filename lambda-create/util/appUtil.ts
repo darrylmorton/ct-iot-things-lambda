@@ -1,7 +1,16 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb'
+import {
+  DynamoDBDocumentClient,
+  PutCommand,
+  PutCommandInput,
+  PutCommandOutput,
+  QueryCommand,
+  QueryCommandInput,
+  QueryCommandOutput,
+} from '@aws-sdk/lib-dynamodb'
+import { v4 as uuidv4 } from 'uuid'
 
-import { ResponseError } from '../../types'
+import { PutThingResult, ResponseBody, ResponseError, Thing } from '../../types'
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
@@ -111,4 +120,37 @@ export const queryByDeviceId = async (client: DynamoDBDocumentClient, deviceId: 
       statusCode: 404,
     }
   }
+}
+
+export const createThing = (
+  thingName: string,
+  deviceId: string,
+  thingTypeId: string,
+  description: string,
+  id: string = uuidv4()
+): Thing => {
+  const currentDate: string = new Date().toISOString()
+
+  return {
+    id,
+    thingName,
+    deviceId,
+    thingTypeId,
+    description,
+    updatedAt: currentDate,
+    createdAt: currentDate,
+  }
+}
+
+export const putThing = async (client: DynamoDBDocumentClient, body: ResponseBody): Promise<PutThingResult> => {
+  const thing: Thing = createThing(body.thingName, body.deviceId, body.thingTypeId, body.description)
+
+  const params: PutCommandInput = {
+    TableName: getDbName(),
+    Item: thing,
+  }
+
+  const putCommandOutput: PutCommandOutput = await client.send(new PutCommand(params))
+
+  return { statusCode: putCommandOutput.$metadata.httpStatusCode, result: thing }
 }

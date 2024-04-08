@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { describe, it, before, after } from 'mocha'
 import * as sinon from 'sinon'
 import { assert } from 'chai'
@@ -9,14 +7,15 @@ import { v4 as uuidv4 } from 'uuid'
 
 import * as createThingLambda from '../lambda-create/index'
 import * as readThingLambda from '../lambda-read/index'
-import { createThing, createEventWrapper, getDbDocumentClient, createContext } from './helper/appHelper'
 import {
-  assertThingResponse,
-  assertResponseError,
+  createThingDb,
+  createEventWrapper,
+  getDbDocumentClient,
+  createContext,
   createTable,
   dropTable,
-  assertThingsResponse,
-} from './helper/thingHelper'
+} from './helper/appHelper'
+import { assertThingResponse, assertResponseError, assertThingsResponse } from './helper/thingHelper'
 import { Thing, ThingResponse } from '../types'
 import { API_GATEWAY_HEADERS } from '../lambda-create/util/appUtil'
 import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy'
@@ -48,7 +47,7 @@ describe('thing tests', () => {
     client = await getDbDocumentClient()
     await createTable(client)
 
-    const { body: createdThingBody } = await createThing(client, thingOneName, deviceOneId, thingTypeOneId)
+    const { body: createdThingBody } = await createThingDb(client, thingOneName, deviceOneId, thingTypeOneId)
     const thingBodyParsed: Thing = JSON.parse(createdThingBody)
     thingOneId = thingBodyParsed.id
 
