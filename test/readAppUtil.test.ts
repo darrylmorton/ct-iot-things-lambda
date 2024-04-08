@@ -1,6 +1,7 @@
 import { describe, it, before, after } from 'mocha'
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
+import { expect } from 'chai'
 
 import { createThingDb, getDbDocumentClient, createTable, dropTable } from './helper/appHelper'
 import { assertResponseError } from './helper/thingHelper'
@@ -8,6 +9,7 @@ import { ResponseError, Thing } from '../types'
 
 import {
   API_GATEWAY_HEADERS,
+  getDbName,
   getItems,
   queryByDeviceId,
   queryById,
@@ -66,72 +68,102 @@ describe('read thing util tests', () => {
 
     it('by id - invalid uuid', async () => {
       const actualResult: ResponseError = await queryById(client, '0')
-      console.log('actualResult', actualResult)
 
       assertResponseError(actualResult, API_GATEWAY_HEADERS, 400)
     })
 
     it('by id - thing does not exist', async () => {
       const actualResult: ResponseError = await queryById(client, thingZeroId)
-      console.log('actualResult', actualResult)
 
       assertResponseError(actualResult, API_GATEWAY_HEADERS, 404)
     })
 
     it('by id', async () => {
       const actualResult: ResponseError = await queryById(client, thingOneId)
-      console.log('actualResult', actualResult)
 
       assertResponseError(actualResult, API_GATEWAY_HEADERS, 200)
     })
 
     it('by thing name - thing does not exist', async () => {
       const actualResult: ResponseError = await queryByThingName(client, thingZeroName)
-      console.log('actualResult', actualResult)
 
       assertResponseError(actualResult, API_GATEWAY_HEADERS, 404)
     })
 
     it('by thing name', async () => {
       const actualResult: ResponseError = await queryByThingName(client, thingOneName)
-      console.log('actualResult', actualResult)
 
       assertResponseError(actualResult, API_GATEWAY_HEADERS, 200)
     })
 
     it('by device id - thing does not exist', async () => {
       const actualResult: ResponseError = await queryByDeviceId(client, deviceZeroId)
-      console.log('actualResult', actualResult)
 
       assertResponseError(actualResult, API_GATEWAY_HEADERS, 404)
     })
 
     it('by device id', async () => {
       const actualResult: ResponseError = await queryByDeviceId(client, deviceOneId)
-      console.log('actualResult', actualResult)
 
       assertResponseError(actualResult, API_GATEWAY_HEADERS, 200)
     })
 
     it('by thing type id - invalid uuid', async () => {
       const actualResult: ResponseError = await queryByThingTypeId(client, '0')
-      console.log('actualResult', actualResult)
 
       assertResponseError(actualResult, API_GATEWAY_HEADERS, 400)
     })
 
     it('by thing type id - thing type does not exist', async () => {
       const actualResult: ResponseError = await queryByThingTypeId(client, thingTypeZeroId)
-      console.log('actualResult', actualResult)
 
       assertResponseError(actualResult, API_GATEWAY_HEADERS, 404)
     })
 
     it('by thing type id', async () => {
       const actualResult: ResponseError = await queryByThingTypeId(client, thingTypeOneId)
-      console.log('actualResult', actualResult)
 
       assertResponseError(actualResult, API_GATEWAY_HEADERS, 200)
+    })
+  })
+
+  describe('getDbName', () => {
+    let environmentName: string
+
+    afterEach(() => {
+      process.env.NODE_ENV = 'test'
+      process.env.DB_TABLE_NAME = 'ct-iot-test-things'
+    })
+
+    it('development', async () => {
+      environmentName = 'development'
+      process.env.NODE_ENV = environmentName
+
+      const expectedResult = `ct-iot-${environmentName}-things`
+
+      const actualResult = getDbName()
+
+      expect(actualResult).to.equal(expectedResult)
+    })
+
+    it('production', async () => {
+      environmentName = 'production'
+      process.env.NODE_ENV = environmentName
+      process.env.DB_TABLE_NAME = `ct-iot-${environmentName}-things`
+
+      const expectedResult = `ct-iot-${environmentName}-things`
+
+      const actualResult = getDbName()
+
+      expect(actualResult).to.equal(expectedResult)
+    })
+
+    it('test', async () => {
+      const expectedResult = 'ct-iot-test-things'
+
+      const actualResult = getDbName()
+
+      expect(actualResult).to.equal(expectedResult)
     })
   })
 })

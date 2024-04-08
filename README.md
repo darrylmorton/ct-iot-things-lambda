@@ -20,7 +20,7 @@ npm run test
 
 ## Package
 The following NPM run scripts zip and move the packages to `../ct-iot-serverless-infrastructure` for deployment via 
-terraform
+IaC
 ```
 # development
 npm run dev:package-create

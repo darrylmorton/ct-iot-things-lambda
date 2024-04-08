@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import { validate as isValidUuid } from 'uuid'
+import { isValid, parseISO } from 'date-fns'
 
 import { ThingResponse, ResponseBody, ResponseError, Thing, PutThingResult } from '../../types'
 import { uuidValidateV4 } from '../../lambda-read/util/appUtil'
@@ -51,6 +52,13 @@ export const assertThing = (actualResult: Thing, expectedResult: Thing): void =>
   expect(actualResult.description).to.equal(expectedResult.description)
   expect(actualResult.deviceId).to.equal(expectedResult.deviceId)
   expect(actualResult.thingTypeId).to.equal(expectedResult.thingTypeId)
+}
+
+export const assertThingWithDates = (actualResult: Thing, expectedResult: Thing): void => {
+  assertThing(actualResult, expectedResult)
+
+  expect(isValid(parseISO(actualResult.updatedAt))).to.equal(true)
+  expect(isValid(parseISO(actualResult.createdAt))).to.equal(true)
 }
 
 export const assertPutThingResult = (actualResult: PutThingResult, expectedResult: PutThingResult): void => {

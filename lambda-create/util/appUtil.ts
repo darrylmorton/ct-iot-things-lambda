@@ -8,9 +8,9 @@ import {
   QueryCommandInput,
   QueryCommandOutput,
 } from '@aws-sdk/lib-dynamodb'
+import { v4 as uuidv4 } from 'uuid'
 
 import { PutThingResult, ResponseBody, ResponseError, Thing } from '../../types'
-import { v4 as uuidv4 } from 'uuid'
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
