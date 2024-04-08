@@ -6,8 +6,6 @@
   "scripts": {
     "lint": "eslint . --ext .ts --ext .tsx",
     "depcheck": "depcheck",
-    "test": "NODE_ENV=test AWS_ACCESS_KEY_ID=1 AWS_SECRET_ACCESS_KEY=2 AWS_REGION=localhost NODE_OPTIONS='--import tsx' mocha --config ./test/mocharc.json ./test/",
-    "test:coverage": "NODE_ENV=test AWS_ACCESS_KEY_ID=1 AWS_SECRET_ACCESS_KEY=2 AWS_REGION=localhost NODE_OPTIONS='--import tsx' nyc mocha --config ./test/mocharc.json ./test/",
     "dev:package-create": "zip -r ../ct-iot-serverless-infrastructure/terraform/development/dev-create-thing-lambda.zip ./lambda-create",
     "dev:package-read": "zip -r ../ct-iot-serverless-infrastructure/terraform/development/dev-read-thing-lambda.zip ./lambda-read",
     "dev:package-all": "npm run dev:package-create && npm run dev:package-read",
@@ -16,7 +14,9 @@
     "stage:package-all": "npm run stage:package-create && npm run stage:package-read",
     "prod:package-create": "zip -r ../ct-iot-serverless-infrastructure/terraform/production/prod-create-thing-lambda.zip ./lambda-create",
     "prod:package-read": "zip -r ../ct-iot-serverless-infrastructure/terraform/production/prod-read-thing-lambda.zip ./lambda-read",
-    "prod:package-all": "npm run prod:package-create && npm run prod:package-read"
+    "prod:package-all": "npm run prod:package-create && npm run prod:package-read",
+    "test": "NODE_ENV=test AWS_ACCESS_KEY_ID=1 AWS_SECRET_ACCESS_KEY=2 AWS_REGION=localhost NODE_OPTIONS='--import tsx' mocha --config ./test/mocharc.json ./test/",
+    "test:coverage": "NODE_ENV=test AWS_ACCESS_KEY_ID=1 AWS_SECRET_ACCESS_KEY=2 AWS_REGION=localhost NODE_OPTIONS='--import tsx' nyc mocha --config ./test/mocharc.json ./test/"
   },
   "engines": {
     "node": ">=20.11"
