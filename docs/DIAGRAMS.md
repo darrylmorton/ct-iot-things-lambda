@@ -2,6 +2,7 @@
 ---
 title: Things Lambda Flow Chart
 ---
+
 flowchart LR
 
     API_Gateway[API Gateway] --request---> ThingsLambda[Things Lambda] <---> ThingsDB[(Things DB)]

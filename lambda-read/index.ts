@@ -10,12 +10,9 @@ import {
   queryByThingTypeId,
   API_GATEWAY_HEADERS,
 } from './util/appUtil'
-import { ResponseError, ThingResponse } from '../types'
+import { ThingResponse } from '../types'
 
-export const handler = async function run(
-  event: APIGatewayProxyEvent,
-  context: Context
-): Promise<ThingResponse | ResponseError> {
+export const handler = async function run(event: APIGatewayProxyEvent, context: Context): Promise<ThingResponse> {
   const client: DynamoDBDocumentClient = await getDbDocumentClient()
 
   if (!event.queryStringParameters || Object.keys(event.queryStringParameters).length === 0) {
@@ -33,5 +30,6 @@ export const handler = async function run(
   return {
     headers: API_GATEWAY_HEADERS,
     statusCode: 400,
+    body: '',
   }
 }

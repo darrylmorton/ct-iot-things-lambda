@@ -4,12 +4,12 @@ import { describe, it, before, after } from 'mocha'
 import * as sinon from 'sinon'
 import { assert } from 'chai'
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
-import { v4 as uuidv4 } from 'uuid'
 import { Context } from 'aws-lambda'
+import { v4 as uuidv4 } from 'uuid'
 
 import * as createThingLambda from '../lambda-create/index'
 import * as readThingLambda from '../lambda-read/index'
-import { createContext, createThing, createEventWrapper, getDbDocumentClient } from './helper/appHelper'
+import { createThing, createEventWrapper, getDbDocumentClient, createContext } from './helper/appHelper'
 import {
   assertThingResponse,
   assertResponseError,
@@ -17,8 +17,9 @@ import {
   dropTable,
   assertThingsResponse,
 } from './helper/thingHelper'
-import { ThingResponse } from '../types'
+import { Thing, ThingResponse } from '../types'
 import { API_GATEWAY_HEADERS } from '../lambda-create/util/appUtil'
+import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy'
 
 describe('thing tests', () => {
   let client: DynamoDBDocumentClient
@@ -48,7 +49,8 @@ describe('thing tests', () => {
     await createTable(client)
 
     const { body: createdThingBody } = await createThing(client, thingOneName, deviceOneId, thingTypeOneId)
-    thingOneId = createdThingBody?.id || ''
+    const thingBodyParsed: Thing = JSON.parse(createdThingBody)
+    thingOneId = thingBodyParsed.id
 
     context = createContext('read-thing-test-lambda')
   })
@@ -74,28 +76,21 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(null, 'GET', {})
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', {})
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
-      assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertThingsResponse(lambdaSpyResult, expectedResult)
     })
 
     it('read thing by id', async () => {
       const qsParams = { id: 'ABC' }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 400)
@@ -118,13 +113,10 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertThingsResponse(lambdaSpyResult, expectedResult)
@@ -133,13 +125,10 @@ describe('thing tests', () => {
     it('read missing thing by id', async () => {
       const qsParams = { id: thingZeroId }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 400)
@@ -162,13 +151,10 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertThingsResponse(lambdaSpyResult, expectedResult)
@@ -177,13 +163,10 @@ describe('thing tests', () => {
     it('read missing thing by name', async () => {
       const qsParams = { thingName: thingZeroName }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 404)
@@ -206,13 +189,10 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertThingsResponse(lambdaSpyResult, expectedResult)
@@ -221,13 +201,10 @@ describe('thing tests', () => {
     it('read missing thing by device id', async () => {
       const qsParams = { deviceId: deviceZeroId }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 404)
@@ -236,13 +213,10 @@ describe('thing tests', () => {
     it('read thing by type', async () => {
       const qsParams = { thingTypeId: 'ABC' }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 400)
@@ -265,13 +239,10 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertThingsResponse(lambdaSpyResult, expectedResult)
@@ -280,13 +251,10 @@ describe('thing tests', () => {
     it('read missing thing by type', async () => {
       const qsParams = { thingTypeId: thingTypeZeroId }
 
-      const event = createEventWrapper(null, 'GET', qsParams)
+      const event: APIGatewayProxyEvent = createEventWrapper(null, 'GET', qsParams)
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        readThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(readThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 404)
@@ -297,13 +265,10 @@ describe('thing tests', () => {
     it('create bad thing', async () => {
       const body = JSON.stringify({ thingName: '', deviceId: '', thingTypeId: '', description: '' })
 
-      const event = createEventWrapper(body, 'POST', {})
+      const event: APIGatewayProxyEvent = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        createThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 400)
@@ -322,13 +287,10 @@ describe('thing tests', () => {
         body,
       }
 
-      const event = createEventWrapper(body, 'POST', {})
+      const event: APIGatewayProxyEvent = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        createThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertThingResponse(lambdaSpyResult, expectedResult)
@@ -342,13 +304,10 @@ describe('thing tests', () => {
         description: thingTwoName,
       })
 
-      const event = createEventWrapper(body, 'POST', {})
+      const event: APIGatewayProxyEvent = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        createThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 409)
@@ -362,13 +321,10 @@ describe('thing tests', () => {
         description: thingTwoName,
       })
 
-      const event = createEventWrapper(body, 'POST', {})
+      const event: APIGatewayProxyEvent = createEventWrapper(body, 'POST', {})
 
-      const lambdaSpy: sinon.SinonSpy = sinon.spy(
-        // @ts-ignore
-        createThingLambda.handler
-      )
-      const lambdaSpyResult = await lambdaSpy(event, context)
+      const lambdaSpy: sinon.SinonSpy = sinon.spy(createThingLambda.handler)
+      const lambdaSpyResult: ThingResponse = await lambdaSpy(event, context)
 
       assert(lambdaSpy.withArgs(event, context).calledOnce)
       assertResponseError(lambdaSpyResult, API_GATEWAY_HEADERS, 409)

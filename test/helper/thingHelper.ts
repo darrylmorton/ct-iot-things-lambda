@@ -1,4 +1,10 @@
-import { CreateTableCommand, DeleteTableCommand, DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import {
+  CreateTableCommand,
+  CreateTableCommandInput,
+  CreateTableCommandOutput,
+  DeleteTableCommand,
+  DeleteTableCommandOutput,
+} from '@aws-sdk/client-dynamodb'
 import { expect } from 'chai'
 import {
   APIGatewayProxyEventMultiValueQueryStringParameters,
@@ -9,14 +15,15 @@ import {
   APIGatewayProxyEventQueryStringParameters,
   APIGatewayProxyEventStageVariables,
 } from 'aws-lambda/trigger/api-gateway-proxy'
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
 
 import { ThingResponse, ResponseBody, ResponseError } from '../../types'
 import { uuidValidateV4 } from '../../lambda-read/util/appUtil'
 
 export const DB_NAME = 'ct-iot-test-things'
 
-export const createTable = async (dbClient: DynamoDBClient) => {
-  const input = {
+export const createTable = async (dbClient: DynamoDBDocumentClient): Promise<CreateTableCommandOutput> => {
+  const input: CreateTableCommandInput = {
     TableName: DB_NAME,
     AttributeDefinitions: [
       {
@@ -123,7 +130,7 @@ export const createTable = async (dbClient: DynamoDBClient) => {
   return dbClient.send(command)
 }
 
-export const dropTable = async (dbClient: DynamoDBClient) => {
+export const dropTable = async (dbClient: DynamoDBDocumentClient): Promise<DeleteTableCommandOutput> => {
   const params = {
     TableName: DB_NAME,
   }
@@ -170,7 +177,8 @@ export const createEvent = (
       user: null
     }
     requestId: string
-    http: { path: string; protocol: string; method: string; sourceIp: string; userAgent: string }
+    // prettier-ignore
+    http: { path: string, protocol: string, method: string, sourceIp: string, userAgent: string }
     apiId: string
   },
   resource: string,
@@ -192,7 +200,7 @@ export const createEvent = (
   }
 }
 
-export const assertThingResponse = (actualResult: ThingResponse, expectedResult: ThingResponse) => {
+export const assertThingResponse = (actualResult: ThingResponse, expectedResult: ThingResponse): void => {
   expect(actualResult.statusCode).to.equal(expectedResult.statusCode)
   expect(actualResult.headers).to.deep.equal(expectedResult.headers)
 
@@ -202,7 +210,7 @@ export const assertThingResponse = (actualResult: ThingResponse, expectedResult:
   assertThingResponseBody(actualResultBody, expectedResultBody)
 }
 
-export const assertThingsResponse = (actualResult: ThingResponse, expectedResult: ThingResponse) => {
+export const assertThingsResponse = (actualResult: ThingResponse, expectedResult: ThingResponse): void => {
   expect(actualResult.statusCode).to.equal(expectedResult.statusCode)
   expect(actualResult.headers).to.deep.equal(expectedResult.headers)
 
@@ -216,7 +224,7 @@ export const assertThingsResponse = (actualResult: ThingResponse, expectedResult
   }
 }
 
-export const assertThingResponseBody = (actualResultBody: ResponseBody, expectedResultBody: ResponseBody) => {
+export const assertThingResponseBody = (actualResultBody: ResponseBody, expectedResultBody: ResponseBody): void => {
   expect(uuidValidateV4(actualResultBody.id)).to.deep.equal(true)
   expect(actualResultBody.thingName).to.equal(expectedResultBody.thingName)
   expect(actualResultBody.deviceId).to.equal(expectedResultBody.deviceId)
@@ -228,7 +236,7 @@ export const assertResponseError = (
   actualResult: ResponseError,
   headers: Record<string, string>,
   statusCode: number
-) => {
+): void => {
   expect(actualResult.headers).to.deep.equal(headers)
   expect(actualResult.statusCode).to.equal(statusCode)
 }

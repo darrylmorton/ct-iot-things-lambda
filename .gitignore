@@ -6,6 +6,7 @@
 # testing
 /coverage
 /dynamodb-local-data
+.nyc_output
 
 # production
 /build

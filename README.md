@@ -11,10 +11,6 @@ The `ct-iot-things-lambda` reads/writes `things` to a database, and is placed be
 ```
 npm run lint
 ```
-### Build
-```
-npm run build
-```
 
 ### Test
 ```

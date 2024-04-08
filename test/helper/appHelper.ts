@@ -1,11 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
 import { DynamoDBDocumentClient, PutCommand, PutCommandInput, PutCommandOutput } from '@aws-sdk/lib-dynamodb'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { v4 as uuidv4 } from 'uuid'
+import { Context } from 'aws-lambda'
+import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy'
 
 import { createEvent, DB_NAME } from './thingHelper'
-import { Thing } from '../../types'
+import { Thing, ThingResponse } from '../../types'
 import { API_GATEWAY_HEADERS, consoleErrorOutput } from '../../lambda-create/util/appUtil'
 
 export const getDbClient = async (): Promise<DynamoDBClient> => {
@@ -41,35 +43,37 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
 
   const translateConfig = { marshallOptions, unmarshallOptions }
 
-  // @ts-ignore
   return DynamoDBDocumentClient.from(await getDbClient(), translateConfig)
 }
 
-export const createContext = (functionName: string) => {
+export const createContext = (functionName: string): Context => {
   return {
-    awsRequestId: '',
     callbackWaitsForEmptyEventLoop: false,
     functionName,
-    functionVersion: '',
-    invokedFunctionArn: '',
-    logGroupName: '',
-    logStreamName: '',
-    memoryLimitInMB: '',
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-    done(error?: Error, result?: any): void {},
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-    fail(error: Error | string): void {},
+    functionVersion: 'mocked',
+    invokedFunctionArn: 'mocked',
+    memoryLimitInMB: 'mocked',
+    awsRequestId: 'mocked',
+    logGroupName: 'mocked',
+    logStreamName: 'mocked',
     getRemainingTimeInMillis(): number {
-      return 0
+      return 999
     },
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-    succeed(message: any, object?: any): void {},
+    done(error?: Error, result?: any) {
+      console.error(error)
+    },
+    fail(error: Error | string) {
+      console.error(error)
+    },
+    succeed(messageOrObject: any) {},
   }
 }
 
-export const createEventWrapper = (body: string | null, httpMethod: string, qsParams: Record<string, string>) => {
+export const createEventWrapper = (
+  body: string | null,
+  httpMethod: string,
+  qsParams: Record<string, string>
+): APIGatewayProxyEvent => {
   return createEvent(
     body,
     { 'content-type': 'application/json' },
@@ -127,7 +131,7 @@ export const createThing = async (
   thingName: string,
   deviceId: string,
   thingTypeId: string
-) => {
+): Promise<ThingResponse> => {
   const currentDate: string = new Date().toISOString()
 
   const thing: Thing = {
@@ -148,10 +152,10 @@ export const createThing = async (
   try {
     const result: PutCommandOutput = await client.send(new PutCommand(params))
 
-    return { headers: API_GATEWAY_HEADERS, statusCode: result.$metadata.httpStatusCode, body: thing }
-  } catch (err: any | unknown) {
+    return { headers: API_GATEWAY_HEADERS, statusCode: result.$metadata.httpStatusCode, body: JSON.stringify(thing) }
+  } catch (err: any) {
     consoleErrorOutput('create-thing-test-lambda', 'createThing', err)
 
-    return { headers: API_GATEWAY_HEADERS, statusCode: err.$metadata?.httpStatusCode }
+    return { headers: API_GATEWAY_HEADERS, statusCode: err.$metadata?.httpStatusCode, body: '' }
   }
 }

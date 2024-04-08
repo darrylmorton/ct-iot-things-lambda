@@ -10,19 +10,19 @@ import { unmarshall } from '@aws-sdk/util-dynamodb'
 import { Context } from 'aws-lambda'
 import { validate as uuidValidate, version as uuidVersion } from 'uuid'
 
-import { ResponseError, ThingResponse } from '../../types'
+import { ThingResponse } from '../../types'
 
 const DB_TABLE_NAME_PREFIX = 'ct-iot'
 const DB_TABLE_NAME_SUFFIX = 'things'
 
 export const API_GATEWAY_HEADERS = { 'Content-Type': 'application/json' }
 
-export const getDbName = () => {
+export const getDbName = (): string => {
   const NODE_ENV = process.env.NODE_ENV
 
   switch (NODE_ENV) {
     case 'production':
-      return process.env.DB_TABLE_NAME
+      return `${process.env.DB_TABLE_NAME}`
     case 'test':
       return `${DB_TABLE_NAME_PREFIX}-${NODE_ENV}-${DB_TABLE_NAME_SUFFIX}`
     default:
@@ -65,22 +65,18 @@ export const getDbDocumentClient = async (): Promise<DynamoDBDocumentClient> => 
   return DynamoDBDocumentClient.from(await getDbClient(), translateConfig)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const consoleErrorOutput = (lambdaFunctionName: string | unknown, functionName: string, err: any | unknown) => {
+export const consoleErrorOutput = (lambdaFunctionName: string | unknown, functionName: string, err: unknown): void => {
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line no-console
     console.error(`${lambdaFunctionName}: ${functionName} - error`, err)
   }
 }
 
-export const uuidValidateV4 = (uuid: string) => {
+export const uuidValidateV4 = (uuid: string): boolean => {
   return uuidValidate(uuid) && uuidVersion(uuid) === 4
 }
 
-export const getItems = async (
-  client: DynamoDBDocumentClient,
-  context: Context
-): Promise<ThingResponse | ResponseError> => {
+export const getItems = async (client: DynamoDBDocumentClient, context: Context): Promise<ThingResponse> => {
   try {
     const params: ScanCommandInput = {
       TableName: getDbName(),
@@ -92,7 +88,7 @@ export const getItems = async (
 
     if (result.Items) {
       const body = result.Items.reduce(
-        (acc: Record<string, AttributeValue>[], item: Record<string, AttributeValue>) => {
+        (acc: Array<Record<string, AttributeValue>>, item: Record<string, AttributeValue>) => {
           const unmarshalledItem = unmarshall(item)
 
           acc.push(unmarshalledItem)
@@ -114,12 +110,13 @@ export const getItems = async (
         body: JSON.stringify([]),
       }
     }
-  } catch (err: unknown) {
+  } catch (err) {
     consoleErrorOutput(context.functionName, 'getItems', err)
 
     return {
       headers: API_GATEWAY_HEADERS,
       statusCode: 500,
+      body: '',
     }
   }
 }
@@ -128,11 +125,12 @@ export const queryById = async (
   client: DynamoDBDocumentClient,
   id: string,
   context: Context
-): Promise<ThingResponse | ResponseError> => {
+): Promise<ThingResponse> => {
   if (!uuidValidateV4(id)) {
     return {
       headers: API_GATEWAY_HEADERS,
       statusCode: 400,
+      body: '',
     }
   }
 
@@ -157,14 +155,16 @@ export const queryById = async (
       return {
         headers: API_GATEWAY_HEADERS,
         statusCode: 404,
+        body: '',
       }
     }
-  } catch (err: unknown) {
+  } catch (err) {
     consoleErrorOutput(context.functionName, 'queryById', err)
 
     return {
       headers: API_GATEWAY_HEADERS,
       statusCode: 500,
+      body: '',
     }
   }
 }
@@ -173,7 +173,7 @@ export const queryByThingName = async (
   client: DynamoDBDocumentClient,
   thingName: string,
   context: Context
-): Promise<ThingResponse | ResponseError> => {
+): Promise<ThingResponse> => {
   try {
     const params: QueryCommandInput = {
       TableName: getDbName(),
@@ -196,14 +196,16 @@ export const queryByThingName = async (
       return {
         headers: API_GATEWAY_HEADERS,
         statusCode: 404,
+        body: '',
       }
     }
-  } catch (err: unknown) {
+  } catch (err) {
     consoleErrorOutput(context.functionName, 'queryByThingName', err)
 
     return {
       headers: API_GATEWAY_HEADERS,
       statusCode: 500,
+      body: '',
     }
   }
 }
@@ -212,11 +214,12 @@ export const queryByDeviceId = async (
   client: DynamoDBDocumentClient,
   deviceId: string,
   context: Context
-): Promise<ThingResponse | ResponseError> => {
+): Promise<ThingResponse> => {
   if (!deviceId) {
     return {
       headers: API_GATEWAY_HEADERS,
       statusCode: 400,
+      body: '',
     }
   }
 
@@ -242,14 +245,16 @@ export const queryByDeviceId = async (
       return {
         headers: API_GATEWAY_HEADERS,
         statusCode: 404,
+        body: '',
       }
     }
-  } catch (err: unknown) {
+  } catch (err) {
     consoleErrorOutput(context.functionName, 'queryByDeviceId', err)
 
     return {
       headers: API_GATEWAY_HEADERS,
       statusCode: 500,
+      body: '',
     }
   }
 }
@@ -258,11 +263,12 @@ export const queryByThingTypeId = async (
   client: DynamoDBDocumentClient,
   thingTypeId: string,
   context: Context
-): Promise<ThingResponse | ResponseError> => {
+): Promise<ThingResponse> => {
   if (!uuidValidateV4(thingTypeId)) {
     return {
       headers: API_GATEWAY_HEADERS,
       statusCode: 400,
+      body: '',
     }
   }
 
@@ -288,14 +294,16 @@ export const queryByThingTypeId = async (
       return {
         headers: API_GATEWAY_HEADERS,
         statusCode: 404,
+        body: '',
       }
     }
-  } catch (err: unknown) {
+  } catch (err) {
     consoleErrorOutput(context.functionName, 'queryByThingName', err)
 
     return {
       headers: API_GATEWAY_HEADERS,
       statusCode: 500,
+      body: '',
     }
   }
 }
