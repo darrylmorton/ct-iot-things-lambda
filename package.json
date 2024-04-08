@@ -23,6 +23,7 @@
   },
   "peerDependencies": {
     "@types/node": "^20.11.30",
+    "prettier": "^3.2.5",
     "tsx": "^4.7.1",
     "typescript": "^5.4.3"
   },
@@ -46,7 +47,6 @@
     "eslint-plugin-promise": "^6.1.1",
     "mocha": "^10.3.0",
     "nyc": "^15.1.0",
-    "prettier": "^3.2.5",
     "sinon": "^17.0.1",
     "uuid": "^9.0.1"
   }
